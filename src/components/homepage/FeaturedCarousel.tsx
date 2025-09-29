@@ -8,14 +8,18 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Play, Plus, Star } from "lucide-react";
-import type { FeaturedManga } from "@/types/manga";
+import { Play, Plus, Star, Eye } from "lucide-react";
+import type { FeaturedManga, Manga } from "@/types/manga";
 
 interface FeaturedCarouselProps {
   featuredManga: FeaturedManga[];
+  onPreview?: (manga: Manga) => void;
 }
 
-export function FeaturedCarousel({ featuredManga }: FeaturedCarouselProps) {
+export function FeaturedCarousel({
+  featuredManga,
+  onPreview,
+}: FeaturedCarouselProps) {
   return (
     <Carousel className="w-full mb-8">
       <CarouselContent>
@@ -61,20 +65,24 @@ export function FeaturedCarousel({ featuredManga }: FeaturedCarouselProps) {
                   </div>
 
                   <div className="flex gap-4">
-                    <Button
-                                    size="lg"
-                                    variant="default"
-                    >
+                    <Button size="lg" variant="default">
                       <Play className="h-4 w-4 mr-2" />
                       Read Now
                     </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                    >
+                    <Button size="lg" variant="outline">
                       <Plus className="h-4 w-4 mr-2" />
                       Add to Library
                     </Button>
+                    {onPreview && (
+                      <Button
+                        size="lg"
+                        variant="secondary"
+                        onClick={() => onPreview(manga)}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        Preview
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>

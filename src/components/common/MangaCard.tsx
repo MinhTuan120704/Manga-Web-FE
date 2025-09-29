@@ -1,18 +1,21 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Star, BookOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Clock, Star, BookOpen, Eye } from "lucide-react";
 import type { Manga } from "@/types/manga";
 
 interface MangaCardProps {
   manga: Manga;
   showStats?: boolean;
   size?: "sm" | "md" | "lg";
+  onPreview?: (manga: Manga) => void;
 }
 
 export function MangaCard({
   manga,
   showStats = true,
   size = "md",
+  onPreview,
 }: MangaCardProps) {
   // Remove fixed widths, let card fill the grid column
   const imageSizes = {
@@ -22,7 +25,7 @@ export function MangaCard({
   };
 
   return (
-    <Card className="w-full overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <Card className="w-full overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
       <div className="relative">
         <img
           src={manga.coverUrl}
@@ -38,6 +41,23 @@ export function MangaCard({
           <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-black/70 rounded px-2 py-1">
             <Star className="h-3 w-3 text-yellow-400 fill-current" />
             <span className="text-white text-xs">{manga.rating}</span>
+          </div>
+        )}
+
+        {/* Preview button - shows on hover */}
+        {onPreview && (
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <Button
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onPreview(manga);
+              }}
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              Preview
+            </Button>
           </div>
         )}
       </div>

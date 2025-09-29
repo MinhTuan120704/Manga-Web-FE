@@ -1,14 +1,16 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Clock, ChevronRight, Eye } from "lucide-react";
 import { SectionHeader } from "@/components/common/SectionHeader";
-import type { RecentUpdate } from "@/types/manga";
+import type { RecentUpdate, Manga } from "@/types/manga";
 
 interface RecentUpdatesProps {
   updates: RecentUpdate[];
+  onPreview?: (manga: Manga) => void;
 }
 
-export function RecentUpdates({ updates }: RecentUpdatesProps) {
+export function RecentUpdates({ updates, onPreview }: RecentUpdatesProps) {
   return (
     <div className="mb-8">
       <SectionHeader
@@ -50,7 +52,22 @@ export function RecentUpdates({ updates }: RecentUpdatesProps) {
                     <span className="text-xs text-muted-foreground">
                       {update.chapter.pages} pages
                     </span>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    <div className="flex items-center gap-2">
+                      {onPreview && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onPreview(update.manga);
+                          }}
+                          className="h-6 px-2"
+                        >
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                      )}
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    </div>
                   </div>
                 </div>
               </div>

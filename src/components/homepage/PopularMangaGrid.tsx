@@ -1,12 +1,16 @@
 import { MangaCard } from "@/components/common/MangaCard";
 import { SectionHeader } from "@/components/common/SectionHeader";
-import type { PopularManga } from "@/types/manga";
+import type { PopularManga, Manga } from "@/types/manga";
 
 interface PopularMangaGridProps {
   popularManga: PopularManga[];
+  onPreview?: (manga: Manga) => void;
 }
 
-export function PopularMangaGrid({ popularManga }: PopularMangaGridProps) {
+export function PopularMangaGrid({
+  popularManga,
+  onPreview,
+}: PopularMangaGridProps) {
   return (
     <div className="mb-8">
       <SectionHeader
@@ -23,7 +27,7 @@ export function PopularMangaGrid({ popularManga }: PopularMangaGridProps) {
                 {item.rank}
               </div>
             </div>
-            <MangaCard manga={item.manga} size="sm" />
+            <MangaCard manga={item.manga} size="sm" onPreview={onPreview} />
           </div>
         ))}
       </div>

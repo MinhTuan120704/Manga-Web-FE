@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -142,6 +141,8 @@ body {
   height: 100%;
   overflow-x: hidden;
 }
+
+/* Preview Pane Animations */
 
 ::-webkit-scrollbar-track {
   background: var(--muted);

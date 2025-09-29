@@ -158,7 +158,7 @@ export const mockRecentUpdates: RecentUpdate[] = [
     },
   {
     manga: {
-      id: "3",
+      id: "5",
       title: "One Piece",
       description:
         "Follow Monkey D. Luffy as he explores the Grand Line to find the legendary treasure One Piece.",
@@ -173,7 +173,7 @@ export const mockRecentUpdates: RecentUpdate[] = [
     },
     chapter: {
       id: "ch1100",
-      mangaId: "3",
+      mangaId: "5",
       number: 1100,
       title: "The Weight of Memory",
       publishedAt: "2024-01-15",
@@ -183,7 +183,7 @@ export const mockRecentUpdates: RecentUpdate[] = [
   },
   {
     manga: {
-      id: "4",
+      id: "6",
       title: "Hunter x Hunter",
       description:
         "A young boy searches for his father who left him to become a Hunter.",
@@ -198,7 +198,7 @@ export const mockRecentUpdates: RecentUpdate[] = [
     },
     chapter: {
       id: "ch390",
-      mangaId: "4",
+      mangaId: "6",
       number: 390,
       title: "Silence",
       publishedAt: "2022-12-26",
@@ -208,7 +208,7 @@ export const mockRecentUpdates: RecentUpdate[] = [
     },
   {
     manga: {
-      id: "3",
+      id: "7",
       title: "One Piece",
       description:
         "Follow Monkey D. Luffy as he explores the Grand Line to find the legendary treasure One Piece.",
@@ -223,7 +223,7 @@ export const mockRecentUpdates: RecentUpdate[] = [
     },
     chapter: {
       id: "ch1100",
-      mangaId: "3",
+      mangaId: "7",
       number: 1100,
       title: "The Weight of Memory",
       publishedAt: "2024-01-15",
@@ -233,7 +233,7 @@ export const mockRecentUpdates: RecentUpdate[] = [
   },
   {
     manga: {
-      id: "4",
+      id: "8",
       title: "Hunter x Hunter",
       description:
         "A young boy searches for his father who left him to become a Hunter.",
@@ -248,7 +248,7 @@ export const mockRecentUpdates: RecentUpdate[] = [
     },
     chapter: {
       id: "ch390",
-      mangaId: "4",
+      mangaId: "8",
       number: 390,
       title: "Silence",
       publishedAt: "2022-12-26",
@@ -258,7 +258,7 @@ export const mockRecentUpdates: RecentUpdate[] = [
   },
   {
     manga: {
-      id: "3",
+      id: "9",
       title: "One Piece",
       description:
         "Follow Monkey D. Luffy as he explores the Grand Line to find the legendary treasure One Piece.",
@@ -273,7 +273,7 @@ export const mockRecentUpdates: RecentUpdate[] = [
     },
     chapter: {
       id: "ch1100",
-      mangaId: "3",
+      mangaId: "9",
       number: 1100,
       title: "The Weight of Memory",
       publishedAt: "2024-01-15",
@@ -283,7 +283,7 @@ export const mockRecentUpdates: RecentUpdate[] = [
   },
   {
     manga: {
-      id: "4",
+      id: "10",
       title: "Hunter x Hunter",
       description:
         "A young boy searches for his father who left him to become a Hunter.",
@@ -298,7 +298,7 @@ export const mockRecentUpdates: RecentUpdate[] = [
     },
     chapter: {
       id: "ch390",
-      mangaId: "4",
+      mangaId: "10",
       number: 390,
       title: "Silence",
       publishedAt: "2022-12-26",
