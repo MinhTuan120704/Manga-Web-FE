@@ -1,40 +1,38 @@
-import { useState, useEffect } from 'react'
-import { DemoPage } from '@/components/DemoPage'
+import { useState, useEffect } from "react";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { Homepage } from "@/pages/Homepage";
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false)
+  const [darkMode, setDarkMode] = useState(false);
 
   // Check for saved theme preference or default to light mode
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setDarkMode(true)
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+      setDarkMode(true);
     }
-  }, [])
+  }, []);
 
   // Apply theme to document
   useEffect(() => {
     if (darkMode) {
-      document.documentElement.classList.add('dark')
-      localStorage.setItem('theme', 'dark')
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
     } else {
-      document.documentElement.classList.remove('dark')
-      localStorage.setItem('theme', 'light')
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
     }
-  }, [darkMode])
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode)
-  }
+  }, [darkMode]);
 
   return (
-    <DemoPage 
-      darkMode={darkMode} 
-      onToggleDarkMode={toggleDarkMode} 
-    />
-  )
+    <SidebarProvider>
+      <Homepage />
+    </SidebarProvider>
+  );
 }
 
-export default App
+export default App;
