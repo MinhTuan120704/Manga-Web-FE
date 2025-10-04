@@ -1,31 +1,51 @@
+import type { Genre } from "./genre";
+import type { User } from "./user";
+
+// ========== Manga Types ==========
+
 export interface Manga {
-  id: string;
+  _id: string;
   title: string;
   description: string;
-  coverUrl: string;
+  coverImage: string; 
   author: string;
   artist?: string;
+  genres: Genre[] | string[];
   status: "ongoing" | "completed" | "hiatus" | "cancelled";
-  genres: string[];
-  rating: number;
-  chapters: number;
+  uploaderId?: string | User;
+  viewCount?: number;
+  followerCount?: number;
+  averageRating?: number;
+  createdAt: string;
   updatedAt: string;
-  tags: string[];
 }
 
-export interface Chapter {
-  id: string;
-  mangaId: string;
-  number: number;
+export interface CreateMangaRequest {
   title: string;
-  publishedAt: string;
-  pages: number;
+  description: string;
+  author: string;
+  artist?: string;
+  genres: string[]; // Array of genre IDs
+  status: "ongoing" | "completed" | "hiatus" | "cancelled";
+  coverImageUrl: File | string;
 }
 
-export interface RecentUpdate {
-  manga: Manga;
-  chapter: Chapter;
-  timeAgo: string;
+export interface UpdateMangaRequest {
+  title?: string;
+  description?: string;
+  author?: string;
+  artist?: string;
+  genres?: string[];
+  status?: "ongoing" | "completed" | "hiatus" | "cancelled";
+  coverImageUrl?: File | string;
+}
+
+export interface MangaQueryParams {
+  page?: number;
+  limit?: number;
+  genre?: string;
+  status?: "ongoing" | "completed" | "hiatus" | "cancelled";
+  sortBy?: string;
 }
 
 export interface PopularManga {

@@ -1,8 +1,9 @@
 import React from "react";
-import { X, Star, Calendar, User, BookOpen, Tag } from "lucide-react";
+import { X, Star, Calendar, User, Tag, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import type { Manga } from "@/types/manga";
+import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
+import type { Manga, Genre } from "@/types";
 
 interface PreviewPaneProps {
   show: boolean;
@@ -35,6 +36,25 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
   }, [show, manga]);
 
   if (!currentManga || !visible) return null;
+
+  // Helper function để lấy tên genre
+  const getGenreNames = (genres: Genre[] | string[]): string[] => {
+    return genres.map((genre) =>
+      typeof genre === "string" ? genre : genre.name
+    );
+  };
+
+  // Helper function để format date
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("vi-VN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const genreNames = getGenreNames(currentManga.genres);
 
   return (
     <>
@@ -78,14 +98,13 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
             <div className="flex gap-4 mb-6">
               <div className="flex-shrink-0">
                 <img
-                  src={currentManga.coverUrl}
+                  src={sanitizeImageUrl(currentManga.coverImage)}
                   alt={currentManga.title}
-                  className="w-32 h-48 object-cover rounded-lg shadow-md"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src =
-                      "https://via.placeholder.com/200x300?text=No+Image";
-                  }}
+                  className="w-32 h-48 object-cover rounded-lg shadow-md bg-muted"
+                  onError={handleImageError}
+                  loading="lazy"
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
                 />
               </div>
               <div className="flex-1 min-w-0">
@@ -97,17 +116,29 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                     <User className="h-4 w-4" />
                     <span>{currentManga.author}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span>{currentManga.rating.toFixed(1)}/10</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="h-4 w-4" />
-                    <span>{currentManga.chapters} chapters</span>
-                  </div>
+                  {currentManga.artist && (
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      <span>Artist: {currentManga.artist}</span>
+                    </div>
+                  )}
+                  {currentManga.averageRating !== undefined && (
+                    <div className="flex items-center gap-2">
+                      <Star className="h-4 w-4 fill-yellow-400 stroke-yellow-400" />
+                      <span>{currentManga.averageRating.toFixed(1)}/10</span>
+                    </div>
+                  )}
+                  {currentManga.viewCount !== undefined && (
+                    <div className="flex items-center gap-2">
+                      <Eye className="h-4 w-4" />
+                      <span>
+                        {currentManga.viewCount.toLocaleString()} views
+                      </span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    <span>Updated: {currentManga.updatedAt}</span>
+                    <span>Updated: {formatDate(currentManga.updatedAt)}</span>
                   </div>
                 </div>
               </div>
@@ -129,7 +160,9 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                   ? "Đang tiến hành"
                   : currentManga.status === "completed"
                   ? "Hoàn thành"
-                  : "Tạm ngưng"}
+                  : currentManga.status === "hiatus"
+                  ? "Tạm ngưng"
+                  : "Đã hủy"}
               </Badge>
             </div>
 
@@ -140,8 +173,8 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                 Thể loại
               </h4>
               <div className="flex flex-wrap gap-2">
-                {currentManga.genres.map((genre) => (
-                  <Badge key={genre} variant="outline" className="text-xs">
+                {genreNames.map((genre, index) => (
+                  <Badge key={index} variant="outline" className="text-xs">
                     {genre}
                   </Badge>
                 ))}
@@ -155,20 +188,6 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                 {currentManga.description}
               </p>
             </div>
-
-            {/* Tags */}
-            {currentManga.tags && currentManga.tags.length > 0 && (
-              <div className="mb-6">
-                <h4 className="text-sm font-semibold mb-2">Tags</h4>
-                <div className="flex flex-wrap gap-2">
-                  {currentManga.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="text-xs">
-                      #{tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Action buttons */}
             <div className="space-y-2">
