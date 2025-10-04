@@ -7,15 +7,15 @@ export interface Manga {
   _id: string;
   title: string;
   description: string;
-  coverImageUrl: string; 
+  coverImage: string; 
   author: string;
   artist?: string;
   genres: Genre[] | string[];
   status: "ongoing" | "completed" | "hiatus" | "cancelled";
-  uploaderId?: string | User; 
+  uploaderId?: string | User;
   viewCount?: number;
   followerCount?: number;
-  averageRating?: number; 
+  averageRating?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -24,10 +24,10 @@ export interface CreateMangaRequest {
   title: string;
   description: string;
   author: string;
-  artist?: string; 
+  artist?: string;
   genres: string[]; // Array of genre IDs
   status: "ongoing" | "completed" | "hiatus" | "cancelled";
-  coverImageUrl: File | string; 
+  coverImageUrl: File | string;
 }
 
 export interface UpdateMangaRequest {
@@ -37,15 +37,15 @@ export interface UpdateMangaRequest {
   artist?: string;
   genres?: string[];
   status?: "ongoing" | "completed" | "hiatus" | "cancelled";
-  coverImageUrl?: File | string; 
+  coverImageUrl?: File | string;
 }
 
 export interface MangaQueryParams {
   page?: number;
   limit?: number;
-  genre?: string; 
+  genre?: string;
   status?: "ongoing" | "completed" | "hiatus" | "cancelled";
-  sortBy?: string; 
+  sortBy?: string;
 }
 
 export interface PopularManga {
