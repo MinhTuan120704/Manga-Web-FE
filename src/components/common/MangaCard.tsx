@@ -46,18 +46,18 @@ export function MangaCard({
 
   // Remove fixed widths, let card fill the grid column
   const imageSizes = {
-    sm: "h-40",
-    md: "h-64",
-    lg: "h-80",
+    sm: "h-64",
+    md: "h-80",
+    lg: "h-100",
   };
 
   return (
-    <Card className="w-full overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
+    <Card className="w-full overflow-hidden hover:shadow-lg transition-shadow duration-300 group flex flex-col">
       <div className="relative">
         <img
           src={sanitizeImageUrl(manga.coverImage)}
           alt={manga.title}
-          className={`w-full ${imageSizes[size]} object-cover bg-muted`}
+          className={`w-full ${imageSizes[size]} object-contain`}
           onError={handleImageError}
           loading="lazy"
           crossOrigin="anonymous"
@@ -79,14 +79,14 @@ export function MangaCard({
 
         {/* Preview button - shows on hover */}
         {onPreview && (
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+          <div className="absolute inset-0 bg-background/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <Button
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
                 onPreview(manga);
               }}
-              className="bg-primary hover:bg-primary/90"
+              className="bg-primary shadow-black-900 "
             >
               <Eye className="h-4 w-4 mr-2" />
               Preview
@@ -95,14 +95,14 @@ export function MangaCard({
         )}
       </div>
 
-      <CardContent className="p-3">
-        <h3 className="font-semibold text-sm line-clamp-2 mb-2">
+      <CardContent className="px-3 flex-1 flex flex-col">
+        <h3 className="font-semibold text-sm line-clamp-2 mb-1">
           {manga.title}
         </h3>
-        <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+        <p className="text-xs text-muted-foreground line-clamp-2 mb-1">
           {manga.description}
         </p>
-        <div className="flex flex-wrap gap-1 mb-2">
+        <div className="flex flex-wrap gap-1 mb-1 mt-auto">
           {genreNames.slice(0, 2).map((genre, index) => (
             <Badge key={index} variant="outline" className="text-xs">
               {genre}
@@ -112,7 +112,7 @@ export function MangaCard({
       </CardContent>
 
       {showStats && (
-        <CardFooter className="p-3 pt-0 flex justify-between items-center text-xs text-muted-foreground">
+        <CardFooter className="px-3 pt-0 flex justify-between items-center text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <BookOpen className="h-3 w-3" />
             <span>{manga.viewCount || 0} views</span>
