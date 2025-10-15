@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { RouterProvider } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { Homepage } from "@/pages/Homepage";
+import { router } from "@/router";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -30,7 +31,7 @@ function App() {
 
   return (
     <SidebarProvider>
-      <Homepage />
+      <RouterProvider router={router} />
     </SidebarProvider>
   );
 }
