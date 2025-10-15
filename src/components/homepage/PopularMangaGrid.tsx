@@ -39,7 +39,8 @@ export function PopularMangaGrid({
                     {index + 1}
                   </div>
                 </div>
-                <MangaCard manga={manga} size="sm" onPreview={onPreview} />
+                <div className="flex h-full">
+                <MangaCard manga={manga} size="sm" onPreview={onPreview} /></div>
               </div>
             ))}
       </div>
