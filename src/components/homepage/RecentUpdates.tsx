@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock, ChevronRight, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
 import type { Manga, Genre } from "@/types";
@@ -18,6 +19,8 @@ export function RecentUpdates({
   onPreview,
   loading = false,
 }: RecentUpdatesProps) {
+  const navigate = useNavigate();
+
   // Helper function để lấy tên genre
   const getGenreName = (genres: Genre[] | string[]): string => {
     if (!genres || genres.length === 0) return "Unknown";
@@ -83,6 +86,7 @@ export function RecentUpdates({
           <Card
             key={manga._id}
             className="hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => navigate(`/manga/${manga._id}`)}
           >
             <CardContent className="p-4">
               <div className="flex gap-3">

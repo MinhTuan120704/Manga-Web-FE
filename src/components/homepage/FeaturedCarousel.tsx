@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Play, Plus, Star, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
 import type { Manga, Genre } from "@/types";
 
@@ -24,6 +25,8 @@ export function FeaturedCarousel({
   onPreview,
   loading = false,
 }: FeaturedCarouselProps) {
+  const navigate = useNavigate();
+
   // Helper function để lấy tên genre
   const getGenreNames = (genres: Genre[] | string[]): string[] => {
     return genres.map((genre) =>
@@ -114,7 +117,11 @@ export function FeaturedCarousel({
                       </div>
 
                       <div className="flex gap-4 flex-wrap">
-                        <Button size="lg" variant="default">
+                        <Button
+                          size="lg"
+                          variant="default"
+                          onClick={() => navigate(`/manga/${manga._id}`)}
+                        >
                           <Play className="h-4 w-4 mr-2" />
                           Read Now
                         </Button>
@@ -126,7 +133,10 @@ export function FeaturedCarousel({
                           <Button
                             size="lg"
                             variant="secondary"
-                            onClick={() => onPreview(manga)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onPreview(manga);
+                            }}
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             Preview
