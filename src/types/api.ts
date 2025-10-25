@@ -22,9 +22,7 @@ export interface MangaListResponse {
   pagination: PaginationData;
 }
 
-export interface ChapterListResponse {
-  chapters: Chapter[];
-}
+export type ChapterListResponse = Chapter[];
 
 export interface CommentListResponse {
   comments: Comment[];

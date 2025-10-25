@@ -2,6 +2,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Star, BookOpen, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
 import type { Manga, Genre } from "@/types";
 
@@ -18,6 +19,8 @@ export function MangaCard({
   size = "md",
   onPreview,
 }: MangaCardProps) {
+  const navigate = useNavigate();
+
   // Helper function để lấy tên genre
   const getGenreNames = (genres: Genre[] | string[]): string[] => {
     return genres.map((genre) =>
@@ -51,8 +54,15 @@ export function MangaCard({
     lg: "h-100",
   };
 
+  const handleCardClick = () => {
+    navigate(`/manga/${manga._id}`);
+  };
+
   return (
-    <Card className="w-full overflow-hidden hover:shadow-lg transition-shadow duration-300 group flex flex-col">
+    <Card
+      className="w-full overflow-hidden hover:shadow-lg transition-shadow duration-300 group flex flex-col cursor-pointer"
+      onClick={handleCardClick}
+    >
       <div className="relative">
         <img
           src={sanitizeImageUrl(manga.coverImage)}

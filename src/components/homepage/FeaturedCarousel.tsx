@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Play, Plus, Star, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
 import type { Manga, Genre } from "@/types";
 
@@ -24,6 +25,8 @@ export function FeaturedCarousel({
   onPreview,
   loading = false,
 }: FeaturedCarouselProps) {
+  const navigate = useNavigate();
+
   // Helper function để lấy tên genre
   const getGenreNames = (genres: Genre[] | string[]): string[] => {
     return genres.map((genre) =>
@@ -66,72 +69,80 @@ export function FeaturedCarousel({
 
           return (
             <CarouselItem key={manga._id}>
-              <Card className="relative overflow-hidden h-96 bg-gradient-to-r from-black/50 to-transparent">
-                <img
-                  src={sanitizeImageUrl(manga.coverImage)}
-                  alt={manga.title}
-                  className="absolute inset-0 w-full h-full object-cover -z-10 bg-muted"
-                  onError={handleImageError}
-                  loading="lazy"
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                />
-                <CardContent className="relative h-full flex items-end p-8">
-                  <div className="max-w-2xl">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Badge variant="default" className="bg-primary">
-                        Featured
-                      </Badge>
-                      <Badge variant="secondary">{manga.status}</Badge>
-                      {manga.averageRating !== undefined && (
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                          <span className="text-white">
-                            {manga.averageRating.toFixed(1)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
+              <Card className="relative overflow-hidden h-96 bg-muted rounded-xl">
+                <CardContent className="h-full flex p-0">
+                  <div className="w-1/3 h-full relative">
+                    <img
+                      src={sanitizeImageUrl(manga.coverImage)}
+                      alt={manga.title}
+                      className="w-full h-full object-contain bg-muted rounded-l-xl"
+                      onError={handleImageError}
+                      loading="lazy"
+                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
 
-                    <h1 className="text-4xl font-bold text-white mb-2">
-                      {manga.title}
-                    </h1>
-
-                    <p className="text-gray-200 mb-4 line-clamp-3">
-                      {manga.description}
-                    </p>
-
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {genreNames.slice(0, 4).map((genre, index) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="text-white border-white/50"
-                        >
-                          {genre}
+                  <div className="w-2/3 h-full flex items-center p-8  from-background/95 to-background ">
+                    <div className="max-w-full">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Badge variant="default" className="bg-primary">
+                          Featured
                         </Badge>
-                      ))}
-                    </div>
+                        <Badge variant="secondary">{manga.status}</Badge>
+                        {manga.averageRating !== undefined && (
+                          <div className="flex items-center gap-1">
+                            <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                            <span className="text-foreground">
+                              {manga.averageRating.toFixed(1)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
 
-                    <div className="flex gap-4">
-                      <Button size="lg" variant="default">
-                        <Play className="h-4 w-4 mr-2" />
-                        Read Now
-                      </Button>
-                      <Button size="lg" variant="outline">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add to Library
-                      </Button>
-                      {onPreview && (
+                      <h1 className="text-3xl font-bold text-foreground mb-2">
+                        {manga.title}
+                      </h1>
+
+                      <p className="text-muted-foreground mb-4 line-clamp-3">
+                        {manga.description}
+                      </p>
+
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {genreNames.slice(0, 4).map((genre, index) => (
+                          <Badge key={index} variant="outline">
+                            {genre}
+                          </Badge>
+                        ))}
+                      </div>
+
+                      <div className="flex gap-4 flex-wrap">
                         <Button
                           size="lg"
-                          variant="secondary"
-                          onClick={() => onPreview(manga)}
+                          variant="default"
+                          onClick={() => navigate(`/manga/${manga._id}`)}
                         >
-                          <Eye className="h-4 w-4 mr-2" />
-                          Preview
+                          <Play className="h-4 w-4 mr-2" />
+                          Read Now
                         </Button>
-                      )}
+                        <Button size="lg" variant="outline">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add to Library
+                        </Button>
+                        {onPreview && (
+                          <Button
+                            size="lg"
+                            variant="secondary"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onPreview(manga);
+                            }}
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            Preview
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>

@@ -1,5 +1,6 @@
 import React from "react";
 import { X, Star, Calendar, User, Tag, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
@@ -16,6 +17,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
   manga,
   onClose,
 }) => {
+  const navigate = useNavigate();
   const [visible, setVisible] = React.useState(false);
   const [currentManga, setCurrentManga] = React.useState<Manga | null>(null);
   const [fadeIn, setFadeIn] = React.useState(false);
@@ -191,7 +193,14 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
 
             {/* Action buttons */}
             <div className="space-y-2">
-              <Button className="w-full" size="lg">
+              <Button
+                className="w-full"
+                size="lg"
+                onClick={() => {
+                  navigate(`/manga/${currentManga._id}`);
+                  onClose();
+                }}
+              >
                 Đọc ngay
               </Button>
               <Button variant="outline" className="w-full" size="lg">

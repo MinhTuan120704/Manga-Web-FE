@@ -26,3 +26,7 @@ dist-ssr
 .env
 .txt
 *.txt
+
+.yarn/install-state.gz
+/.yarn
+*.gz
