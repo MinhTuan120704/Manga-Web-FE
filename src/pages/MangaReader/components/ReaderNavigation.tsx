@@ -48,6 +48,9 @@ export function ReaderNavigation({
   onPageChange,
   settings,
 }: ReaderNavigationProps) {
+  // Determine if RTL mode
+  const isRTL = settings.readingDirection === "rtl";
+
   if (settings.readingMode === "long-strip") {
     // Simplified navigation for long-strip mode
     return (
@@ -64,12 +67,21 @@ export function ReaderNavigation({
           <div className="flex items-center justify-between gap-4">
             <Button
               variant="outline"
-              onClick={onPreviousChapter}
-              disabled={!hasPreviousChapter}
+              onClick={isRTL ? onNextChapter : onPreviousChapter}
+              disabled={isRTL ? !hasNextChapter : !hasPreviousChapter}
               className="flex items-center gap-2"
             >
-              <ChevronsLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Previous Chapter</span>
+              {isRTL ? (
+                <>
+                  <ChevronsRight className="h-4 w-4" />
+                  <span className="hidden sm:inline">Next Chapter</span>
+                </>
+              ) : (
+                <>
+                  <ChevronsLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">Previous Chapter</span>
+                </>
+              )}
             </Button>
 
             <Select value={chapter._id} onValueChange={onChapterSelect}>
@@ -91,12 +103,21 @@ export function ReaderNavigation({
 
             <Button
               variant="outline"
-              onClick={onNextChapter}
-              disabled={!hasNextChapter}
+              onClick={isRTL ? onPreviousChapter : onNextChapter}
+              disabled={isRTL ? !hasPreviousChapter : !hasNextChapter}
               className="flex items-center gap-2"
             >
-              <span className="hidden sm:inline">Next Chapter</span>
-              <ChevronsRight className="h-4 w-4" />
+              {isRTL ? (
+                <>
+                  <span className="hidden sm:inline">Previous Chapter</span>
+                  <ChevronsLeft className="h-4 w-4" />
+                </>
+              ) : (
+                <>
+                  <span className="hidden sm:inline">Next Chapter</span>
+                  <ChevronsRight className="h-4 w-4" />
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -118,7 +139,11 @@ export function ReaderNavigation({
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col gap-4">
           {/* Page Slider */}
-          <div className="flex items-center gap-4">
+          <div
+            className={`flex items-center gap-4 ${
+              isRTL ? "flex-row-reverse" : ""
+            }`}
+          >
             <Badge variant="outline" className="min-w-[80px] justify-center">
               {currentPage} / {totalPages}
             </Badge>
@@ -129,40 +154,66 @@ export function ReaderNavigation({
               max={totalPages}
               step={1}
               className="flex-1"
+              dir={isRTL ? "rtl" : "ltr"}
             />
           </div>
 
           {/* Navigation Buttons */}
           <div className="flex items-center justify-between gap-2">
+            {/* Left side buttons */}
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={onPreviousChapter}
-                disabled={!hasPreviousChapter}
+                onClick={isRTL ? onNextChapter : onPreviousChapter}
+                disabled={isRTL ? !hasNextChapter : !hasPreviousChapter}
                 className="hidden sm:flex items-center gap-2"
               >
-                <ChevronsLeft className="h-4 w-4" />
-                Prev Chapter
+                {isRTL ? (
+                  <>
+                    <ChevronsRight className="h-4 w-4" />
+                    Next Chapter
+                  </>
+                ) : (
+                  <>
+                    <ChevronsLeft className="h-4 w-4" />
+                    Prev Chapter
+                  </>
+                )}
               </Button>
               <Button
                 variant="outline"
                 size="icon"
-                onClick={onPreviousChapter}
-                disabled={!hasPreviousChapter}
+                onClick={isRTL ? onNextChapter : onPreviousChapter}
+                disabled={isRTL ? !hasNextChapter : !hasPreviousChapter}
                 className="sm:hidden"
               >
-                <ChevronsLeft className="h-4 w-4" />
+                {isRTL ? (
+                  <ChevronsRight className="h-4 w-4" />
+                ) : (
+                  <ChevronsLeft className="h-4 w-4" />
+                )}
               </Button>
 
               <Button
                 variant="outline"
                 size="sm"
-                onClick={onPreviousPage}
-                disabled={currentPage === 1}
+                onClick={isRTL ? onNextPage : onPreviousPage}
+                disabled={
+                  isRTL ? currentPage === totalPages : currentPage === 1
+                }
               >
-                <ChevronLeft className="h-4 w-4" />
-                <span className="hidden sm:inline ml-1">Prev</span>
+                {isRTL ? (
+                  <>
+                    <ChevronRight className="h-4 w-4" />
+                    <span className="hidden sm:inline ml-1">Next</span>
+                  </>
+                ) : (
+                  <>
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="hidden sm:inline ml-1">Prev</span>
+                  </>
+                )}
               </Button>
             </div>
 
@@ -191,35 +242,60 @@ export function ReaderNavigation({
               </SelectContent>
             </Select>
 
+            {/* Right side buttons */}
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={onNextPage}
-                disabled={currentPage === totalPages}
+                onClick={isRTL ? onPreviousPage : onNextPage}
+                disabled={
+                  isRTL ? currentPage === 1 : currentPage === totalPages
+                }
               >
-                <span className="hidden sm:inline mr-1">Next</span>
-                <ChevronRight className="h-4 w-4" />
+                {isRTL ? (
+                  <>
+                    <span className="hidden sm:inline mr-1">Prev</span>
+                    <ChevronLeft className="h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    <span className="hidden sm:inline mr-1">Next</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </>
+                )}
               </Button>
 
               <Button
                 variant="outline"
                 size="sm"
-                onClick={onNextChapter}
-                disabled={!hasNextChapter}
+                onClick={isRTL ? onPreviousChapter : onNextChapter}
+                disabled={isRTL ? !hasPreviousChapter : !hasNextChapter}
                 className="hidden sm:flex items-center gap-2"
               >
-                Next Chapter
-                <ChevronsRight className="h-4 w-4" />
+                {isRTL ? (
+                  <>
+                    Prev Chapter
+                    <ChevronsLeft className="h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    Next Chapter
+                    <ChevronsRight className="h-4 w-4" />
+                  </>
+                )}
               </Button>
               <Button
                 variant="outline"
                 size="icon"
-                onClick={onNextChapter}
-                disabled={!hasNextChapter}
+                onClick={isRTL ? onPreviousChapter : onNextChapter}
+                disabled={isRTL ? !hasPreviousChapter : !hasNextChapter}
                 className="sm:hidden"
               >
-                <ChevronsRight className="h-4 w-4" />
+                {isRTL ? (
+                  <ChevronsLeft className="h-4 w-4" />
+                ) : (
+                  <ChevronsRight className="h-4 w-4" />
+                )}
               </Button>
             </div>
           </div>

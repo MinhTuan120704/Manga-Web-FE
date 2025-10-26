@@ -98,6 +98,27 @@ export function ReaderSettings({
             </div>
           )}
 
+          {/* Double Page Offset */}
+          {settings.readingMode === "double" && (
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="double-page-offset" className="cursor-pointer">
+                  Offset First Page
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Display first page alone (for cover pages)
+                </p>
+              </div>
+              <Switch
+                id="double-page-offset"
+                checked={settings.doublePageOffset}
+                onCheckedChange={(checked) =>
+                  onUpdateSettings({ doublePageOffset: checked })
+                }
+              />
+            </div>
+          )}
+
           {/* Fit Mode */}
           {settings.readingMode !== "long-strip" && (
             <div className="space-y-3">
@@ -187,6 +208,10 @@ export function ReaderSettings({
               <div className="flex justify-between">
                 <span>Toggle Settings:</span>
                 <span className="font-mono">S</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Toggle Navigation:</span>
+                <span className="font-mono">N</span>
               </div>
               <div className="flex justify-between">
                 <span>Close Panel:</span>

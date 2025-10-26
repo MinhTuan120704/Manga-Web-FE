@@ -8,6 +8,7 @@ interface ReaderContentProps {
   chapter: Chapter;
   currentPage: number;
   settings: ReaderSettings;
+  showNavigation?: boolean;
   onPageChange: (page: number) => void;
   onNextPage: () => void;
   onPreviousPage: () => void;
@@ -17,6 +18,7 @@ export function ReaderContent({
   chapter,
   currentPage,
   settings,
+  showNavigation = true,
   onNextPage,
   onPreviousPage,
 }: ReaderContentProps) {
@@ -35,19 +37,62 @@ export function ReaderContent({
       const pages = [];
       const startIdx = currentPage - 1;
 
+      // Calculate effective page number with offset
+      const effectivePage = settings.doublePageOffset
+        ? currentPage
+        : currentPage - 1;
+      const isOddPage = effectivePage % 2 === 1;
+
       if (settings.readingDirection === "rtl") {
-        // Right to left: show current and previous page
-        if (startIdx > 0) {
-          pages.push(chapter.pages[startIdx]);
-          pages.push(chapter.pages[startIdx - 1]);
+        // Right to left reading
+        if (settings.doublePageOffset) {
+          // First page is alone (cover), then pairs
+          if (currentPage === 1) {
+            // Show only first page (cover)
+            pages.push(chapter.pages[0]);
+          } else if (isOddPage) {
+            // Odd pages: show current and next
+            pages.push(chapter.pages[startIdx]);
+            if (startIdx + 1 < chapter.pages.length) {
+              pages.push(chapter.pages[startIdx + 1]);
+            }
+          } else {
+            // Even pages: already shown with previous odd page
+            // This shouldn't happen with proper navigation
+            pages.push(chapter.pages[startIdx]);
+          }
         } else {
-          pages.push(chapter.pages[startIdx]);
+          // Normal pairing: show current and previous
+          if (startIdx > 0) {
+            pages.push(chapter.pages[startIdx]);
+            pages.push(chapter.pages[startIdx - 1]);
+          } else {
+            pages.push(chapter.pages[startIdx]);
+          }
         }
       } else {
-        // Left to right: show current and next page
-        pages.push(chapter.pages[startIdx]);
-        if (startIdx + 1 < chapter.pages.length) {
-          pages.push(chapter.pages[startIdx + 1]);
+        // Left to right reading
+        if (settings.doublePageOffset) {
+          // First page is alone (cover), then pairs
+          if (currentPage === 1) {
+            // Show only first page (cover)
+            pages.push(chapter.pages[0]);
+          } else if (isOddPage) {
+            // Odd pages: show current and next
+            pages.push(chapter.pages[startIdx]);
+            if (startIdx + 1 < chapter.pages.length) {
+              pages.push(chapter.pages[startIdx + 1]);
+            }
+          } else {
+            // Even pages: already shown with previous odd page
+            pages.push(chapter.pages[startIdx]);
+          }
+        } else {
+          // Normal pairing: show current and next
+          pages.push(chapter.pages[startIdx]);
+          if (startIdx + 1 < chapter.pages.length) {
+            pages.push(chapter.pages[startIdx + 1]);
+          }
         }
       }
 
@@ -62,13 +107,17 @@ export function ReaderContent({
 
   if (settings.readingMode === "long-strip") {
     return (
-      <div className="flex flex-col items-center pb-24">
+      <div
+        className={`flex flex-col items-center ${
+          showNavigation ? "pb-24" : "pb-4"
+        }`}
+      >
         {chapter.pages.map((page, index) => (
           <div key={page.pageNumber} className="w-full flex justify-center">
             <img
               src={page.image}
               alt={`Page ${page.pageNumber}`}
-              className="max-w-full h-auto"
+              className="w-full h-auto"
               loading={index < 3 ? "eager" : "lazy"}
             />
           </div>
@@ -79,13 +128,19 @@ export function ReaderContent({
 
   // Single or Double page mode
   return (
-    <div className="relative min-h-[calc(100vh-64px-80px)] flex items-center justify-center py-8">
+    <div
+      className={`relative w-full ${
+        showNavigation
+          ? "min-h-[calc(100vh-64px-80px)]"
+          : "min-h-[calc(100vh-64px)]"
+      } flex items-center justify-center py-4`}
+    >
       {/* Navigation Buttons */}
       <Button
         variant="ghost"
         size="icon"
         onClick={onPreviousPage}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-black/20 hover:bg-black/40 text-white"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-black/20 hover:bg-black/40 text-white"
         disabled={currentPage === 1}
       >
         <ChevronLeft className="h-8 w-8" />
@@ -95,12 +150,14 @@ export function ReaderContent({
       <div
         className={`flex ${
           settings.readingDirection === "rtl" ? "flex-row-reverse" : "flex-row"
-        } gap-4 items-start justify-center px-4`}
+        } gap-0 items-center justify-center w-full h-full px-2 sm:px-4`}
       >
-        {pages.map((page) => (
+        {pages.map((page, index) => (
           <div
             key={page.pageNumber}
-            className="relative flex items-center justify-center"
+            className={`relative flex items-center justify-center ${
+              settings.readingMode === "double" ? "" : "flex-1"
+            } h-full`}
           >
             {!imageLoaded && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-800/50 rounded">
@@ -110,13 +167,25 @@ export function ReaderContent({
             <img
               src={page.image}
               alt={`Page ${page.pageNumber}`}
-              className={`max-h-[calc(100vh-200px)] ${
+              className={`${
                 settings.fitMode === "fit-width"
-                  ? "w-full max-w-4xl"
+                  ? "w-full h-auto"
                   : settings.fitMode === "fit-height"
-                  ? "h-[calc(100vh-200px)]"
-                  : "max-w-full"
-              } object-contain`}
+                  ? showNavigation
+                    ? "w-auto h-[calc(100vh-180px)]"
+                    : "w-auto h-[calc(100vh-100px)]"
+                  : showNavigation
+                  ? "w-auto h-auto max-h-[calc(100vh-180px)]"
+                  : "w-auto h-auto max-h-[calc(100vh-100px)]"
+              } object-contain ${
+                settings.readingMode === "double" &&
+                pages.length === 2 &&
+                index === 0
+                  ? settings.readingDirection === "rtl"
+                    ? "border-l border-gray-600/30"
+                    : "border-r border-gray-600/30"
+                  : ""
+              }`}
               onLoad={() => setImageLoaded(true)}
             />
           </div>
@@ -127,20 +196,20 @@ export function ReaderContent({
         variant="ghost"
         size="icon"
         onClick={onNextPage}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-black/20 hover:bg-black/40 text-white"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-black/20 hover:bg-black/40 text-white"
       >
         <ChevronRight className="h-8 w-8" />
       </Button>
 
       {/* Click Areas for Navigation */}
       <div
-        className="absolute left-0 top-0 bottom-0 w-1/3 cursor-pointer z-[5]"
+        className="absolute left-0 top-0 bottom-0 w-1/4 cursor-pointer z-[5]"
         onClick={
           settings.readingDirection === "ltr" ? onPreviousPage : onNextPage
         }
       />
       <div
-        className="absolute right-0 top-0 bottom-0 w-1/3 cursor-pointer z-[5]"
+        className="absolute right-0 top-0 bottom-0 w-1/4 cursor-pointer z-[5]"
         onClick={
           settings.readingDirection === "ltr" ? onNextPage : onPreviousPage
         }

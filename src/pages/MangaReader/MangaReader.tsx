@@ -10,6 +10,7 @@ import {
   ReaderNavigation,
   ReaderSkeleton,
   ReaderError,
+  ReadingDirectionOverlay,
 } from "./components";
 
 export type ReadingMode = "single" | "double" | "long-strip";
@@ -21,6 +22,7 @@ export interface ReaderSettings {
   fitMode: "fit-width" | "fit-height" | "original";
   showPageNumber: boolean;
   backgroundColor: "white" | "black" | "gray";
+  doublePageOffset: boolean;
 }
 
 export function MangaReader() {
@@ -37,13 +39,15 @@ export function MangaReader() {
   // Reader states
   const [currentPage, setCurrentPage] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
-  const [showNavigation, setShowNavigation] = useState(false);
+  const [showNavigation, setShowNavigation] = useState(true);
+  const [showDirectionOverlay, setShowDirectionOverlay] = useState(false);
   const [settings, setSettings] = useState<ReaderSettings>({
-    readingMode: "single",
-    readingDirection: "ltr",
-    fitMode: "fit-width",
+    readingMode: "double",
+    readingDirection: "rtl",
+    fitMode: "fit-height",
     showPageNumber: true,
     backgroundColor: "gray",
+    doublePageOffset: false,
   });
 
   // Fetch chapter data
@@ -52,6 +56,13 @@ export function MangaReader() {
       fetchChapterData(chapterId);
     }
   }, [chapterId]);
+
+  // Show direction overlay when chapter loads
+  useEffect(() => {
+    if (chapter && !loading) {
+      setShowDirectionOverlay(true);
+    }
+  }, [chapter, loading]);
 
   // Load settings from localStorage
   useEffect(() => {
@@ -113,8 +124,31 @@ export function MangaReader() {
   const handleNextPage = useCallback(() => {
     if (!chapter) return;
 
-    if (currentPage < chapter.pages.length) {
-      setCurrentPage((prev) => prev + 1);
+    // Calculate pages to skip based on reading mode
+    let pagesToSkip = 1;
+    if (settings.readingMode === "double") {
+      if (settings.doublePageOffset) {
+        // With offset: page 1 alone, then pairs (2-3, 4-5, 6-7...)
+        if (currentPage === 1) {
+          pagesToSkip = 1; // Jump from 1 to 2
+        } else {
+          const effectivePage = currentPage - 1; // Adjust for offset
+          const isFirstOfPair = effectivePage % 2 === 1;
+          pagesToSkip = isFirstOfPair ? 2 : 1;
+        }
+      } else {
+        // No offset: pairs (1-2, 3-4, 5-6...)
+        const isFirstOfPair = currentPage % 2 === 1;
+        pagesToSkip = isFirstOfPair ? 2 : 1;
+      }
+    }
+
+    if (currentPage + pagesToSkip <= chapter.pages.length) {
+      setCurrentPage((prev) => prev + pagesToSkip);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (currentPage < chapter.pages.length) {
+      // Jump to last page if we can't skip full pages
+      setCurrentPage(chapter.pages.length);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       // Go to next chapter
@@ -127,11 +161,41 @@ export function MangaReader() {
         setCurrentPage(1);
       }
     }
-  }, [chapter, currentPage, allChapters, navigate]);
+  }, [
+    chapter,
+    currentPage,
+    allChapters,
+    navigate,
+    settings.readingMode,
+    settings.doublePageOffset,
+  ]);
 
   const handlePreviousPage = useCallback(() => {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
+    // Calculate pages to skip based on reading mode
+    let pagesToSkip = 1;
+    if (settings.readingMode === "double") {
+      if (settings.doublePageOffset) {
+        // With offset: page 1 alone, then pairs (2-3, 4-5, 6-7...)
+        if (currentPage === 2) {
+          pagesToSkip = 1; // Jump from 2 to 1
+        } else if (currentPage > 2) {
+          const effectivePage = currentPage - 1; // Adjust for offset
+          const isFirstOfPair = effectivePage % 2 === 1;
+          pagesToSkip = isFirstOfPair ? 1 : 2;
+        }
+      } else {
+        // No offset: pairs (1-2, 3-4, 5-6...)
+        const isFirstOfPair = currentPage % 2 === 1;
+        pagesToSkip = isFirstOfPair ? 2 : 1;
+      }
+    }
+
+    if (currentPage - pagesToSkip >= 1) {
+      setCurrentPage((prev) => prev - pagesToSkip);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (currentPage > 1) {
+      // Jump to first page
+      setCurrentPage(1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       // Go to previous chapter
@@ -145,7 +209,14 @@ export function MangaReader() {
         setCurrentPage(1);
       }
     }
-  }, [currentPage, chapter, allChapters, navigate]);
+  }, [
+    currentPage,
+    chapter,
+    allChapters,
+    navigate,
+    settings.readingMode,
+    settings.doublePageOffset,
+  ]);
 
   const handleNextChapter = () => {
     if (!chapter || allChapters.length === 0) return;
@@ -184,7 +255,19 @@ export function MangaReader() {
   };
 
   const updateSettings = (newSettings: Partial<ReaderSettings>) => {
-    setSettings((prev: ReaderSettings) => ({ ...prev, ...newSettings }));
+    setSettings((prev: ReaderSettings) => {
+      const updated = { ...prev, ...newSettings };
+
+      // Show overlay if reading direction changed
+      if (
+        newSettings.readingDirection &&
+        newSettings.readingDirection !== prev.readingDirection
+      ) {
+        setShowDirectionOverlay(true);
+      }
+
+      return updated;
+    });
   };
 
   const getCurrentChapterIndex = () => {
@@ -244,6 +327,10 @@ export function MangaReader() {
         case "S":
           setShowSettings((prev) => !prev);
           break;
+        case "n":
+        case "N":
+          setShowNavigation((prev) => !prev);
+          break;
         case "Escape":
           if (showSettings) {
             setShowSettings(false);
@@ -281,7 +368,7 @@ export function MangaReader() {
 
   return (
     <div
-      className={`min-h-screen ${
+      className={`min-h-screen w-full ${
         settings.backgroundColor === "white"
           ? "bg-white"
           : settings.backgroundColor === "black"
@@ -289,6 +376,12 @@ export function MangaReader() {
           : "bg-gray-900"
       }`}
     >
+      {/* Reading Direction Overlay */}
+      <ReadingDirectionOverlay
+        direction={settings.readingDirection}
+        show={showDirectionOverlay}
+      />
+
       {/* Header */}
       <ReaderHeader
         manga={manga}
@@ -298,6 +391,7 @@ export function MangaReader() {
         onReturnToManga={handleReturnToManga}
         onToggleSettings={() => setShowSettings((prev) => !prev)}
         onToggleNavigation={() => setShowNavigation((prev) => !prev)}
+        showNavigation={showNavigation}
         settings={settings}
       />
 
@@ -315,27 +409,30 @@ export function MangaReader() {
         chapter={chapter}
         currentPage={currentPage}
         settings={settings}
+        showNavigation={showNavigation}
         onPageChange={setCurrentPage}
         onNextPage={handleNextPage}
         onPreviousPage={handlePreviousPage}
       />
 
       {/* Bottom Navigation */}
-      <ReaderNavigation
-        chapter={chapter}
-        allChapters={allChapters}
-        currentPage={currentPage}
-        totalPages={chapter.pages.length}
-        hasNextChapter={hasNextChapter()}
-        hasPreviousChapter={hasPreviousChapter()}
-        onNextPage={handleNextPage}
-        onPreviousPage={handlePreviousPage}
-        onNextChapter={handleNextChapter}
-        onPreviousChapter={handlePreviousChapter}
-        onChapterSelect={handleChapterSelect}
-        onPageChange={setCurrentPage}
-        settings={settings}
-      />
+      {showNavigation && (
+        <ReaderNavigation
+          chapter={chapter}
+          allChapters={allChapters}
+          currentPage={currentPage}
+          totalPages={chapter.pages.length}
+          hasNextChapter={hasNextChapter()}
+          hasPreviousChapter={hasPreviousChapter()}
+          onNextPage={handleNextPage}
+          onPreviousPage={handlePreviousPage}
+          onNextChapter={handleNextChapter}
+          onPreviousChapter={handlePreviousChapter}
+          onChapterSelect={handleChapterSelect}
+          onPageChange={setCurrentPage}
+          settings={settings}
+        />
+      )}
     </div>
   );
 }

@@ -12,6 +12,7 @@ interface ReaderHeaderProps {
   onReturnToManga: () => void;
   onToggleSettings: () => void;
   onToggleNavigation: () => void;
+  showNavigation?: boolean;
   settings: ReaderSettings;
 }
 
@@ -23,6 +24,7 @@ export function ReaderHeader({
   onReturnToManga,
   onToggleSettings,
   onToggleNavigation,
+  showNavigation = true,
   settings,
 }: ReaderHeaderProps) {
   const textColor =
@@ -88,8 +90,8 @@ export function ReaderHeader({
               variant="ghost"
               size="icon"
               onClick={onToggleNavigation}
-              className={textColor}
-              title="Chapter List"
+              className={`${textColor} ${showNavigation ? "bg-accent" : ""}`}
+              title="Toggle Navigation (N)"
             >
               <List className="h-5 w-5" />
             </Button>
@@ -99,7 +101,7 @@ export function ReaderHeader({
               size="icon"
               onClick={onToggleSettings}
               className={textColor}
-              title="Settings"
+              title="Settings (S)"
             >
               <Settings className="h-5 w-5" />
             </Button>
