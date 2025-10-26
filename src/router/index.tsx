@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Homepage } from "@/pages/Homepage";
+import { Homepage } from "@/pages/Home/Homepage";
 import { MangaDetail } from "@/pages/MangaDetail/MangaDetail";
+import { MangaReader } from "@/pages/MangaReader/MangaReader";
 import { NotFound } from "@/pages/NotFound/NotFound";
 
 export const router = createBrowserRouter([
@@ -11,6 +12,10 @@ export const router = createBrowserRouter([
   {
     path: "/manga/:id",
     element: <MangaDetail />,
+  },
+  {
+    path: "/reader/:chapterId",
+    element: <MangaReader />,
   },
   {
     path: "*",
