@@ -9,6 +9,7 @@ interface ReaderContentProps {
   currentPage: number;
   settings: ReaderSettings;
   showNavigation?: boolean;
+  showHeader?: boolean;
   onPageChange: (page: number) => void;
   onNextPage: () => void;
   onPreviousPage: () => void;
@@ -19,6 +20,7 @@ export function ReaderContent({
   currentPage,
   settings,
   showNavigation = true,
+  showHeader = true,
   onNextPage,
   onPreviousPage,
 }: ReaderContentProps) {
@@ -113,7 +115,10 @@ export function ReaderContent({
         }`}
       >
         {chapter.pages.map((page, index) => (
-          <div key={page.pageNumber} className="w-full max-w-2xl flex justify-center">
+          <div
+            key={page.pageNumber}
+            className="w-full max-w-2xl flex justify-center"
+          >
             <img
               src={page.image}
               alt={`Page ${page.pageNumber}`}
@@ -130,9 +135,13 @@ export function ReaderContent({
   return (
     <div
       className={`relative w-full ${
-        showNavigation
+        showHeader && showNavigation
           ? "min-h-[calc(100vh-64px-80px)]"
-          : "min-h-[calc(100vh-64px)]"
+          : showHeader
+          ? "min-h-[calc(100vh-64px)]"
+          : showNavigation
+          ? "min-h-[calc(100vh-80px)]"
+          : "min-h-screen"
       } flex items-center justify-center py-4`}
     >
       {/* Navigation Buttons */}
@@ -171,12 +180,20 @@ export function ReaderContent({
                 settings.fitMode === "fit-width"
                   ? "w-full h-auto"
                   : settings.fitMode === "fit-height"
-                  ? showNavigation
+                  ? showHeader && showNavigation
                     ? "w-auto h-[calc(100vh-180px)]"
-                    : "w-auto h-[calc(100vh-100px)]"
-                  : showNavigation
+                    : showHeader
+                    ? "w-auto h-[calc(100vh-100px)]"
+                    : showNavigation
+                    ? "w-auto h-[calc(100vh-116px)]"
+                    : "w-auto h-[calc(100vh-36px)]"
+                  : showHeader && showNavigation
                   ? "w-auto h-auto max-h-[calc(100vh-180px)]"
-                  : "w-auto h-auto max-h-[calc(100vh-100px)]"
+                  : showHeader
+                  ? "w-auto h-auto max-h-[calc(100vh-100px)]"
+                  : showNavigation
+                  ? "w-auto h-auto max-h-[calc(100vh-116px)]"
+                  : "w-auto h-auto max-h-[calc(100vh-36px)]"
               } object-contain ${
                 settings.readingMode === "double" &&
                 pages.length === 2 &&

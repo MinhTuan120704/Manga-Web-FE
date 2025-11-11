@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { chapterService } from "@/services/chapter.service";
 import { mangaService } from "@/services/manga.service";
 import type { Chapter, Manga } from "@/types";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   ReaderHeader,
   ReaderSettings,
@@ -39,6 +41,7 @@ export function MangaReader() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
   const [showNavigation, setShowNavigation] = useState(true);
+  const [showHeader, setShowHeader] = useState(true);
   const [showDirectionOverlay, setShowDirectionOverlay] = useState(false);
   const [settings, setSettings] = useState<ReaderSettings>({
     readingMode: "double",
@@ -93,7 +96,6 @@ export function MangaReader() {
       const chapterData = chapterResponse.data;
       setChapter(chapterData);
 
-      
       const mangaId =
         typeof chapterData.mangaId === "string"
           ? chapterData.mangaId
@@ -335,6 +337,10 @@ export function MangaReader() {
         case "N":
           setShowNavigation((prev) => !prev);
           break;
+        case "h":
+        case "H":
+          setShowHeader((prev) => !prev);
+          break;
         case "Escape":
           if (showSettings) {
             setShowSettings(false);
@@ -378,18 +384,35 @@ export function MangaReader() {
         show={showDirectionOverlay}
       />
 
+      {/* Toggle Header Button */}
+      <Button
+        variant="default"
+        size="icon"
+        onClick={() => setShowHeader((prev) => !prev)}
+        className="fixed top-4 right-4 z-100 h-10 w-10 rounded-full shadow-lg hover:scale-110 transition-transform"
+        title={showHeader ? "Hide header (H)" : "Show header (H)"}
+      >
+        {showHeader ? (
+          <ChevronUp className="h-5 w-5" />
+        ) : (
+          <ChevronDown className="h-5 w-5 " />
+        )}
+      </Button>
+
       {/* Header */}
-      <ReaderHeader
-        manga={manga}
-        chapter={chapter}
-        currentPage={currentPage}
-        totalPages={chapter.pages.length}
-        onReturnToManga={handleReturnToManga}
-        onToggleSettings={() => setShowSettings((prev) => !prev)}
-        onToggleNavigation={() => setShowNavigation((prev) => !prev)}
-        showNavigation={showNavigation}
-        settings={settings}
-      />
+      {showHeader && (
+        <ReaderHeader
+          manga={manga}
+          chapter={chapter}
+          currentPage={currentPage}
+          totalPages={chapter.pages.length}
+          onReturnToManga={handleReturnToManga}
+          onToggleSettings={() => setShowSettings((prev) => !prev)}
+          onToggleNavigation={() => setShowNavigation((prev) => !prev)}
+          showNavigation={showNavigation}
+          settings={settings}
+        />
+      )}
 
       {/* Settings Panel */}
       {showSettings && (
@@ -406,6 +429,7 @@ export function MangaReader() {
         currentPage={currentPage}
         settings={settings}
         showNavigation={showNavigation}
+        showHeader={showHeader}
         onPageChange={setCurrentPage}
         onNextPage={handleNextPage}
         onPreviousPage={handlePreviousPage}
