@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Link } from "react-router-dom";
 import {
   Home,
   Heart,
@@ -103,17 +104,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-4 py-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <BookOpen className="h-4 w-4" />
+        <Link to="/" className="block">
+          <div className="flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-accent transition-colors rounded-md">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <BookOpen className="h-4 w-4" />
+            </div>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">Manga Web</span>
+              <span className="truncate text-xs text-muted-foreground">
+                Manga Reader Platform
+              </span>
+            </div>
           </div>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">Manga Web</span>
-            <span className="truncate text-xs text-muted-foreground">
-              Manga Reader Platform
-            </span>
-          </div>
-        </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         {/* Map through navigation items */}
