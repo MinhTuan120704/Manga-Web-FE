@@ -46,51 +46,38 @@ export function ReaderContent({
       const isOddPage = effectivePage % 2 === 1;
 
       if (settings.readingDirection === "rtl") {
-        // Right to left reading
         if (settings.doublePageOffset) {
-          // First page is alone (cover), then pairs
           if (currentPage === 1) {
-            // Show only first page (cover)
             pages.push(chapter.pages[0]);
           } else if (isOddPage) {
-            // Odd pages: show current and next
             pages.push(chapter.pages[startIdx]);
             if (startIdx + 1 < chapter.pages.length) {
-              pages.push(chapter.pages[startIdx + 1]);
+              pages.push(chapter.pages[startIdx + 1]); 
             }
           } else {
-            // Even pages: already shown with previous odd page
-            // This shouldn't happen with proper navigation
             pages.push(chapter.pages[startIdx]);
           }
         } else {
-          // Normal pairing: show current and previous
           if (startIdx > 0) {
-            pages.push(chapter.pages[startIdx]);
-            pages.push(chapter.pages[startIdx - 1]);
+            pages.push(chapter.pages[startIdx - 1]); 
+            pages.push(chapter.pages[startIdx]); 
           } else {
             pages.push(chapter.pages[startIdx]);
           }
         }
       } else {
-        // Left to right reading
         if (settings.doublePageOffset) {
-          // First page is alone (cover), then pairs
           if (currentPage === 1) {
-            // Show only first page (cover)
             pages.push(chapter.pages[0]);
           } else if (isOddPage) {
-            // Odd pages: show current and next
             pages.push(chapter.pages[startIdx]);
             if (startIdx + 1 < chapter.pages.length) {
               pages.push(chapter.pages[startIdx + 1]);
             }
           } else {
-            // Even pages: already shown with previous odd page
             pages.push(chapter.pages[startIdx]);
           }
         } else {
-          // Normal pairing: show current and next
           pages.push(chapter.pages[startIdx]);
           if (startIdx + 1 < chapter.pages.length) {
             pages.push(chapter.pages[startIdx + 1]);
