@@ -385,19 +385,21 @@ export function MangaReader() {
       />
 
       {/* Toggle Header Button */}
-      <Button
-        variant="default"
-        size="icon"
-        onClick={() => setShowHeader((prev) => !prev)}
-        className="fixed top-4 right-4 z-100 h-10 w-10 rounded-full shadow-lg hover:scale-110 transition-transform"
-        title={showHeader ? "Hide header (H)" : "Show header (H)"}
-      >
-        {showHeader ? (
-          <ChevronUp className="h-5 w-5" />
-        ) : (
-          <ChevronDown className="h-5 w-5 " />
-        )}
-      </Button>
+      {!showSettings && (
+        <Button
+          variant="default"
+          size="icon"
+          onClick={() => setShowHeader((prev) => !prev)}
+          className="fixed top-4 right-4 z-100 h-10 w-10 rounded-full shadow-lg hover:scale-110 transition-transform"
+          title={showHeader ? "Hide header (H)" : "Show header (H)"}
+        >
+          {showHeader ? (
+            <ChevronUp className="h-5 w-5" />
+          ) : (
+            <ChevronDown className="h-5 w-5 " />
+          )}
+        </Button>
+      )}
 
       {/* Header */}
       {showHeader && (
