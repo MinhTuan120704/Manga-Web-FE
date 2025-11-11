@@ -113,7 +113,7 @@ export function ReaderContent({
         }`}
       >
         {chapter.pages.map((page, index) => (
-          <div key={page.pageNumber} className="w-full flex justify-center">
+          <div key={page.pageNumber} className="w-full max-w-2xl flex justify-center">
             <img
               src={page.image}
               alt={`Page ${page.pageNumber}`}
