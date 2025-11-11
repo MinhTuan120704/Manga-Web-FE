@@ -1,4 +1,4 @@
-import { X, Book, ArrowRight, Maximize, Eye, Palette } from "lucide-react";
+import { X, Book, ArrowRight, Maximize, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -145,32 +145,6 @@ export function ReaderSettings({
               </Select>
             </div>
           )}
-
-          {/* Background Color */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Palette className="h-4 w-4 text-muted-foreground" />
-              <Label htmlFor="background-color">Background Color</Label>
-            </div>
-            <Select
-              value={settings.backgroundColor}
-              onValueChange={(value) =>
-                onUpdateSettings({
-                  backgroundColor:
-                    value as ReaderSettingsType["backgroundColor"],
-                })
-              }
-            >
-              <SelectTrigger id="background-color">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="white">White</SelectItem>
-                <SelectItem value="gray">Gray</SelectItem>
-                <SelectItem value="black">Black</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
 
           {/* Show Page Number */}
           <div className="flex items-center justify-between">

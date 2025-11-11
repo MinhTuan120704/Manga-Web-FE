@@ -27,48 +27,28 @@ export function ReaderHeader({
   showNavigation = true,
   settings,
 }: ReaderHeaderProps) {
-  const textColor =
-    settings.backgroundColor === "white" ? "text-gray-900" : "text-white";
-
   return (
-    <header
-      className={`sticky top-0 z-50 border-b backdrop-blur-sm ${
-        settings.backgroundColor === "white"
-          ? "bg-white/80 border-gray-200"
-          : settings.backgroundColor === "black"
-          ? "bg-black/80 border-gray-800"
-          : "bg-gray-900/80 border-gray-700"
-      }`}
-    >
+    <header className="sticky top-0 z-50 border-b backdrop-blur-sm bg-background/80 border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Left: Back button and title */}
           <div className="flex items-center gap-4 flex-1 min-w-0">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onReturnToManga}
-              className={textColor}
-            >
+            <Button variant="ghost" size="icon" onClick={onReturnToManga}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
 
             <div className="flex flex-col min-w-0">
-              <h1
-                className={`font-semibold truncate text-sm sm:text-base ${textColor}`}
-              >
+              <h1 className="font-semibold truncate text-sm sm:text-base text-foreground">
                 {manga?.title || "Loading..."}
               </h1>
               <div className="flex items-center gap-2 text-xs sm:text-sm">
-                <span className={`${textColor} opacity-70`}>
+                <span className="text-muted-foreground">
                   Ch. {chapter.chapterNumber}
                 </span>
                 {chapter.title && (
                   <>
-                    <span className={`${textColor} opacity-50`}>•</span>
-                    <span
-                      className={`${textColor} opacity-70 truncate max-w-[150px] sm:max-w-[300px]`}
-                    >
+                    <span className="text-muted-foreground">•</span>
+                    <span className="text-muted-foreground truncate max-w-[150px] sm:max-w-[300px]">
                       {chapter.title}
                     </span>
                   </>
@@ -90,7 +70,7 @@ export function ReaderHeader({
               variant="ghost"
               size="icon"
               onClick={onToggleNavigation}
-              className={`${textColor} ${showNavigation ? "bg-accent" : ""}`}
+              className={showNavigation ? "bg-accent" : ""}
               title="Toggle Navigation (N)"
             >
               <List className="h-5 w-5" />
@@ -100,7 +80,6 @@ export function ReaderHeader({
               variant="ghost"
               size="icon"
               onClick={onToggleSettings}
-              className={textColor}
               title="Settings (S)"
             >
               <Settings className="h-5 w-5" />

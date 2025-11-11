@@ -54,15 +54,7 @@ export function ReaderNavigation({
   if (settings.readingMode === "long-strip") {
     // Simplified navigation for long-strip mode
     return (
-      <div
-        className={`fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-sm ${
-          settings.backgroundColor === "white"
-            ? "bg-white/90 border-gray-200"
-            : settings.backgroundColor === "black"
-            ? "bg-black/90 border-gray-800"
-            : "bg-gray-900/90 border-gray-700"
-        }`}
-      >
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-sm bg-background/90 border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <Button
@@ -127,15 +119,7 @@ export function ReaderNavigation({
 
   // Full navigation for single/double page mode
   return (
-    <div
-      className={`fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-sm ${
-        settings.backgroundColor === "white"
-          ? "bg-white/90 border-gray-200"
-          : settings.backgroundColor === "black"
-          ? "bg-black/90 border-gray-800"
-          : "bg-gray-900/90 border-gray-700"
-      }`}
-    >
+    <div className="fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-sm bg-background/90 border-border">
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col gap-4">
           {/* Page Slider */}

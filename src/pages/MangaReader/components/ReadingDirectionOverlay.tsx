@@ -28,7 +28,7 @@ export function ReadingDirectionOverlay({
 
   return (
     <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] pointer-events-none">
-      <div className="bg-black/90 backdrop-blur-md text-white px-8 py-4 rounded-xl shadow-2xl border border-white/20 animate-in fade-in slide-in-from-top-4 duration-500">
+      <div className="bg-background/95 backdrop-blur-md text-foreground px-8 py-4 rounded-xl shadow-2xl border border-border animate-in fade-in slide-in-from-top-4 duration-500">
         <div className="flex items-center gap-4">
           {direction === "rtl" ? (
             <>

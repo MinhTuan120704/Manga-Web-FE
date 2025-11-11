@@ -140,7 +140,7 @@ export function ReaderContent({
         variant="ghost"
         size="icon"
         onClick={onPreviousPage}
-        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-black/20 hover:bg-black/40 text-white"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-black/20 hover:bg-black/40 text-white dark:bg-white/20 dark:hover:bg-white/40 dark:text-white"
         disabled={currentPage === 1}
       >
         <ChevronLeft className="h-8 w-8" />
@@ -160,8 +160,8 @@ export function ReaderContent({
             } h-full`}
           >
             {!imageLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-800/50 rounded">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white" />
+              <div className="absolute inset-0 flex items-center justify-center bg-muted/50 rounded">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
               </div>
             )}
             <img
@@ -182,8 +182,8 @@ export function ReaderContent({
                 pages.length === 2 &&
                 index === 0
                   ? settings.readingDirection === "rtl"
-                    ? "border-l border-gray-600/30"
-                    : "border-r border-gray-600/30"
+                    ? "border-l border-border/30"
+                    : "border-r border-border/30"
                   : ""
               }`}
               onLoad={() => setImageLoaded(true)}
@@ -196,7 +196,7 @@ export function ReaderContent({
         variant="ghost"
         size="icon"
         onClick={onNextPage}
-        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-black/20 hover:bg-black/40 text-white"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-black/20 hover:bg-black/40 text-white dark:bg-white/20 dark:hover:bg-white/40 dark:text-white"
       >
         <ChevronRight className="h-8 w-8" />
       </Button>

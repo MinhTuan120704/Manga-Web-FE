@@ -21,7 +21,6 @@ export interface ReaderSettings {
   readingDirection: ReadingDirection;
   fitMode: "fit-width" | "fit-height" | "original";
   showPageNumber: boolean;
-  backgroundColor: "white" | "black" | "gray";
   doublePageOffset: boolean;
 }
 
@@ -46,7 +45,6 @@ export function MangaReader() {
     readingDirection: "rtl",
     fitMode: "fit-height",
     showPageNumber: true,
-    backgroundColor: "gray",
     doublePageOffset: false,
   });
 
@@ -95,10 +93,16 @@ export function MangaReader() {
       const chapterData = chapterResponse.data;
       setChapter(chapterData);
 
+      
+      const mangaId =
+        typeof chapterData.mangaId === "string"
+          ? chapterData.mangaId
+          : chapterData.mangaId._id;
+
       // Fetch manga details and all chapters
       const [mangaResponse, chaptersResponse] = await Promise.all([
-        mangaService.getMangaById(chapterData.mangaId),
-        mangaService.getChaptersByMangaId(chapterData.mangaId),
+        mangaService.getMangaById(mangaId),
+        mangaService.getChaptersByMangaId(mangaId),
       ]);
 
       if (mangaResponse.data) {
@@ -367,15 +371,7 @@ export function MangaReader() {
   }
 
   return (
-    <div
-      className={`min-h-screen w-full ${
-        settings.backgroundColor === "white"
-          ? "bg-white"
-          : settings.backgroundColor === "black"
-          ? "bg-black"
-          : "bg-gray-900"
-      }`}
-    >
+    <div className="min-h-screen w-full bg-background">
       {/* Reading Direction Overlay */}
       <ReadingDirectionOverlay
         direction={settings.readingDirection}
