@@ -1,6 +1,8 @@
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import DashboardOverview from "@/components/admin/DashboardOverview";
 import MangaManagement from "@/components/admin/MangaManagement";
+import Reports from "@/components/admin/Reports";
+import TranslationQueue from "@/components/admin/TranslationQueue";
 import UserManagement from "@/components/admin/UserManagement";
 import { useState } from "react";
 
@@ -15,6 +17,10 @@ export default function AdminPage() {
         return <MangaManagement />;
       case "users":
         return <UserManagement />;
+      case "translations":
+        return <TranslationQueue />;
+      case "reports":
+        return <Reports />;
       default:
         return <DashboardOverview />;
     }
