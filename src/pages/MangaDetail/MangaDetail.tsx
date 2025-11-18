@@ -75,12 +75,12 @@ export default function MangaDetail() {
 
   const handleStartReading = () => {
     if (chapters.length > 0) {
-      navigate(`/chapter/${chapters[0]._id}`);
+      navigate(`/reader/${chapters[0]._id}`);
     }
   };
 
   const handleChapterClick = (chapterId: string) => {
-    navigate(`/chapter/${chapterId}`);
+    navigate(`/reader/${chapterId}`);
   };
 
   const getGenreNames = (genres: Genre[] | string[]): Genre[] => {

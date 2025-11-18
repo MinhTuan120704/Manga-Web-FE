@@ -1,7 +1,7 @@
 import { MangaCard } from "@/components/common/MangaCard";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Manga } from "@/types/manga";
+import type { Manga } from "@/types";
 
 interface PopularMangaGridProps {
   popularManga: Manga[];
@@ -40,8 +40,7 @@ export function PopularMangaGrid({
                   </div>
                 </div>
                 <div className="flex h-full">
-                  <MangaCard manga={manga} size="sm" onPreview={onPreview} />
-                </div>
+                <MangaCard manga={manga} size="sm" onPreview={onPreview} /></div>
               </div>
             ))}
       </div>

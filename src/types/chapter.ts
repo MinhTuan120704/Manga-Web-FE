@@ -4,23 +4,31 @@ import type { User } from "./user";
 
 export interface Page {
   pageNumber: number;
-  image: string; 
+  image: string;
+}
+
+// Manga reference when populated
+export interface MangaReference {
+  _id: string;
+  title: string;
 }
 
 export interface Chapter {
   _id: string;
-  mangaId: string;
+  mangaId: string | MangaReference;
   chapterNumber: number;
   title: string;
   pages: Page[];
-  uploaderId?: string | User; 
+  thumbnail?: string;
+  uploaderId?: string | User;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface CreateChapterRequest {
   chapterNumber: number;
   title: string;
-  pages: File[]; 
+  pages: File[];
 }
 
 export interface UpdateChapterRequest {

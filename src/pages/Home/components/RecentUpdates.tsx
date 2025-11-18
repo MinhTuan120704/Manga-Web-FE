@@ -6,8 +6,7 @@ import { Clock, ChevronRight, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
-import type { Manga } from "@/types/manga";
-import type { Genre } from "@/types/genre";
+import type { Manga, Genre } from "@/types";
 
 interface RecentUpdatesProps {
   updates: Manga[];
