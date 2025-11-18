@@ -1,17 +1,28 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Homepage } from "@/pages/Homepage";
-import { MangaDetail } from "@/pages/MangaDetail/MangaDetail";
-import { NotFound } from "@/pages/NotFound/NotFound";
-import AdminPage from "@/pages/Admin/Admin";
+import { lazy, Suspense } from "react";
+
+const Homepage = lazy(() => import("@/pages/Homepage"));
+const MangaDetail = lazy(() => import("@/pages/MangaDetail/MangaDetail"));
+const NotFound = lazy(() => import("@/pages/NotFound/NotFound"));
+const AdminPage = lazy(() => import("@/pages/Admin/Admin"));
+const LoadingSpinner = lazy(() => import("@/components/common/LoadingSpinner"));
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Homepage />,
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <Homepage />
+      </Suspense>
+    ),
   },
   {
     path: "/manga/:id",
-    element: <MangaDetail />,
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <MangaDetail />
+      </Suspense>
+    ),
   },
   {
     path: "*",
@@ -19,7 +30,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminPage />,
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <AdminPage />
+      </Suspense>
+    ),
   },
   // TODO: Add other routes here
   // Example:

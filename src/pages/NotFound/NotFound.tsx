@@ -10,7 +10,7 @@ import {
 import { Coffee } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export function NotFound() {
+export default function NotFound() {
   const navigate = useNavigate();
   const goHome = () => {
     navigate("/");

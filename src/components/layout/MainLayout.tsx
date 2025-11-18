@@ -1,5 +1,9 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -61,110 +65,114 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
-      <AppSidebar />
-      <SidebarInset className="flex-1 min-w-0">
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
+    <SidebarProvider>
+      <div className="flex h-screen w-full overflow-hidden">
+        <AppSidebar />
+        <SidebarInset className="flex-1 min-w-0">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
 
-          {/* Breadcrumbs */}
-          {breadcrumbs.length > 0 && (
-            <Breadcrumb>
-              <BreadcrumbList>
-                {breadcrumbs.map((crumb, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <BreadcrumbItem>
-                      {crumb.href ? (
-                        <BreadcrumbLink href={crumb.href}>
-                          {crumb.label}
-                        </BreadcrumbLink>
-                      ) : (
-                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+            {/* Breadcrumbs */}
+            {breadcrumbs.length > 0 && (
+              <Breadcrumb>
+                <BreadcrumbList>
+                  {breadcrumbs.map((crumb, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <BreadcrumbItem>
+                        {crumb.href ? (
+                          <BreadcrumbLink href={crumb.href}>
+                            {crumb.label}
+                          </BreadcrumbLink>
+                        ) : (
+                          <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                        )}
+                      </BreadcrumbItem>
+                      {index < breadcrumbs.length - 1 && (
+                        <BreadcrumbSeparator />
                       )}
-                    </BreadcrumbItem>
-                    {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
-                  </div>
-                ))}
-              </BreadcrumbList>
-            </Breadcrumb>
-          )}
+                    </div>
+                  ))}
+                </BreadcrumbList>
+              </Breadcrumb>
+            )}
 
-          {/* Search Bar */}
-          <div className="flex-1 max-w-sm ml-4">
-            <div className="relative border-2 rounded-lg">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Tìm kiếm truyện..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8"
-              />
+            {/* Search Bar */}
+            <div className="flex-1 max-w-sm ml-4">
+              <div className="relative border-2 rounded-lg">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Tìm kiếm truyện..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Right side controls */}
-          <div className="ml-auto flex items-center gap-2">
-            {/* Dark mode toggle */}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={toggleDarkMode}
-              className="transition-all duration-300"
-            >
-              {darkMode ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
-            </Button>
-
-            {/* User Avatar/Login */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
-                >
-                  <Avatar className="h-8 w-8">
-                    {isLoggedIn ? (
-                      <AvatarImage src="/avatars/01.png" alt="User" />
-                    ) : null}
-                    <AvatarFallback>
-                      <User className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                {isLoggedIn ? (
-                  <>
-                    <DropdownMenuItem>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Tài khoản</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Cài đặt</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Đăng xuất</span>
-                    </DropdownMenuItem>
-                  </>
+            {/* Right side controls */}
+            <div className="ml-auto flex items-center gap-2">
+              {/* Dark mode toggle */}
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={toggleDarkMode}
+                className="transition-all duration-300"
+              >
+                {darkMode ? (
+                  <Sun className="h-4 w-4" />
                 ) : (
-                  <DropdownMenuItem onClick={() => setIsLoggedIn(true)}>
-                    <LogIn className="mr-2 h-4 w-4" />
-                    <span>Đăng nhập</span>
-                  </DropdownMenuItem>
+                  <Moon className="h-4 w-4" />
                 )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </header>
-        <main className="flex-1 overflow-auto p-4">{children}</main>
-      </SidebarInset>
-    </div>
+              </Button>
+
+              {/* User Avatar/Login */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                  >
+                    <Avatar className="h-8 w-8">
+                      {isLoggedIn ? (
+                        <AvatarImage src="/avatars/01.png" alt="User" />
+                      ) : null}
+                      <AvatarFallback>
+                        <User className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  {isLoggedIn ? (
+                    <>
+                      <DropdownMenuItem>
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Tài khoản</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Cài đặt</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Đăng xuất</span>
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <DropdownMenuItem onClick={() => setIsLoggedIn(true)}>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      <span>Đăng nhập</span>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </header>
+          <main className="flex-1 overflow-auto p-4">{children}</main>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 }

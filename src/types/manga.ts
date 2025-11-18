@@ -7,7 +7,7 @@ export interface Manga {
   _id: string;
   title: string;
   description: string;
-  coverImage: string; 
+  coverImage: string;
   author: string;
   artist?: string;
   genres: Genre[] | string[];
@@ -16,6 +16,7 @@ export interface Manga {
   viewCount?: number;
   followerCount?: number;
   averageRating?: number;
+  chapterCount?: number;
   createdAt: string;
   updatedAt: string;
 }

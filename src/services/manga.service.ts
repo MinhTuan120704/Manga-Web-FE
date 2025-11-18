@@ -17,7 +17,7 @@ export const mangaService = {
   getMangas: async (
     params?: MangaQueryParams
   ): Promise<ApiResponse<MangaListResponse>> => {
-    return axiosInstance.get(API_ENDPOINTS.MANGA.LIST, { params });
+    return await axiosInstance.get(API_ENDPOINTS.MANGA.LIST, { params });
   },
 
   /**

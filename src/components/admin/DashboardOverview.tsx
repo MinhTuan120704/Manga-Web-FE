@@ -54,7 +54,7 @@ export default function DashboardOverview() {
         />
         <StatCard
           icon={<Users className="text-primary" size={24} />}
-          label="Active Users"
+          label="Total Users"
           value="8,456"
           trend="+5%"
           trendUp
@@ -113,7 +113,7 @@ export default function DashboardOverview() {
         {/* Pie Chart */}
         <div className="bg-card rounded-lg border border-border p-6 flex flex-col items-center justify-center">
           <h3 className="text-lg font-semibold text-card-foreground mb-4 w-full">
-            Popular Genres
+            Total Genres
           </h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>

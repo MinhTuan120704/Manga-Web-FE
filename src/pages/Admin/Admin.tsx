@@ -1,10 +1,18 @@
-import AdminSidebar from "@/components/admin/AdminSidebar";
-import DashboardOverview from "@/components/admin/DashboardOverview";
-import MangaManagement from "@/components/admin/MangaManagement";
-import Reports from "@/components/admin/Reports";
-import TranslationQueue from "@/components/admin/TranslationQueue";
-import UserManagement from "@/components/admin/UserManagement";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
+
+const AdminSidebar = lazy(() => import("@/components/admin/AdminSidebar"));
+const DashboardOverview = lazy(
+  () => import("@/components/admin/DashboardOverview")
+);
+const MangaManagement = lazy(
+  () => import("@/components/admin/MangaManagement")
+);
+const Reports = lazy(() => import("@/components/admin/Reports"));
+const TranslationQueue = lazy(
+  () => import("@/components/admin/TranslationQueue")
+);
+const UserManagement = lazy(() => import("@/components/admin/UserManagement"));
+const LoadingSpinner = lazy(() => import("@/components/common/LoadingSpinner"));
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -12,17 +20,41 @@ export default function AdminPage() {
   const renderContent = () => {
     switch (activeTab) {
       case "overview":
-        return <DashboardOverview />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <DashboardOverview />
+          </Suspense>
+        );
       case "manga":
-        return <MangaManagement />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <MangaManagement />
+          </Suspense>
+        );
       case "users":
-        return <UserManagement />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <UserManagement />
+          </Suspense>
+        );
       case "translations":
-        return <TranslationQueue />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <TranslationQueue />
+          </Suspense>
+        );
       case "reports":
-        return <Reports />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <Reports />
+          </Suspense>
+        );
       default:
-        return <DashboardOverview />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <DashboardOverview />
+          </Suspense>
+        );
     }
   };
 

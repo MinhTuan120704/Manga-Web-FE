@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { router } from "@/router";
 
 function App() {
@@ -29,11 +28,7 @@ function App() {
     }
   }, [darkMode]);
 
-  return (
-    <SidebarProvider>
-      <RouterProvider router={router} />
-    </SidebarProvider>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

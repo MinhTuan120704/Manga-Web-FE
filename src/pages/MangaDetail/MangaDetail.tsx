@@ -2,15 +2,17 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { mangaService } from "@/services/manga.service";
-import type { Manga, Genre, Chapter } from "@/types";
+import type { Manga } from "@/types/manga";
 import {
   MangaInfo,
   ChapterList,
   MangaDetailSkeleton,
   MangaDetailError,
 } from "./components";
+import type { Chapter } from "@/types/chapter";
+import type { Genre } from "@/types/genre";
 
-export function MangaDetail() {
+export default function MangaDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 

@@ -8,9 +8,9 @@ import { PreviewPane } from "@/components/common/PreviewPane";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
 import { mangaService } from "@/services/manga.service";
-import type { Manga } from "@/types";
+import type { Manga } from "@/types/manga";
 
-export function Homepage() {
+export default function Homepage() {
   const breadcrumbs = [{ label: "Home" }];
   const [showPreview, setShowPreview] = useState(false);
   const [selectedManga, setSelectedManga] = useState<Manga | null>(null);
