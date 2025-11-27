@@ -70,7 +70,18 @@ export function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative">
+      {/* Logo - Top left corner */}
+      <Link 
+        to="/" 
+        className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent transition-colors"
+      >
+        <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
+          <BookOpen className="h-5 w-5 text-primary-foreground" />
+        </div>
+        <span className="font-semibold text-lg hidden sm:inline">Manga Web</span>
+      </Link>
+
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-3 text-center">
           <div className="flex justify-center mb-2">
