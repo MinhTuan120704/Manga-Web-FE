@@ -19,8 +19,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Moon, Sun, Search, User, LogIn, LogOut, Settings } from "lucide-react";
+import { Moon, Sun, Search, User, LogOut, Settings, BookOpen } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { authService } from "@/services/auth.service";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -31,9 +33,37 @@ interface MainLayoutProps {
 }
 
 export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
+  const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Mock login state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{
+    _id: string;
+    username: string;
+    role: string;
+    email?: string;
+    avatarUrl?: string;
+  } | null>(null);
+
+  // Kiểm tra trạng thái đăng nhập khi component mount
+  useEffect(() => {
+    const checkAuth = () => {
+      const loggedIn = authService.isAuthenticated();
+      const user = authService.getStoredUser();
+      
+      setIsLoggedIn(loggedIn);
+      setCurrentUser(user);
+    };
+
+    checkAuth();
+
+    // Lắng nghe sự kiện storage để cập nhật khi đăng nhập/đăng xuất từ tab khác
+    window.addEventListener('storage', checkAuth);
+    
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+    };
+  }, []);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
@@ -58,6 +88,50 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
+  };
+
+  const handleLogout = () => {
+    authService.logout();
+    setIsLoggedIn(false);
+    setCurrentUser(null);
+    navigate("/login");
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // TODO: Implement search functionality
+      console.log("Searching for:", searchQuery);
+    }
+  };
+
+  // Lấy chữ cái đầu của username cho avatar fallback
+  const getInitials = (name: string) => {
+    return name.charAt(0).toUpperCase();
+  };
+
+  // Lấy màu role badge
+  const getRoleBadgeColor = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "text-red-500";
+      case "uploader":
+        return "text-blue-500";
+      default:
+        return "text-green-500";
+    }
+  };
+
+  // Format role name
+  const formatRole = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "Quản trị viên";
+      case "uploader":
+        return "Uploader";
+      default:
+        return "Người đọc";
+    }
   };
 
   return (
@@ -92,15 +166,17 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
 
           {/* Search Bar */}
           <div className="flex-1 max-w-sm ml-4">
-            <div className="relative border-2 rounded-lg">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Tìm kiếm truyện..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8"
-              />
-            </div>
+            <form onSubmit={handleSearch}>
+              <div className="relative border-2 rounded-lg">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Tìm kiếm truyện..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+            </form>
           </div>
 
           {/* Right side controls */}
@@ -120,47 +196,77 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
             </Button>
 
             {/* User Avatar/Login */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
-                >
-                  <Avatar className="h-8 w-8">
-                    {isLoggedIn ? (
-                      <AvatarImage src="/avatars/01.png" alt="User" />
-                    ) : null}
-                    <AvatarFallback>
-                      <User className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                {isLoggedIn ? (
-                  <>
-                    <DropdownMenuItem>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Tài khoản</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Cài đặt</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Đăng xuất</span>
-                    </DropdownMenuItem>
-                  </>
-                ) : (
-                  <DropdownMenuItem onClick={() => setIsLoggedIn(true)}>
-                    <LogIn className="mr-2 h-4 w-4" />
-                    <span>Đăng nhập</span>
+            {isLoggedIn && currentUser ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage 
+                        src={currentUser.avatarUrl} 
+                        alt={currentUser.username} 
+                      />
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {getInitials(currentUser.username)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      <p className="font-medium text-sm">{currentUser.username}</p>
+                      {currentUser.email && (
+                        <p className="text-xs text-muted-foreground">
+                          {currentUser.email}
+                        </p>
+                      )}
+                      <p className={`text-xs font-semibold ${getRoleBadgeColor(currentUser.role)}`}>
+                        {formatRole(currentUser.role)}
+                      </p>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Tài khoản</span>
                   </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  
+                  {currentUser.role === "uploader" && (
+                    <DropdownMenuItem onClick={() => navigate("/my-mangas")}>
+                      <BookOpen className="mr-2 h-4 w-4" />
+                      <span>Truyện của tôi</span>
+                    </DropdownMenuItem>
+                  )}
+                  
+                  <DropdownMenuItem onClick={() => navigate("/settings")}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Cài đặt</span>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="text-red-600 dark:text-red-400"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Đăng xuất</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button 
+                onClick={() => navigate("/login")} 
+                size="sm"
+                className="h-8"
+              >
+                Đăng nhập
+              </Button>
+            )}
           </div>
         </header>
         <main className="flex-1 overflow-auto p-4">{children}</main>
