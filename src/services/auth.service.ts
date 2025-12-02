@@ -46,7 +46,7 @@ export const authService = {
    * Lấy thông tin người dùng hiện tại
    */
   getCurrentUser: async (): Promise<ApiResponse<{ user: User }>> => {
-    return axiosInstance.get(API_ENDPOINTS.AUTH.ME);
+    return axiosInstance.get(API_ENDPOINTS.AUTH.USER);
   },
 
   /**
