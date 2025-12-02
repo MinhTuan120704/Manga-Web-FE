@@ -35,14 +35,14 @@ export function RecentUpdates({
     const diffInMs = now.getTime() - date.getTime();
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
 
-    if (diffInHours < 1) return "Just now";
-    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 1) return "Vừa xong";
+    if (diffInHours < 24) return `${diffInHours} giờ trước`;
 
     const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ago`;
+    if (diffInDays < 7) return `${diffInDays} ngày trước`;
 
     const diffInWeeks = Math.floor(diffInDays / 7);
-    return `${diffInWeeks}w ago`;
+    return `${diffInWeeks} tuần trước`;
   };
 
   if (loading) {
@@ -76,8 +76,8 @@ export function RecentUpdates({
   return (
     <div className="mb-8">
       <SectionHeader
-        title="Recent Updates"
-        subtitle="Latest manga chapter releases"
+        title="Cập nhật gần đây"
+        subtitle="Chapter truyện mới nhất"
         showViewAll
       />
 

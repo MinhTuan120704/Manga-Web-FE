@@ -14,7 +14,7 @@ export function ReaderError({ error, onReturnToManga }: ReaderErrorProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
             <AlertCircle className="h-5 w-5" />
-            Error Loading Chapter
+            Lỗi tải chapter
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -26,14 +26,14 @@ export function ReaderError({ error, onReturnToManga }: ReaderErrorProps) {
               onClick={onReturnToManga}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Go Back
+              Quay lại
             </Button>
             <Button
               variant="default"
               className="flex-1"
               onClick={() => window.location.reload()}
             >
-              Try Again
+              Thử lại
             </Button>
           </div>
           <Button
@@ -42,7 +42,7 @@ export function ReaderError({ error, onReturnToManga }: ReaderErrorProps) {
             onClick={() => (window.location.href = "/")}
           >
             <Home className="h-4 w-4 mr-2" />
-            Return to Homepage
+            Về trang chủ
           </Button>
         </CardContent>
       </Card>

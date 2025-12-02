@@ -24,17 +24,17 @@ export function NotFound() {
         <EmptyMedia>
           <Coffee className="w-32 h-32" />
         </EmptyMedia>
-        <EmptyTitle>404 Not found...</EmptyTitle>
+        <EmptyTitle>404 Không tìm thấy...</EmptyTitle>
         <EmptyDescription>
-          The page you are trying to reach is not existed... <br />
-          Go back to home page?
+          Trang bạn đang cố truy cập không tồn tại... <br />
+          Quay về trang chủ?
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <div className="flex gap-2">
-          <Button onClick={goHome}>To home</Button>
+          <Button onClick={goHome}>Về trang chủ</Button>
           <Button variant="outline" onClick={goBack}>
-            Go back to last page
+            Quay lại trang trước
           </Button>
         </div>
       </EmptyContent>

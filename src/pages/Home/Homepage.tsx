@@ -11,7 +11,7 @@ import { mangaService } from "@/services/manga.service";
 import type { Manga } from "@/types";
 
 export function Homepage() {
-  const breadcrumbs = [{ label: "Home" }];
+  const breadcrumbs = [{ label: "Trang chủ" }];
   const [showPreview, setShowPreview] = useState(false);
   const [selectedManga, setSelectedManga] = useState<Manga | null>(null);
 
@@ -145,8 +145,8 @@ export function Homepage() {
           {/* New Releases */}
           <div>
             <SectionHeader
-              title="New Releases"
-              subtitle="Fresh manga just added"
+              title="Mới phát hành"
+              subtitle="Truyện mới vừa được thêm"
               showViewAll
             />
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-4">

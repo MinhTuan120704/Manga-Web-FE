@@ -39,7 +39,7 @@ export function ReaderHeader({
 
             <div className="flex flex-col min-w-0">
               <h1 className="font-semibold truncate text-sm sm:text-base text-foreground">
-                {manga?.title || "Loading..."}
+                {manga?.title || "Đang tải..."}
               </h1>
               <div className="flex items-center gap-2 text-xs sm:text-sm">
                 <span className="text-muted-foreground">
@@ -71,7 +71,7 @@ export function ReaderHeader({
               size="icon"
               onClick={onToggleNavigation}
               className={showNavigation ? "bg-accent" : ""}
-              title="Toggle Navigation (N)"
+              title="Bật/tắt điều hướng (N)"
             >
               <List className="h-5 w-5" />
             </Button>
@@ -80,7 +80,7 @@ export function ReaderHeader({
               variant="ghost"
               size="icon"
               onClick={onToggleSettings}
-              title="Settings (S)"
+              title="Cài đặt (S)"
             >
               <Settings className="h-5 w-5" />
             </Button>
