@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { chapterService } from "@/services/chapter.service";
 import { mangaService } from "@/services/manga.service";
+import { userService } from "@/services/user.service";
+import { authService } from "@/services/auth.service";
 import type { Chapter, Manga } from "@/types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -64,6 +66,29 @@ export function MangaReader() {
       setShowDirectionOverlay(true);
     }
   }, [chapter, loading]);
+
+  // Update reading history when chapter loads
+  useEffect(() => {
+    const updateReadingHistory = async () => {
+      if (chapter && manga && authService.isAuthenticated()) {
+        try {
+          const mangaId =
+            typeof chapter.mangaId === "string"
+              ? chapter.mangaId
+              : chapter.mangaId._id;
+
+          await userService.updateReadingHistory({
+            manga: mangaId,
+            chapterId: chapter._id,
+          });
+        } catch (error) {
+          console.error("Failed to update reading history:", error);
+        }
+      }
+    };
+
+    updateReadingHistory();
+  }, [chapter, manga]);
 
   // Load settings from localStorage
   useEffect(() => {

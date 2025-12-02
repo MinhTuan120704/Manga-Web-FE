@@ -1,14 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Pencil } from "lucide-react";
 import { authService } from "@/services/auth.service";
+import { userService } from "@/services/user.service";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UpdateUserInfoModal } from "./UpdateUserInfoModal";
+import type { User } from "@/types";
 
 export const UserInfoCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const user = authService.getStoredUser();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      // Set initial user from localStorage
+      const storedUser = authService.getStoredUser();
+      if (storedUser) {
+        setUser(storedUser as User);
+      }
+
+      setLoading(true);
+      try {
+        const response = await userService.getMyProfile();
+        if (response.data) {
+          setUser(response.data);
+          // Update localStorage with fresh data
+          localStorage.setItem("user", JSON.stringify(response.data));
+        }
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+        // Keep using stored user data on error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const getRoleBadge = (role: string) => {
     const badges = {
@@ -18,6 +48,19 @@ export const UserInfoCard = () => {
     };
     return badges[role as keyof typeof badges] || badges.reader;
   };
+
+  if (loading) {
+    return (
+      <div className="bg-card rounded-lg p-4 border border-border">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-muted animate-pulse" />
+          <div className="w-32 h-5 bg-muted animate-pulse rounded" />
+          <div className="w-40 h-6 bg-muted animate-pulse rounded" />
+          <div className="w-full h-9 bg-muted animate-pulse rounded" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
