@@ -5,6 +5,7 @@ import { MangaReader } from "@/pages/MangaReader/MangaReader";
 import { Login, Register } from "@/pages/Auth";
 import { NotFound } from "@/pages/NotFound/NotFound";
 import { AuthLayout } from "@/components/layout/AuthLayout";
+import { uploaderRoutes } from "./uploaderRoutes";
 
 export const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ export const router = createBrowserRouter([
     path: "/reader/:chapterId",
     element: <MangaReader />,
   },
+  
+  // ========== UPLOADER ROUTES ==========
+  ...uploaderRoutes,
+  
   {
     path: "*",
     element: <NotFound />,

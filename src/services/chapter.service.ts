@@ -5,6 +5,7 @@ import type {
   Chapter,
   CreateChapterRequest,
   UpdateChapterRequest,
+  ChapterCountResponse,
 } from "@/types";
 
 export const chapterService = {
@@ -28,7 +29,6 @@ export const chapterService = {
 
     // Append pages (image files)
     data.pages.forEach((page, index) => {
-      // Đặt tên file theo format page_01.jpg, page_02.jpg, ...
       const paddedIndex = String(index + 1).padStart(2, "0");
       formData.append("pages", page, `page_${paddedIndex}.jpg`);
     });
@@ -55,5 +55,9 @@ export const chapterService = {
    */
   deleteChapter: async (chapterId: string): Promise<ApiResponse<void>> => {
     return axiosInstance.delete(API_ENDPOINTS.CHAPTER.DELETE(chapterId));
+  },
+
+  getChapterCountByUploader: async (): Promise<ApiResponse<ChapterCountResponse>> => {
+    return axiosInstance.get(API_ENDPOINTS.CHAPTER.COUNT_BY_UPLOADER);
   },
 };
