@@ -87,7 +87,7 @@ export function FeaturedCarousel({
                     <div className="max-w-full">
                       <div className="flex items-center gap-2 mb-4">
                         <Badge variant="default" className="bg-primary">
-                          Featured
+                          Nổi bật
                         </Badge>
                         <Badge variant="secondary">{manga.status}</Badge>
                         {manga.averageRating !== undefined && (
@@ -123,11 +123,11 @@ export function FeaturedCarousel({
                           onClick={() => navigate(`/manga/${manga._id}`)}
                         >
                           <Play className="h-4 w-4 mr-2" />
-                          Read Now
+                          Đọc ngay
                         </Button>
                         <Button size="lg" variant="outline">
                           <Plus className="h-4 w-4 mr-2" />
-                          Add to Library
+                          Thêm vào thư viện
                         </Button>
                         {onPreview && (
                           <Button
@@ -139,7 +139,7 @@ export function FeaturedCarousel({
                             }}
                           >
                             <Eye className="h-4 w-4 mr-2" />
-                            Preview
+                            Xem trước
                           </Button>
                         )}
                       </div>
