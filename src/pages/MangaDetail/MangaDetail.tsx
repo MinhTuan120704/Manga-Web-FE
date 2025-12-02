@@ -11,6 +11,7 @@ import {
   MangaDetailSkeleton,
   MangaDetailError,
 } from "./components";
+import { CommentSection } from "@/components/common/CommentSection";
 
 export function MangaDetail() {
   const { id } = useParams<{ id: string }>();
@@ -151,7 +152,15 @@ export function MangaDetail() {
         </div>
 
         {/* Chapters Section */}
-        <ChapterList chapters={chapters} onChapterClick={handleChapterClick} />
+        <div className="mb-8">
+          <ChapterList
+            chapters={chapters}
+            onChapterClick={handleChapterClick}
+          />
+        </div>
+
+        {/* Comments Section */}
+        <CommentSection mangaId={id} />
       </div>
     </MainLayout>
   );
