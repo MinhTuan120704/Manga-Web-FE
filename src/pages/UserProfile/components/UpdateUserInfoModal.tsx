@@ -97,7 +97,7 @@ export const UpdateUserInfoModal = ({
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="firstName">Họ</Label>
               <Input
                 id="firstName"
@@ -108,7 +108,7 @@ export const UpdateUserInfoModal = ({
                 placeholder="Họ"
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="lastName">Tên</Label>
               <Input
                 id="lastName"
@@ -121,7 +121,7 @@ export const UpdateUserInfoModal = ({
             </div>
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -134,7 +134,7 @@ export const UpdateUserInfoModal = ({
             />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="bio">Giới thiệu</Label>
             <Textarea
               id="bio"

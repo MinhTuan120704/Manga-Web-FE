@@ -4,6 +4,7 @@ import { authService } from "@/services/auth.service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ConfirmationModal } from "./ConfirmationModal";
 
 interface ChangePasswordProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export const ChangePassword = ({ isOpen, onClose }: ChangePasswordProps) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +35,10 @@ export const ChangePassword = ({ isOpen, onClose }: ChangePasswordProps) => {
       return;
     }
 
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmChange = async () => {
     setLoading(true);
     try {
       await authService.changePassword({
@@ -42,6 +48,7 @@ export const ChangePassword = ({ isOpen, onClose }: ChangePasswordProps) => {
 
       alert("Đổi mật khẩu thành công");
       setFormData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+      setShowConfirmation(false);
       onClose();
     } catch (error: unknown) {
       const errorMessage =
@@ -49,6 +56,7 @@ export const ChangePassword = ({ isOpen, onClose }: ChangePasswordProps) => {
           ? (error as { message: string }).message
           : "Đổi mật khẩu thất bại. Vui lòng thử lại.";
       setError(errorMessage);
+      setShowConfirmation(false);
     } finally {
       setLoading(false);
     }
@@ -57,26 +65,29 @@ export const ChangePassword = ({ isOpen, onClose }: ChangePasswordProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-      <div className="bg-[#1a1a1a] rounded-lg p-6 w-full max-w-md border border-gray-800">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-white">Đổi mật khẩu</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">
-            <X className="w-6 h-6" />
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+      <div className="bg-popover rounded-lg p-4 sm:p-6 w-full max-w-md border border-border">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-bold text-popover-foreground">
+            Đổi mật khẩu
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           {error && (
-            <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded-lg text-sm">
+            <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-2 rounded-lg text-sm">
               {error}
             </div>
           )}
 
-          <div>
-            <Label htmlFor="oldPassword" className="text-white">
-              Mật khẩu cũ
-            </Label>
+          <div className="space-y-2">
+            <Label htmlFor="oldPassword">Mật khẩu cũ</Label>
             <Input
               id="oldPassword"
               type="password"
@@ -84,16 +95,13 @@ export const ChangePassword = ({ isOpen, onClose }: ChangePasswordProps) => {
               onChange={(e) =>
                 setFormData({ ...formData, oldPassword: e.target.value })
               }
-              className="bg-gray-800 border-gray-700 text-white"
               placeholder="Mật khẩu cũ"
               required
             />
           </div>
 
-          <div>
-            <Label htmlFor="newPassword" className="text-white">
-              Mật khẩu mới
-            </Label>
+          <div className="space-y-2">
+            <Label htmlFor="newPassword">Mật khẩu mới</Label>
             <Input
               id="newPassword"
               type="password"
@@ -101,16 +109,13 @@ export const ChangePassword = ({ isOpen, onClose }: ChangePasswordProps) => {
               onChange={(e) =>
                 setFormData({ ...formData, newPassword: e.target.value })
               }
-              className="bg-gray-800 border-gray-700 text-white"
               placeholder="Mật khẩu mới"
               required
             />
           </div>
 
-          <div>
-            <Label htmlFor="confirmPassword" className="text-white">
-              Xác nhận mật khẩu
-            </Label>
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
             <Input
               id="confirmPassword"
               type="password"
@@ -118,31 +123,38 @@ export const ChangePassword = ({ isOpen, onClose }: ChangePasswordProps) => {
               onChange={(e) =>
                 setFormData({ ...formData, confirmPassword: e.target.value })
               }
-              className="bg-gray-800 border-gray-700 text-white"
               placeholder="Xác nhận mật khẩu"
               required
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-2 sm:gap-3 pt-2 sm:pt-4">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
-              className="flex-1 border-gray-700 text-white hover:bg-gray-800"
+              className="flex-1"
             >
               Hủy bỏ
             </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-            >
+            <Button type="submit" disabled={loading} className="flex-1">
               {loading ? "Đang lưu..." : "Đổi mật khẩu"}
             </Button>
           </div>
         </form>
       </div>
+
+      <ConfirmationModal
+        isOpen={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onConfirm={handleConfirmChange}
+        title="Xác nhận đổi mật khẩu"
+        message="Bạn có chắc chắn muốn đổi mật khẩu không? Bạn sẽ phải đăng nhập lại với mật khẩu mới."
+        confirmText="Đổi mật khẩu"
+        cancelText="Hủy bỏ"
+        variant="warning"
+        loading={loading}
+      />
     </div>
   );
 };

@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
+import { ConfirmationModal } from "./ConfirmationModal";
+import { useState } from "react";
 
 interface UserSidebarProps {
   isOpen: boolean;
@@ -13,6 +15,7 @@ export const UserSidebar = ({ isOpen, onClose }: UserSidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = authService.getStoredUser();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = () => {
     authService.logout();
@@ -126,13 +129,24 @@ export const UserSidebar = ({ isOpen, onClose }: UserSidebarProps) => {
 
         {/* Logout */}
         <button
-          onClick={handleLogout}
+          onClick={() => setShowLogoutConfirm(true)}
           className="flex items-center gap-3 px-6 py-3 text-destructive hover:bg-sidebar-accent transition-colors border-t border-sidebar-border"
         >
           <LogOut className="w-5 h-5" />
           <span className="text-sm">Đăng xuất</span>
         </button>
       </aside>
+
+      <ConfirmationModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?"
+        confirmText="Đăng xuất"
+        cancelText="Hủy bỏ"
+        variant="danger"
+      />
     </>
   );
 };
