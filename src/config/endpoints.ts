@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
     REGISTER: "/auth/register",
     LOGIN: "/auth/login",
     ME: "/auth/me",
+    CHANGE_PASSWORD: "/auth/change-password",
   },
 
   // ========== Manga ==========

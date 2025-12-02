@@ -63,4 +63,14 @@ export const authService = {
     const userStr = localStorage.getItem("user");
     return userStr ? JSON.parse(userStr) : null;
   },
+
+  /**
+   * Đổi mật khẩu
+   */
+  changePassword: async (data: {
+    oldPassword: string;
+    newPassword: string;
+  }): Promise<ApiResponse<void>> => {
+    return axiosInstance.put(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, data);
+  },
 };
