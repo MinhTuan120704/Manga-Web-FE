@@ -1,32 +1,19 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
-import type { ApiResponse, Manga, User, UpdateProfileRequest, FollowMangaRequest, MangaListResponse } from "@/types";
+import type {
+  ApiResponse,
+  Manga,
+  User,
+  UpdateProfileRequest,
+  FollowMangaRequest,
+} from "@/types";
 
 export const userService = {
   /**
-   * Lấy danh sách manga đã upload (cho uploader)
+   * Lấy profile của user hiện tại
    */
-  getUploadedMangas: async (): Promise<ApiResponse<Manga[]>> => {
-    try {
-      const response = await axiosInstance.get(API_ENDPOINTS.USER.UPLOADED_MANGAS);
-
-      // Backend có thể trả về trực tiếp array hoặc wrapped trong data
-      // Normalize response
-      if (Array.isArray(response)) {
-        return {
-          status: "success",
-          data: response,
-        };
-      }
-
-      return {
-        status: "success",
-        data: response as any, // Cast to any to avoid strict type check if response structure is uncertain, or we can assume it's Manga[]
-      };
-    } catch (error) {
-      console.error("Error fetching uploaded mangas:", error);
-      throw error;
-    }
+  getMyProfile: async (): Promise<ApiResponse<User>> => {
+    return axiosInstance.get(API_ENDPOINTS.USER.PROFILE);
   },
 
   /**
@@ -39,6 +26,13 @@ export const userService = {
   },
 
   /**
+   * Xóa tài khoản
+   */
+  deleteProfile: async (): Promise<ApiResponse<void>> => {
+    return axiosInstance.delete(API_ENDPOINTS.USER.DELETE_PROFILE);
+  },
+
+  /**
    * Theo dõi một bộ truyện
    */
   followManga: async (data: FollowMangaRequest): Promise<ApiResponse<void>> => {
@@ -46,16 +40,33 @@ export const userService = {
   },
 
   /**
-   * Lấy danh sách truyện đã theo dõi
-   */
-  getFollowedMangas: async (): Promise<ApiResponse<MangaListResponse>> => {
-    return axiosInstance.get(API_ENDPOINTS.USER.FOLLOWED_MANGAS);
-  },
-
-  /**
    * Bỏ theo dõi một bộ truyện
    */
   unfollowManga: async (mangaId: string): Promise<ApiResponse<void>> => {
-    return axiosInstance.delete(API_ENDPOINTS.USER.UNFOLLOW(mangaId));
+    return axiosInstance.post(API_ENDPOINTS.USER.UNFOLLOW, { mangaId });
+  },
+
+  /**
+   * Lấy reading history
+   */
+  getReadingHistory: async (): Promise<ApiResponse<any>> => {
+    return axiosInstance.get(API_ENDPOINTS.USER.READING_HISTORY);
+  },
+
+  /**
+   * Cập nhật reading history
+   */
+  updateReadingHistory: async (data: {
+    manga: string;
+    chapterId: string;
+  }): Promise<ApiResponse<void>> => {
+    return axiosInstance.post(API_ENDPOINTS.USER.READING_HISTORY, data);
+  },
+
+  /**
+   * Lấy danh sách manga đã upload (cho uploader)
+   */
+  getUploadedMangas: async (): Promise<ApiResponse<Manga[]>> => {
+    return axiosInstance.get(API_ENDPOINTS.USER.UPLOADED_MANGAS);
   },
 };

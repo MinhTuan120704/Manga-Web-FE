@@ -46,7 +46,7 @@ export const authService = {
    * Lấy thông tin người dùng hiện tại
    */
   getCurrentUser: async (): Promise<ApiResponse<{ user: User }>> => {
-    return axiosInstance.get(API_ENDPOINTS.AUTH.ME);
+    return axiosInstance.get(API_ENDPOINTS.AUTH.USER);
   },
 
   /**
@@ -62,5 +62,15 @@ export const authService = {
   getStoredUser: (): LoginResponse["user"] | null => {
     const userStr = localStorage.getItem("user");
     return userStr ? JSON.parse(userStr) : null;
+  },
+
+  /**
+   * Đổi mật khẩu
+   */
+  changePassword: async (data: {
+    oldPassword: string;
+    newPassword: string;
+  }): Promise<ApiResponse<void>> => {
+    return axiosInstance.put(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, data);
   },
 };

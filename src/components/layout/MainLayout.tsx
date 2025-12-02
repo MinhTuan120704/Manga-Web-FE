@@ -50,7 +50,7 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
     const checkAuth = () => {
       const loggedIn = authService.isAuthenticated();
       const user = authService.getStoredUser();
-      
+
       setIsLoggedIn(loggedIn);
       setCurrentUser(user);
     };
@@ -58,10 +58,10 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
     checkAuth();
 
     // Lắng nghe sự kiện storage để cập nhật khi đăng nhập/đăng xuất từ tab khác
-    window.addEventListener('storage', checkAuth);
-    
+    window.addEventListener("storage", checkAuth);
+
     return () => {
-      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener("storage", checkAuth);
     };
   }, []);
 
@@ -217,9 +217,9 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
                     className="relative h-8 w-8 rounded-full"
                   >
                     <Avatar className="h-8 w-8">
-                      <AvatarImage 
-                        src={currentUser.avatarUrl} 
-                        alt={currentUser.username} 
+                      <AvatarImage
+                        src={currentUser.avatarUrl}
+                        alt={currentUser.username}
                       />
                       <AvatarFallback className="bg-primary text-primary-foreground">
                         {getInitials(currentUser.username)}
@@ -230,24 +230,30 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium text-sm">{currentUser.username}</p>
+                      <p className="font-medium text-sm">
+                        {currentUser.username}
+                      </p>
                       {currentUser.email && (
                         <p className="text-xs text-muted-foreground">
                           {currentUser.email}
                         </p>
                       )}
-                      <p className={`text-xs font-semibold ${getRoleBadgeColor(currentUser.role)}`}>
+                      <p
+                        className={`text-xs font-semibold ${getRoleBadgeColor(
+                          currentUser.role
+                        )}`}
+                      >
                         {formatRole(currentUser.role)}
                       </p>
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  
-                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+
+                  <DropdownMenuItem onClick={() => navigate("/user/profile")}>
                     <User className="mr-2 h-4 w-4" />
                     <span>Tài khoản</span>
                   </DropdownMenuItem>
-                  
+
                   {currentUser.role === "uploader" && (
                     <>
                       <DropdownMenuItem onClick={() => navigate("/uploader")}>
@@ -260,15 +266,15 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
                       </DropdownMenuItem>
                     </>
                   )}
-                  
-                  <DropdownMenuItem onClick={() => navigate("/settings")}>
+
+                  <DropdownMenuItem onClick={() => navigate("/user/settings")}>
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Cài đặt</span>
                   </DropdownMenuItem>
-                  
+
                   <DropdownMenuSeparator />
-                  
-                  <DropdownMenuItem 
+
+                  <DropdownMenuItem
                     onClick={handleLogout}
                     className="text-red-600 dark:text-red-400"
                   >
@@ -278,8 +284,8 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button 
-                onClick={() => navigate("/login")} 
+              <Button
+                onClick={() => navigate("/login")}
                 size="sm"
                 className="h-8"
               >

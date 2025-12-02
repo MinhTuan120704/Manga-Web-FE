@@ -6,27 +6,34 @@ import type {
   CommentListResponse,
   CreateCommentRequest,
   UpdateCommentRequest,
-  RatingRequest,
 } from "@/types";
 
 export const commentService = {
+  /**
+   * Tạo bình luận mới
+   */
+  createComment: async (
+    data: CreateCommentRequest
+  ): Promise<ApiResponse<Comment>> => {
+    return axiosInstance.post(API_ENDPOINTS.COMMENT.CREATE, data);
+  },
+
   /**
    * Lấy bình luận của một bộ truyện
    */
   getCommentsByMangaId: async (
     mangaId: string
   ): Promise<ApiResponse<CommentListResponse>> => {
-    return axiosInstance.get(API_ENDPOINTS.MANGA.COMMENTS(mangaId));
+    return axiosInstance.get(API_ENDPOINTS.COMMENT.BY_MANGA(mangaId));
   },
 
   /**
-   * Gửi bình luận
+   * Lấy bình luận của một chapter
    */
-  createComment: async (
-    mangaId: string,
-    data: CreateCommentRequest
-  ): Promise<ApiResponse<Comment>> => {
-    return axiosInstance.post(API_ENDPOINTS.MANGA.COMMENTS(mangaId), data);
+  getCommentsByChapterId: async (
+    chapterId: string
+  ): Promise<ApiResponse<CommentListResponse>> => {
+    return axiosInstance.get(API_ENDPOINTS.COMMENT.BY_CHAPTER(chapterId));
   },
 
   /**
@@ -44,26 +51,5 @@ export const commentService = {
    */
   deleteComment: async (commentId: string): Promise<ApiResponse<void>> => {
     return axiosInstance.delete(API_ENDPOINTS.COMMENT.DELETE(commentId));
-  },
-};
-
-export const ratingService = {
-  /**
-   * Đánh giá truyện hoặc cập nhật đánh giá
-   */
-  rateManga: async (
-    mangaId: string,
-    data: RatingRequest
-  ): Promise<ApiResponse<{ averageRating: number }>> => {
-    return axiosInstance.post(API_ENDPOINTS.MANGA.RATINGS(mangaId), data);
-  },
-
-  /**
-   * Xóa đánh giá
-   */
-  deleteRating: async (
-    mangaId: string
-  ): Promise<ApiResponse<{ averageRating: number }>> => {
-    return axiosInstance.delete(API_ENDPOINTS.MANGA.RATINGS(mangaId));
   },
 };

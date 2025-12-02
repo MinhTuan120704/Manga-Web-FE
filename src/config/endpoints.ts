@@ -7,7 +7,9 @@ export const API_ENDPOINTS = {
   AUTH: {
     REGISTER: "/auth/register",
     LOGIN: "/auth/login",
+    USER: "/auth/user",
     ME: "/auth/me",
+    CHANGE_PASSWORD: "/auth/change-password",
   },
 
   // ========== Manga ==========
@@ -32,19 +34,20 @@ export const API_ENDPOINTS = {
 
   // ========== User ==========
   USER: {
-    ME: "/users/me",
-    UPDATE_PROFILE: "/users/me",
     PROFILE: "/users/profile",
-    FOLLOW: "/users/me/follow",
-    FOLLOWED_MANGAS: "/users/me/follow",
-    UNFOLLOW: (mangaId: string) => `/users/me/follow/${mangaId}`,
-
+    UPDATE_PROFILE: "/users/profile",
+    DELETE_PROFILE: "/users/profile",
+    FOLLOW: "/users/follow",
+    UNFOLLOW: "/users/unfollow",
     READING_HISTORY: "/users/reading-history",
-    UPLOADED_MANGAS: "/users/uploaded-mangas", 
+    UPLOADED_MANGAS: "/users/uploaded-mangas",
   },
 
   // ========== Comment ==========
   COMMENT: {
+    CREATE: "/comments",
+    BY_MANGA: (mangaId: string) => `/comments/manga/${mangaId}`,
+    BY_CHAPTER: (chapterId: string) => `/comments/chapter/${chapterId}`,
     UPDATE: (id: string) => `/comments/${id}`,
     DELETE: (id: string) => `/comments/${id}`,
   },
@@ -58,8 +61,30 @@ export const API_ENDPOINTS = {
     MANGAS: (slug: string) => `/genres/${slug}/mangas`,
   },
 
+  // ========== Rating ==========
+  RATING: {
+    RATE: "/ratings",
+    MANGA_AVERAGE: (mangaId: string) => `/ratings/manga/${mangaId}`,
+    USER_RATING: (mangaId: string) => `/ratings/manga/${mangaId}/user`,
+  },
+
+  // ========== Report ==========
+  REPORT: {
+    CREATE: (mangaId: string) => `/reports/${mangaId}`,
+    LIST: "/reports",
+    BY_MANGA: (mangaId: string) => `/reports/manga/${mangaId}`,
+    DETAIL: (reportId: string) => `/reports/${reportId}`,
+  },
+
+  // ========== Statistics ==========
+  STATISTICS: {
+    BASIC: "/statistics",
+    DETAILED: "/statistics/detailed",
+  },
+
   // ========== AI ==========
   AI: {
     GET_MANGA: "/ai/get-manga",
+    GENERATE_MANGA: "/ai/generate-manga",
   },
 } as const;

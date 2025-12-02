@@ -6,6 +6,9 @@ import { Login, Register } from "@/pages/Auth";
 import { NotFound } from "@/pages/NotFound/NotFound";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { uploaderRoutes } from "./uploaderRoutes";
+import { UserLayout } from "@/components/layout";
+import { UserProfile } from "@/pages/UserProfile/UserProfile";
+import { UserSettings } from "@/pages/UserProfile/components/UserSettings";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +30,20 @@ export const router = createBrowserRouter([
         <Register />
       </AuthLayout>
     ),
+  },
+  {
+    path: "/user",
+    element: <UserLayout />,
+    children: [
+      {
+        path: "profile",
+        element: <UserProfile />,
+      },
+      {
+        path: "settings",
+        element: <UserSettings />,
+      },
+    ],
   },
   {
     path: "/manga/:id",
