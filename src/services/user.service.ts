@@ -19,7 +19,10 @@ export const userService = {
         };
       }
 
-      return response;
+      return {
+        status: "success",
+        data: response as any, // Cast to any to avoid strict type check if response structure is uncertain, or we can assume it's Manga[]
+      };
     } catch (error) {
       console.error("Error fetching uploaded mangas:", error);
       throw error;

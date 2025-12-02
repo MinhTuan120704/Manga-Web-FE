@@ -38,7 +38,7 @@ export const API_ENDPOINTS = {
     FOLLOW: "/users/me/follow",
     FOLLOWED_MANGAS: "/users/me/follow",
     UNFOLLOW: (mangaId: string) => `/users/me/follow/${mangaId}`,
-    UNFOLLOW: "/users/unfollow",
+
     READING_HISTORY: "/users/reading-history",
     UPLOADED_MANGAS: "/users/uploaded-mangas", 
   },
