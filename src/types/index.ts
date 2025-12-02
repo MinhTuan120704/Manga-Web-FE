@@ -23,3 +23,6 @@ export * from "./comment";
 
 // AI types
 export * from "./ai";
+
+// Dashboard types
+export * from "./dashboard";

@@ -18,6 +18,9 @@ export interface Manga {
   averageRating?: number;
   createdAt: string;
   updatedAt: string;
+  progress?: number;
+  chapterCount?: number;
+  followedCount?: number;
 }
 
 export interface CreateMangaRequest {

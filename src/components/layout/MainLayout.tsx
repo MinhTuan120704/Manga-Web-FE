@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Moon, Sun, Search, User, LogOut, Settings, BookOpen } from "lucide-react";
+import { Moon, Sun, Search, User, LogOut, Settings, BookOpen, LayoutDashboard, ArrowLeftRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
@@ -137,7 +137,7 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
   return (
     <div className="flex h-screen w-full overflow-hidden">
       <AppSidebar />
-      <SidebarInset className="flex-1 min-w-0">
+      <SidebarInset className="flex-1 min-w-0 flex flex-col">
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
@@ -181,6 +181,19 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
 
           {/* Right side controls */}
           <div className="ml-auto flex items-center gap-2">
+            {/* Switch to Uploader Mode - Chỉ hiện nếu user là uploader */}
+            {isLoggedIn && currentUser?.role === "uploader" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/uploader")}
+                className="gap-2"
+              >
+                <ArrowLeftRight className="h-4 w-4" />
+                <span className="hidden sm:inline">Uploader Mode</span>
+              </Button>
+            )}
+
             {/* Dark mode toggle */}
             <Button
               variant="outline"
@@ -236,10 +249,16 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
                   </DropdownMenuItem>
                   
                   {currentUser.role === "uploader" && (
-                    <DropdownMenuItem onClick={() => navigate("/my-mangas")}>
-                      <BookOpen className="mr-2 h-4 w-4" />
-                      <span>Truyện của tôi</span>
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuItem onClick={() => navigate("/uploader")}>
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate("/uploader/mangas")}>
+                        <BookOpen className="mr-2 h-4 w-4" />
+                        <span>Truyện của tôi</span>
+                      </DropdownMenuItem>
+                    </>
                   )}
                   
                   <DropdownMenuItem onClick={() => navigate("/settings")}>
@@ -269,7 +288,11 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
             )}
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-4">{children}</main>
+        
+        <main className="flex-1 overflow-auto">
+          <div className="p-4">{children}</div>
+          {/* <Footer /> */}
+        </main>
       </SidebarInset>
     </div>
   );

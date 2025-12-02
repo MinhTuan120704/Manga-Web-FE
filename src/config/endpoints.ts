@@ -24,18 +24,23 @@ export const API_ENDPOINTS = {
 
   // ========== Chapter ==========
   CHAPTER: {
-    DETAIL: (id: string) => `/chapters/${id}`,
-    UPDATE: (id: string) => `/chapters/${id}`,
-    DELETE: (id: string) => `/chapters/${id}`,
+    DETAIL: (chapterId: string) => `/chapters/${chapterId}`,
+    UPDATE: (chapterId: string) => `/chapters/${chapterId}`,
+    DELETE: (chapterId: string) => `/chapters/${chapterId}`,
+    COUNT_BY_UPLOADER: "/chapters/count/uploader", // 🆕 Add this
   },
 
   // ========== User ==========
   USER: {
     ME: "/users/me",
     UPDATE_PROFILE: "/users/me",
+    PROFILE: "/users/profile",
     FOLLOW: "/users/me/follow",
     FOLLOWED_MANGAS: "/users/me/follow",
     UNFOLLOW: (mangaId: string) => `/users/me/follow/${mangaId}`,
+
+    READING_HISTORY: "/users/reading-history",
+    UPLOADED_MANGAS: "/users/uploaded-mangas", 
   },
 
   // ========== Comment ==========
