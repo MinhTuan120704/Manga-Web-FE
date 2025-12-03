@@ -256,10 +256,8 @@ export function CreateManga() {
       if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as {
           response?: {
-            data?: {
-              message?: string;
-              errors?: Record<string, string>;
-            };
+            message?: string;
+            errors?: Record<string, string>;
           };
           message?: string;
         };
