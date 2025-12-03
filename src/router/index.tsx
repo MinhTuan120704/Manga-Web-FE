@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Homepage } from "@/pages/Home/Homepage";
+import { lazy, Suspense } from "react";
 import { MangaDetail } from "@/pages/MangaDetail/MangaDetail";
 import { MangaReader } from "@/pages/MangaReader/MangaReader";
 import { Login, Register } from "@/pages/Auth";
@@ -7,13 +7,33 @@ import { NotFound } from "@/pages/NotFound/NotFound";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { uploaderRoutes } from "./uploaderRoutes";
 import { UserLayout } from "@/components/layout";
-import { UserProfile } from "@/pages/UserProfile/UserProfile";
-import { UserSettings } from "@/pages/UserProfile/components/UserSettings";
+import { PageLoader } from "@/components/common/PageLoader";
+
+// Lazy load components
+const Homepage = lazy(() =>
+  import("@/pages/Home/Homepage").then((module) => ({
+    default: module.Homepage,
+  }))
+);
+const UserProfile = lazy(() =>
+  import("@/pages/UserProfile/UserProfile").then((module) => ({
+    default: module.UserProfile,
+  }))
+);
+const UserSettings = lazy(() =>
+  import("@/pages/UserProfile/components/UserSettings").then((module) => ({
+    default: module.UserSettings,
+  }))
+);
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Homepage />,
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <Homepage />
+      </Suspense>
+    ),
   },
   {
     path: "/login",
@@ -37,11 +57,19 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "profile",
-        element: <UserProfile />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <UserProfile />
+          </Suspense>
+        ),
       },
       {
         path: "settings",
-        element: <UserSettings />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <UserSettings />
+          </Suspense>
+        ),
       },
     ],
   },
@@ -53,10 +81,10 @@ export const router = createBrowserRouter([
     path: "/reader/:chapterId",
     element: <MangaReader />,
   },
-  
+
   // ========== UPLOADER ROUTES ==========
   ...uploaderRoutes,
-  
+
   {
     path: "*",
     element: <NotFound />,
