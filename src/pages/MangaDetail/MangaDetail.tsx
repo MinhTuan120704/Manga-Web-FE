@@ -29,8 +29,25 @@ export function MangaDetail() {
     if (id) {
       fetchMangaDetail(id);
       fetchChapters(id);
+      checkIfFollowing(id);
     }
   }, [id]);
+
+  const checkIfFollowing = async (mangaId: string) => {
+    if (!authService.isAuthenticated()) {
+      setIsFollowing(false);
+      return;
+    }
+
+    try {
+      const profile = await userService.getMyProfile();
+      if (profile?.followedMangas) {
+        setIsFollowing(profile.followedMangas.includes(mangaId));
+      }
+    } catch (error) {
+      console.error("Failed to check follow status:", error);
+    }
+  };
 
   const fetchMangaDetail = async (mangaId: string) => {
     try {
