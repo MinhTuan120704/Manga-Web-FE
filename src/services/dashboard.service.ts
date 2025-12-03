@@ -1,7 +1,19 @@
 import { userService } from "./user.service";
 import { mangaService } from "./manga.service";
 import { chapterService } from "./chapter.service"; // 🆕 Import chapter service
-import type { DashboardData, DashboardStats, MangaWithChapters, Manga, Chapter } from "@/types";
+import type {
+  DashboardData,
+  DashboardStats,
+  MangaWithChapters,
+  Manga,
+  Chapter,
+} from "@/types";
+
+interface ChapterCountData {
+  uploaderId: string;
+  totalChapters: number;
+  totalMangas: number;
+}
 
 export const dashboardService = {
   /**
@@ -14,9 +26,8 @@ export const dashboardService = {
         userService.getUploadedMangas(),
         chapterService.getChapterCountByUploader(), // 🆕 Fetch từ API
       ]);
-
-      const mangas: Manga[] = mangasResponse.data || [];
-      const chapterCountData = chapterCountResponse.data;
+      const mangas: Manga[] = mangasResponse || [];
+      const chapterCountData = chapterCountResponse as ChapterCountData;
 
       console.log("Chapter count from API:", chapterCountData);
 
@@ -24,9 +35,11 @@ export const dashboardService = {
       const mangasWithChapters: MangaWithChapters[] = await Promise.all(
         mangas.map(async (manga) => {
           try {
-            const chaptersResponse = await mangaService.getChaptersByMangaId(manga._id);
+            const chaptersResponse = await mangaService.getChaptersByMangaId(
+              manga._id
+            );
             const chapters: Chapter[] = chaptersResponse.data || [];
-            
+
             // Sort chapters by number descending để lấy latest
             const sortedChapters = [...chapters].sort(
               (a, b) => b.chapterNumber - a.chapterNumber
@@ -38,7 +51,10 @@ export const dashboardService = {
               latestChapter: sortedChapters[0] || undefined,
             };
           } catch (error) {
-            console.error(`Failed to fetch chapters for manga ${manga._id}:`, error);
+            console.error(
+              `Failed to fetch chapters for manga ${manga._id}:`,
+              error
+            );
             return {
               ...manga,
               chapters: [],
@@ -60,19 +76,20 @@ export const dashboardService = {
           (sum, manga) => sum + (manga.followedCount || 0),
           0
         ),
-        avgRating: mangasWithChapters.length > 0
-          ? mangasWithChapters.reduce(
-              (sum, manga) => sum + (manga.averageRating || 0),
-              0
-            ) / mangasWithChapters.length
-          : 0,
+        avgRating:
+          mangasWithChapters.length > 0
+            ? mangasWithChapters.reduce(
+                (sum, manga) => sum + (manga.averageRating || 0),
+                0
+              ) / mangasWithChapters.length
+            : 0,
       };
 
       console.log("Dashboard stats:", stats);
 
       // 4. Get recently updated mangas (có chapters mới nhất)
       const recentlyUpdated = [...mangasWithChapters]
-        .filter(manga => manga.latestChapter)
+        .filter((manga) => manga.latestChapter)
         .sort((a, b) => {
           const dateA = a.latestChapter?.createdAt || a.updatedAt;
           const dateB = b.latestChapter?.createdAt || b.updatedAt;
