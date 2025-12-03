@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { toast } from "sonner";
 
 interface UpdateUserInfoModalProps {
   isOpen: boolean;
@@ -95,12 +96,13 @@ export const UpdateUserInfoModal = ({
         localStorage.setItem("user", JSON.stringify(updatedUser));
       }
 
+      toast.success("Cập nhật thông tin thành công!");
       setShowConfirmModal(false);
       onClose();
       window.location.reload(); // Reload to show updated info
     } catch (error) {
       console.error("Failed to update profile:", error);
-      alert("Cập nhật thất bại. Vui lòng thử lại.");
+      toast.error("Cập nhật thất bại. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }

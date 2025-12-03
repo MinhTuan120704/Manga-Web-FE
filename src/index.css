@@ -173,3 +173,46 @@ body {
   scrollbar-width: thin;
   scrollbar-color: var(--border) var(--muted);
 }
+
+/* Sonner toast theming */
+[data-sonner-toaster] {
+  --normal-bg: var(--card) !important;
+  --normal-border: var(--border) !important;
+  --normal-text: var(--card-foreground) !important;
+  --success-bg: oklch(0.95 0.08 145) !important;
+  --success-border: oklch(0.65 0.15 145) !important;
+  --success-text: oklch(0.25 0.08 145) !important;
+  --error-bg: oklch(0.95 0.08 25) !important;
+  --error-border: oklch(0.65 0.2 25) !important;
+  --error-text: oklch(0.35 0.15 25) !important;
+}
+
+.dark [data-sonner-toaster] {
+  --normal-bg: var(--card) !important;
+  --normal-border: var(--border) !important;
+  --normal-text: var(--card-foreground) !important;
+  --success-bg: oklch(0.2 0.08 145) !important;
+  --success-border: oklch(0.5 0.15 145) !important;
+  --success-text: oklch(0.85 0.1 145) !important;
+  --error-bg: oklch(0.2 0.08 25) !important;
+  --error-border: oklch(0.5 0.2 25) !important;
+  --error-text: oklch(0.85 0.12 25) !important;
+}
+
+[data-sonner-toast] {
+  background-color: var(--normal-bg) !important;
+  border: 1px solid var(--normal-border) !important;
+  color: var(--normal-text) !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  background-color: var(--success-bg) !important;
+  border-color: var(--success-border) !important;
+  color: var(--success-text) !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+  background-color: var(--error-bg) !important;
+  border-color: var(--error-border) !important;
+  color: var(--error-text) !important;
+}

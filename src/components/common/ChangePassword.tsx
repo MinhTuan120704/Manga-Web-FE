@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ConfirmationModal } from "./ConfirmationModal";
+import { toast } from "sonner";
 
 interface ChangePasswordProps {
   isOpen: boolean;
@@ -46,7 +47,7 @@ export const ChangePassword = ({ isOpen, onClose }: ChangePasswordProps) => {
         newPassword: formData.newPassword,
       });
 
-      alert("Đổi mật khẩu thành công");
+      toast.success("Đổi mật khẩu thành công");
       setFormData({ oldPassword: "", newPassword: "", confirmPassword: "" });
       setShowConfirmation(false);
       onClose();
@@ -55,6 +56,7 @@ export const ChangePassword = ({ isOpen, onClose }: ChangePasswordProps) => {
         error && typeof error === "object" && "message" in error
           ? (error as { message: string }).message
           : "Đổi mật khẩu thất bại. Vui lòng thử lại.";
+      toast.error(errorMessage);
       setError(errorMessage);
       setShowConfirmation(false);
     } finally {

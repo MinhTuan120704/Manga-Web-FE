@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { router } from "@/router";
+import { Toaster } from "sonner";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -30,9 +31,18 @@ function App() {
   }, [darkMode]);
 
   return (
-    <SidebarProvider>
-      <RouterProvider router={router} />
-    </SidebarProvider>
+    <>
+      <SidebarProvider>
+        <RouterProvider router={router} />
+      </SidebarProvider>
+      <Toaster
+        position="top-right"
+        theme={darkMode ? "dark" : "light"}
+        richColors
+        closeButton
+        duration={3000}
+      />
+    </>
   );
 }
 
