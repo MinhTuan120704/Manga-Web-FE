@@ -3,7 +3,6 @@ import { API_ENDPOINTS } from "@/config/endpoints";
 import type {
   ApiResponse,
   Genre,
-  GenreListResponse,
   CreateGenreRequest,
   UpdateGenreRequest,
   MangaListResponse,
@@ -13,9 +12,19 @@ import type {
 export const genreService = {
   /**
    * Lấy danh sách tất cả thể loại (Public)
+   * Backend trả về Array trực tiếp, không có wrapper
    */
-  getGenres: async (): Promise<ApiResponse<GenreListResponse>> => {
+  getGenres: async (): Promise<Genre[]> => {
     return axiosInstance.get(API_ENDPOINTS.GENRE.LIST);
+  },
+
+  /**
+   * Tìm kiếm thể loại
+   */
+  searchGenres: async (searchTerm: string): Promise<Genre[]> => {
+    return axiosInstance.get(API_ENDPOINTS.GENRE.SEARCH, {
+      params: { query: searchTerm }
+    });
   },
 
   /**

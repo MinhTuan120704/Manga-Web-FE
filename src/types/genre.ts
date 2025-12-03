@@ -5,6 +5,7 @@ export interface Genre {
   name: string;
   slug?: string; 
   description?: string;
+  mangaCount?: number; 
   createdAt?: string;
   updatedAt?: string;
 }
