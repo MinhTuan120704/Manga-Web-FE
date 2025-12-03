@@ -3,7 +3,14 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { authService } from "@/services/auth.service";
 import { BookOpen, Eye, EyeOff, Loader2 } from "lucide-react";
 import type { LoginRequest } from "@/types";
@@ -26,14 +33,14 @@ export function Login() {
     try {
       const response = await authService.login(formData);
       console.log("Login response:", response);
-      
-      if (response.data) {
+
+      if (response) {
         // Đăng nhập thành công
         console.log("Login successful, navigating to home...");
-        
+
         // Navigate về trang chủ và reload để cập nhật MainLayout
         navigate("/", { replace: true });
-        
+
         // Delay ngắn để đảm bảo navigation hoàn tất trước khi reload
         setTimeout(() => {
           window.location.reload();
@@ -43,9 +50,9 @@ export function Login() {
       }
     } catch (err: unknown) {
       console.error("Login error:", err);
-      
+
       // Xử lý error một cách an toàn
-      if (err && typeof err === 'object' && 'message' in err) {
+      if (err && typeof err === "object" && "message" in err) {
         setError(err.message as string);
       } else {
         setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
@@ -58,14 +65,16 @@ export function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 relative">
       {/* Logo - Top left corner */}
-      <Link 
-        to="/" 
+      <Link
+        to="/"
         className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent transition-colors"
       >
         <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
           <BookOpen className="h-5 w-5 text-primary-foreground" />
         </div>
-        <span className="font-semibold text-lg hidden sm:inline">Manga Web</span>
+        <span className="font-semibold text-lg hidden sm:inline">
+          Manga Web
+        </span>
       </Link>
 
       <Card className="w-full max-w-md shadow-lg">
@@ -88,7 +97,7 @@ export function Login() {
                 {error}
               </div>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">
                 Email

@@ -30,6 +30,11 @@ const AdvancedSearch = lazy(() =>
     default: module.AdvancedSearch,
   }))
 );
+const AIRecommendation = lazy(() =>
+  import("@/pages/AIRecommendation/AIRecommendation").then((module) => ({
+    default: module.AIRecommendation,
+  }))
+);
 
 export const router = createBrowserRouter([
   {
@@ -45,6 +50,14 @@ export const router = createBrowserRouter([
     element: (
       <Suspense fallback={<PageLoader />}>
         <AdvancedSearch />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/ai-recommendation",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <AIRecommendation />
       </Suspense>
     ),
   },

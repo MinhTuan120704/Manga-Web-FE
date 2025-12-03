@@ -53,8 +53,8 @@ export function MangaDetail() {
     try {
       setLoading(true);
       const response = await mangaService.getMangaById(mangaId);
-      if (response.data) {
-        setManga(response.data);
+      if (response) {
+        setManga(response);
       }
     } catch (err) {
       setError("Failed to load manga details");
@@ -67,8 +67,8 @@ export function MangaDetail() {
   const fetchChapters = async (mangaId: string) => {
     try {
       const response = await mangaService.getChaptersByMangaId(mangaId);
-      if (response.data) {
-        setChapters(Array.isArray(response.data) ? response.data : []);
+      if (response) {
+        setChapters(Array.isArray(response) ? response : []);
       }
     } catch (err) {
       console.error("Failed to load chapters:", err);

@@ -1,7 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
 import type {
-  ApiResponse,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -12,23 +11,23 @@ export const authService = {
   /**
    * Đăng ký người dùng mới
    */
-  register: async (data: RegisterRequest): Promise<ApiResponse<User>> => {
+  register: async (data: RegisterRequest): Promise<User> => {
     return axiosInstance.post(API_ENDPOINTS.AUTH.REGISTER, data);
   },
 
   /**
    * Đăng nhập
    */
-  login: async (data: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
+  login: async (data: LoginRequest): Promise<LoginResponse> => {
     const response = (await axiosInstance.post(
       API_ENDPOINTS.AUTH.LOGIN,
       data
-    )) as ApiResponse<LoginResponse>;
+    )) as LoginResponse;
 
     // Lưu token và user info vào localStorage
-    if (response.data?.accessToken) {
-      localStorage.setItem("accessToken", response.data.accessToken);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+    if (response?.accessToken) {
+      localStorage.setItem("accessToken", response.accessToken);
+      localStorage.setItem("user", JSON.stringify(response.user));
     }
 
     return response;
@@ -45,7 +44,7 @@ export const authService = {
   /**
    * Lấy thông tin người dùng hiện tại
    */
-  getCurrentUser: async (): Promise<ApiResponse<{ user: User }>> => {
+  getCurrentUser: async (): Promise<{ user: User }> => {
     return axiosInstance.get(API_ENDPOINTS.AUTH.USER);
   },
 
@@ -70,7 +69,7 @@ export const authService = {
   changePassword: async (data: {
     oldPassword: string;
     newPassword: string;
-  }): Promise<ApiResponse<void>> => {
+  }): Promise<void> => {
     return axiosInstance.put(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, data);
   },
 };

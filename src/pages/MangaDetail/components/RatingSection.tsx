@@ -33,9 +33,9 @@ export const RatingSection = ({
 
       // Fetch average rating
       const avgResponse = await ratingService.getMangaAverageRating(mangaId);
-      if (avgResponse.data) {
-        setAverageRating(avgResponse.data.averageRating);
-        setTotalRatings(avgResponse.data.totalRatings);
+      if (avgResponse) {
+        setAverageRating(avgResponse.averageRating);
+        setTotalRatings(avgResponse.totalRatings);
       }
 
       // Fetch user's rating if logged in
@@ -44,9 +44,9 @@ export const RatingSection = ({
           const userResponse = await ratingService.getUserRatingForManga(
             mangaId
           );
-          if (userResponse.data?.rating) {
-            setUserRating(userResponse.data.rating.star);
-            setSelectedRating(userResponse.data.rating.star);
+          if (userResponse?.rating) {
+            setUserRating(userResponse.rating.star);
+            setSelectedRating(userResponse.rating.star);
           }
         } catch {
           // User hasn't rated yet
@@ -124,7 +124,7 @@ export const RatingSection = ({
         </div>
 
         {/* Average Rating Display */}
-        {!loading && (
+        {!loading && averageRating !== undefined && (
           <div className="flex items-center gap-4 pb-4 border-b border-border">
             <div className="flex flex-col items-center">
               <div className="text-3xl font-bold text-foreground">

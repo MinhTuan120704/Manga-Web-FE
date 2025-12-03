@@ -75,7 +75,7 @@ const data = {
         }, */
         {
           title: "Tìm kiếm AI",
-          url: "/search?ai=true",
+          url: "/ai-recommendation",
           icon: Sparkles,
         },
       ],

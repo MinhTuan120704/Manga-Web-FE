@@ -96,10 +96,10 @@ export const AdvancedSearch = () => {
         }
 
         const response = await mangaService.getMangas(params);
-        if (response.data) {
-          setMangas(response.data.mangas);
-          setTotalPages(response.data.pagination.totalPages);
-          setTotalResults(response.data.pagination.total);
+        if (response) {
+          setMangas(response.mangas);
+          setTotalPages(response.pagination.totalPages);
+          setTotalResults(response.pagination.total);
         }
       } catch (error) {
         console.error("Failed to fetch mangas:", error);

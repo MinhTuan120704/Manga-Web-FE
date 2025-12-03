@@ -38,7 +38,7 @@ export const dashboardService = {
             const chaptersResponse = await mangaService.getChaptersByMangaId(
               manga._id
             );
-            const chapters: Chapter[] = chaptersResponse.data || [];
+            const chapters: Chapter[] = chaptersResponse || [];
 
             // Sort chapters by number descending để lấy latest
             const sortedChapters = [...chapters].sort(

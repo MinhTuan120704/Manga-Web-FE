@@ -36,8 +36,8 @@ export function CommentSection({
         response = await commentService.getCommentsByChapterId(chapterId);
       }
 
-      if (response?.data?.comments) {
-        setComments(response.data.comments);
+      if (response?.comments) {
+        setComments(response.comments);
       }
     } catch (error) {
       console.error("Failed to fetch comments:", error);
