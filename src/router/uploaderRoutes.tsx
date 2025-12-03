@@ -1,6 +1,6 @@
 import type { RouteObject } from "react-router-dom";
 import { ProtectedRoute } from "./protectedRoute";
-import { Dashboard } from "@/pages/Uploader/Dashboard";
+import { Dashboard } from "@/pages/Uploader/Dashboard/Dashboard";
 
 export const uploaderRoutes: RouteObject[] = [
   {
