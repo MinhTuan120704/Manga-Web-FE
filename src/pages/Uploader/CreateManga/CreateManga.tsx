@@ -216,7 +216,7 @@ export function CreateManga() {
       console.log("✅ Response:", response);
       
       toast.success("Tạo truyện mới thành công!");
-      navigate(`/uploader/manga/${response.data?._id || ""}`);
+      navigate(`/uploader/manga/${response._id || ""}`);
     } catch (error: unknown) { 
       console.error("❌ Error creating manga:", error);
       
@@ -235,8 +235,8 @@ export function CreateManga() {
           message?: string;
         };
         
-        if (axiosError.response?.data) {
-          const data = axiosError.response.data;
+        if (axiosError.response) {
+          const data = axiosError.response;
           
           // Nếu có message từ API
           if (data.message) {

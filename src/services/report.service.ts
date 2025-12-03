@@ -1,7 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
 import type {
-  ApiResponse,
   Report,
   ReportListResponse,
   CreateReportRequest,
@@ -14,14 +13,14 @@ export const reportService = {
   createReport: async (
     mangaId: string,
     data: CreateReportRequest
-  ): Promise<ApiResponse<Report>> => {
+  ): Promise<Report> => {
     return axiosInstance.post(API_ENDPOINTS.REPORT.CREATE(mangaId), data);
   },
 
   /**
    * Lấy tất cả reports (Admin only)
    */
-  getAllReports: async (): Promise<ApiResponse<ReportListResponse>> => {
+  getAllReports: async (): Promise<ReportListResponse> => {
     return axiosInstance.get(API_ENDPOINTS.REPORT.LIST);
   },
 
@@ -30,14 +29,14 @@ export const reportService = {
    */
   getReportsByMangaId: async (
     mangaId: string
-  ): Promise<ApiResponse<ReportListResponse>> => {
+  ): Promise<ReportListResponse> => {
     return axiosInstance.get(API_ENDPOINTS.REPORT.BY_MANGA(mangaId));
   },
 
   /**
    * Lấy chi tiết một report (Admin only)
    */
-  getReportById: async (reportId: string): Promise<ApiResponse<Report>> => {
+  getReportById: async (reportId: string): Promise<Report> => {
     return axiosInstance.get(API_ENDPOINTS.REPORT.DETAIL(reportId));
   },
 };

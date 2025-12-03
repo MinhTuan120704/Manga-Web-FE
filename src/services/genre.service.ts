@@ -1,7 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
 import type {
-  ApiResponse,
   Genre,
   CreateGenreRequest,
   UpdateGenreRequest,
@@ -32,7 +31,7 @@ export const genreService = {
    */
   createGenre: async (
     data: CreateGenreRequest
-  ): Promise<ApiResponse<Genre>> => {
+  ): Promise<Genre> => {
     return axiosInstance.post(API_ENDPOINTS.GENRE.CREATE, data);
   },
 
@@ -42,14 +41,14 @@ export const genreService = {
   updateGenre: async (
     genreId: string,
     data: UpdateGenreRequest
-  ): Promise<ApiResponse<Genre>> => {
+  ): Promise<Genre> => {
     return axiosInstance.put(API_ENDPOINTS.GENRE.UPDATE(genreId), data);
   },
 
   /**
    * Xóa một thể loại (Admin)
    */
-  deleteGenre: async (genreId: string): Promise<ApiResponse<void>> => {
+  deleteGenre: async (genreId: string): Promise<void> => {
     return axiosInstance.delete(API_ENDPOINTS.GENRE.DELETE(genreId));
   },
 
@@ -59,7 +58,7 @@ export const genreService = {
   getMangasByGenre: async (
     slug: string,
     params?: GenreMangaQueryParams
-  ): Promise<ApiResponse<MangaListResponse & { genre: Genre }>> => {
+  ): Promise<MangaListResponse & { genre: Genre }> => {
     return axiosInstance.get(API_ENDPOINTS.GENRE.MANGAS(slug), { params });
   },
 };

@@ -27,8 +27,8 @@ export const FavoriteMangaList = ({
         );
         const mangaResults = await Promise.all(mangaPromises);
         const validMangas = mangaResults
-          .filter((result) => result?.data)
-          .map((result) => result!.data!);
+          .filter((result) => result)
+          .map((result) => result!);
         setMangas(validMangas);
       } catch (error) {
         console.error("Failed to fetch followed mangas:", error);

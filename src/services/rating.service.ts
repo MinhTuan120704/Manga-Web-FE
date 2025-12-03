@@ -1,7 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
 import type {
-  ApiResponse,
   RatingRequest,
   RatingResponse,
   UserRatingResponse,
@@ -22,7 +21,7 @@ export const ratingService = {
    */
   getMangaAverageRating: async (
     mangaId: string
-  ): Promise<ApiResponse<RatingResponse>> => {
+  ): Promise<RatingResponse> => {
     return axiosInstance.get(API_ENDPOINTS.RATING.MANGA_AVERAGE(mangaId));
   },
 
@@ -31,7 +30,7 @@ export const ratingService = {
    */
   getUserRatingForManga: async (
     mangaId: string
-  ): Promise<ApiResponse<UserRatingResponse>> => {
+  ): Promise<UserRatingResponse> => {
     return axiosInstance.get(API_ENDPOINTS.RATING.USER_RATING(mangaId));
   },
 };

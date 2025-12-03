@@ -27,7 +27,7 @@ export function Login() {
       const response = await authService.login(formData);
       console.log("Login response:", response);
       
-      if (response.data) {
+      if (response) {
         // Đăng nhập thành công
         console.log("Login successful, navigating to home...");
         

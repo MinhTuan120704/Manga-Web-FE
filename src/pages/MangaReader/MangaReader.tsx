@@ -135,13 +135,13 @@ export function MangaReader() {
         mangaService.getChaptersByMangaId(mangaId),
       ]);
 
-      if (mangaResponse.data) {
-        setManga(mangaResponse.data);
+      if (mangaResponse) {
+        setManga(mangaResponse);
       }
 
-      if (chaptersResponse.data) {
-        const chapters = Array.isArray(chaptersResponse.data)
-          ? chaptersResponse.data
+      if (chaptersResponse) {
+        const chapters = Array.isArray(chaptersResponse)
+          ? chaptersResponse
           : [];
         setAllChapters(
           chapters.sort((a, b) => a.chapterNumber - b.chapterNumber)

@@ -1,7 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
 import type {
-  ApiResponse,
   Manga,
   MangaListResponse,
   MangaQueryParams,
@@ -16,14 +15,14 @@ export const mangaService = {
    */
   getMangas: async (
     params?: MangaQueryParams
-  ): Promise<ApiResponse<MangaListResponse>> => {
+  ): Promise<MangaListResponse> => {
     return axiosInstance.get(API_ENDPOINTS.MANGA.LIST, { params });
   },
 
   /**
    * Lấy thông tin chi tiết một bộ truyện
    */
-  getMangaById: async (mangaId: string): Promise<ApiResponse<Manga>> => {
+  getMangaById: async (mangaId: string): Promise<Manga> => {
     return axiosInstance.get(API_ENDPOINTS.MANGA.DETAIL(mangaId));
   },
 
@@ -32,7 +31,7 @@ export const mangaService = {
    */
   getChaptersByMangaId: async (
     mangaId: string
-  ): Promise<ApiResponse<ChapterListResponse>> => {
+  ): Promise<ChapterListResponse> => {
     return axiosInstance.get(API_ENDPOINTS.MANGA.CHAPTERS(mangaId));
   },
 
@@ -41,7 +40,7 @@ export const mangaService = {
    */
   createManga: async (
     data: CreateMangaRequest
-  ): Promise<ApiResponse<Manga>> => {
+  ): Promise<Manga> => {
     if (data.coverImage instanceof File) {
       const formData = new FormData();
       formData.append("title", data.title);
@@ -72,7 +71,7 @@ export const mangaService = {
   updateManga: async (
     mangaId: string,
     data: UpdateMangaRequest
-  ): Promise<ApiResponse<Manga>> => {
+  ): Promise<Manga> => {
     // Nếu có file coverImage, gửi dưới dạng FormData
     if (data.coverImage instanceof File) {
       const formData = new FormData();
@@ -103,7 +102,7 @@ export const mangaService = {
   /**
    * Xóa truyện (Admin, Uploader)
    */
-  deleteManga: async (mangaId: string): Promise<ApiResponse<void>> => {
+  deleteManga: async (mangaId: string): Promise<void> => {
     return axiosInstance.delete(API_ENDPOINTS.MANGA.DELETE(mangaId));
   },
 };
