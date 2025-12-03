@@ -27,6 +27,14 @@ axiosInstance.interceptors.request.use(
 // Response interceptor - xử lý lỗi chung
 axiosInstance.interceptors.response.use(
   (response) => {
+    // Kiểm tra xem backend có trả về lồng 2 lần wrap status, data không
+    if (
+      response.data &&
+      typeof response.data === "object" &&
+      "data" in response.data
+    ) {
+      return response.data.data;
+    }
     return response.data;
   },
   (error) => {
