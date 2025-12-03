@@ -49,6 +49,7 @@ export interface MangaQueryParams {
   genre?: string;
   status?: "ongoing" | "completed" | "hiatus" | "cancelled";
   sortBy?: string;
+  search?: string; // Search by title/description
 }
 
 export interface PopularManga {

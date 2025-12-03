@@ -10,8 +10,10 @@ import {
   ChapterList,
   MangaDetailSkeleton,
   MangaDetailError,
+  RatingSection,
 } from "./components";
 import { CommentSection } from "@/components/common/CommentSection";
+import { toast } from "sonner";
 
 export function MangaDetail() {
   const { id } = useParams<{ id: string }>();
@@ -27,8 +29,25 @@ export function MangaDetail() {
     if (id) {
       fetchMangaDetail(id);
       fetchChapters(id);
+      checkIfFollowing(id);
     }
   }, [id]);
+
+  const checkIfFollowing = async (mangaId: string) => {
+    if (!authService.isAuthenticated()) {
+      setIsFollowing(false);
+      return;
+    }
+
+    try {
+      const profile = await userService.getMyProfile();
+      if (profile?.followedMangas) {
+        setIsFollowing(profile.followedMangas.includes(mangaId));
+      }
+    } catch (error) {
+      console.error("Failed to check follow status:", error);
+    }
+  };
 
   const fetchMangaDetail = async (mangaId: string) => {
     try {
@@ -58,7 +77,7 @@ export function MangaDetail() {
 
   const handleFollowToggle = async () => {
     if (!authService.isAuthenticated()) {
-      alert("Vui lòng đăng nhập để theo dõi truyện");
+      toast.error("Vui lòng đăng nhập để theo dõi truyện");
       navigate("/login");
       return;
     }
@@ -69,16 +88,18 @@ export function MangaDetail() {
       if (isFollowing) {
         await userService.unfollowManga(id);
         setIsFollowing(false);
+        toast.success("Đã hủy theo dõi truyện");
       } else {
         await userService.followManga({ mangaId: id });
         setIsFollowing(true);
+        toast.success("Đã theo dõi truyện");
       }
 
       // Refresh manga data to get updated follower count
       fetchMangaDetail(id);
     } catch (error) {
       console.error("Failed to toggle follow:", error);
-      alert("Có lỗi xảy ra. Vui lòng thử lại.");
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
     }
   };
 
@@ -91,7 +112,7 @@ export function MangaDetail() {
       });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      // TODO: Show toast notification
+      toast.success("Đã sao chép liên kết!");
     }
   };
 
@@ -156,6 +177,15 @@ export function MangaDetail() {
           <ChapterList
             chapters={chapters}
             onChapterClick={handleChapterClick}
+          />
+        </div>
+
+        {/* Rating Section */}
+        <div className="mb-8">
+          <RatingSection
+            mangaId={id!}
+            initialAverageRating={manga.averageRating}
+            initialTotalRatings={0}
           />
         </div>
 

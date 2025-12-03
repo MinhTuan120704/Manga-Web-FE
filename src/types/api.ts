@@ -15,6 +15,7 @@ export interface PaginationData {
   currentPage: number;
   totalPages: number;
   totalItems: number;
+  total: number; // Alias for totalItems
 }
 
 export interface MangaListResponse {

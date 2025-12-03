@@ -1,44 +1,51 @@
 import { useEffect, useState } from "react";
 import { mangaService } from "@/services/manga.service";
 import { MangaCard } from "@/components/common/MangaCard";
-import type { Manga } from "@/types";
+import type { Manga, ReadingHistoryItem } from "@/types";
 
-interface FavoriteMangaListProps {
-  followedMangaIds: string[];
+interface MangaReadingHistoryProps {
+  readingHistory: ReadingHistoryItem[];
 }
 
-export const FavoriteMangaList = ({
-  followedMangaIds,
-}: FavoriteMangaListProps) => {
+export const MangaReadingHistory = ({
+  readingHistory,
+}: MangaReadingHistoryProps) => {
   const [mangas, setMangas] = useState<Manga[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchFollowedMangas = async () => {
-      if (followedMangaIds.length === 0) {
+    const fetchReadingHistory = async () => {
+      if (readingHistory.length === 0) {
         setLoading(false);
         return;
       }
 
       try {
-        // Fetch manga details for each followed manga ID
-        const mangaPromises = followedMangaIds.map((id) =>
-          mangaService.getMangaById(id).catch(() => null)
-        );
-        const mangaResults = await Promise.all(mangaPromises);
-        const validMangas = mangaResults
-          .filter((result) => result?.data)
-          .map((result) => result!.data!);
-        setMangas(validMangas);
+        // Get unique manga IDs from reading history
+        const mangaIds = Array.from(
+          new Set(readingHistory.map((item) => item.manga))
+        ) as string[];
+
+        // Fetch manga details for each unique manga
+        if (mangaIds.length > 0) {
+          const mangaPromises = mangaIds.map((id) =>
+            mangaService.getMangaById(id).catch(() => null)
+          );
+          const mangaResults = await Promise.all(mangaPromises);
+          const validMangas = mangaResults
+            .filter((result) => result?.data)
+            .map((result) => result!.data!);
+          setMangas(validMangas);
+        }
       } catch (error) {
-        console.error("Failed to fetch followed mangas:", error);
+        console.error("Failed to fetch reading history:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFollowedMangas();
-  }, [followedMangaIds]);
+    fetchReadingHistory();
+  }, [readingHistory]);
 
   if (loading) {
     return (
@@ -51,12 +58,12 @@ export const FavoriteMangaList = ({
   return (
     <div className="w-full">
       <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">
-        Truyện yêu thích
+        Lịch sử đọc truyện
       </h2>
       {mangas.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-base sm:text-lg">
-            Chưa có truyện nào được theo dõi
+            Chưa có lịch sử đọc truyện
           </p>
         </div>
       ) : (

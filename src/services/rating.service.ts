@@ -5,15 +5,15 @@ import type {
   RatingRequest,
   RatingResponse,
   UserRatingResponse,
+  Rating,
 } from "@/types";
 
 export const ratingService = {
   /**
    * Đánh giá manga hoặc cập nhật đánh giá (1-5 sao)
+   * Returns the created/updated rating object
    */
-  rateManga: async (
-    data: RatingRequest & { manga: string }
-  ): Promise<ApiResponse<RatingResponse>> => {
+  rateManga: async (data: RatingRequest): Promise<Rating> => {
     return axiosInstance.post(API_ENDPOINTS.RATING.RATE, data);
   },
 

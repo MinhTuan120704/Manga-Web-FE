@@ -117,11 +117,11 @@ export function MangaReader() {
 
       // Fetch chapter details
       const chapterResponse = await chapterService.getChapterById(id);
-      if (!chapterResponse.data) {
+      if (!chapterResponse) {
         throw new Error("Chapter not found");
       }
 
-      const chapterData = chapterResponse.data;
+      const chapterData = chapterResponse;
       setChapter(chapterData);
 
       const mangaId =
