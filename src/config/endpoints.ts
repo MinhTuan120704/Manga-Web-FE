@@ -55,6 +55,7 @@ export const API_ENDPOINTS = {
   // ========== Genre ==========
   GENRE: {
     LIST: "/genres",
+    SEARCH: "/genres/search",
     CREATE: "/genres",
     UPDATE: (id: string) => `/genres/${id}`,
     DELETE: (id: string) => `/genres/${id}`,

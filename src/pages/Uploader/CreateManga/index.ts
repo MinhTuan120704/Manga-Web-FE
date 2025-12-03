@@ -1,0 +1,1 @@
+export { CreateManga } from "./CreateManga";

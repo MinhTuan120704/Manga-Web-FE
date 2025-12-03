@@ -42,15 +42,14 @@ export const mangaService = {
   createManga: async (
     data: CreateMangaRequest
   ): Promise<ApiResponse<Manga>> => {
-    // Nếu có file coverImageUrl, gửi dưới dạng FormData
-    if (data.coverImageUrl instanceof File) {
+    if (data.coverImage instanceof File) {
       const formData = new FormData();
       formData.append("title", data.title);
       formData.append("description", data.description);
       formData.append("author", data.author);
       if (data.artist) formData.append("artist", data.artist);
       formData.append("status", data.status);
-      formData.append("coverImageUrl", data.coverImageUrl);
+      formData.append("coverImage", data.coverImage);
 
       // Append genres array
       data.genres.forEach((genre) => {
@@ -74,8 +73,8 @@ export const mangaService = {
     mangaId: string,
     data: UpdateMangaRequest
   ): Promise<ApiResponse<Manga>> => {
-    // Nếu có file coverImageUrl, gửi dưới dạng FormData
-    if (data.coverImageUrl instanceof File) {
+    // Nếu có file coverImage, gửi dưới dạng FormData
+    if (data.coverImage instanceof File) {
       const formData = new FormData();
 
       if (data.title) formData.append("title", data.title);
@@ -83,7 +82,7 @@ export const mangaService = {
       if (data.author) formData.append("author", data.author);
       if (data.artist) formData.append("artist", data.artist);
       if (data.status) formData.append("status", data.status);
-      formData.append("coverImageUrl", data.coverImageUrl);
+      formData.append("coverImage", data.coverImage);
 
       if (data.genres) {
         data.genres.forEach((genre) => {
