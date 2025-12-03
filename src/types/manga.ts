@@ -7,7 +7,7 @@ export interface Manga {
   _id: string;
   title: string;
   description: string;
-  coverImage: string; 
+  coverImage: string;
   author: string;
   artist?: string;
   genres: Genre[] | string[];
@@ -30,7 +30,7 @@ export interface CreateMangaRequest {
   artist?: string;
   genres: string[]; // Array of genre IDs
   status: "ongoing" | "completed" | "hiatus" | "cancelled";
-  coverImage: File | string;
+  coverImage: File;
 }
 
 export interface UpdateMangaRequest {
