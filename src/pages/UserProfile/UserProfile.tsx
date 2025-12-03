@@ -1,14 +1,20 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { userService } from "@/services/user.service";
 import { UserInfoCard } from "./components/UserInfoCard";
 import { UserTitle } from "./components/UserTitle";
 import { FavoriteMangaList } from "./components/FavoriteMangaList";
 import { MangaReadingHistory } from "./components/MangaReadingHistory";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { User } from "@/types";
 
 export const UserProfile = () => {
   const [userProfile, setUserProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Get tab from URL or default to "favorites"
+  const currentTab = searchParams.get("tab") || "favorites";
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -30,6 +36,10 @@ export const UserProfile = () => {
 
     fetchUserProfile();
   }, []);
+
+  const handleTabChange = (value: string) => {
+    setSearchParams({ tab: value });
+  };
 
   if (loading) {
     return (
@@ -57,14 +67,34 @@ export const UserProfile = () => {
         <UserTitle user={userProfile} />
       </div>
 
-      {/* Main Content - Followed Manga & Reading History */}
-      <div className="flex-1 p-4 sm:p-6 min-w-0 space-y-8">
-        <FavoriteMangaList
-          followedMangaIds={userProfile?.followedMangas || []}
-        />
-        <MangaReadingHistory
-          readingHistory={userProfile?.readingHistory || []}
-        />
+      {/* Main Content - Tabs for Followed Manga & Reading History */}
+      <div className="flex-1 p-4 sm:p-6 min-w-0">
+        <Tabs
+          value={currentTab}
+          onValueChange={handleTabChange}
+          className="w-full"
+        >
+          <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
+            <TabsTrigger value="favorites" className="text-sm sm:text-base">
+              Truyện yêu thích
+            </TabsTrigger>
+            <TabsTrigger value="history" className="text-sm sm:text-base">
+              Lịch sử đọc
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="favorites" className="mt-0">
+            <FavoriteMangaList
+              followedMangaIds={userProfile?.followedMangas || []}
+            />
+          </TabsContent>
+
+          <TabsContent value="history" className="mt-0">
+            <MangaReadingHistory
+              readingHistory={userProfile?.readingHistory || []}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

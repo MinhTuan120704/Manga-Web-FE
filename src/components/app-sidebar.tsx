@@ -4,13 +4,13 @@ import {
   Home,
   Heart,
   Search,
-  Users,
+  /*  Users, */
   BookOpen,
-  Clock,
+  /*  Clock, */
   Library,
   Sparkles,
-  Mail,
-  Info,
+  /* Mail,
+  Info, */
 } from "lucide-react";
 
 import {
@@ -27,76 +27,76 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 
-// This is sample data.
+// Navigation data with routes
 const data = {
   navMain: [
     {
-      title: "Home",
+      title: "Trang chủ",
       url: "/",
       icon: Home,
       isTopLevel: true,
     },
     {
-      title: "Follows",
+      title: "Theo dõi",
       url: "#",
       icon: Heart,
       items: [
-        {
-          title: "Updates",
+        /* {
+          title: "Cập nhật mới",
           url: "#",
           icon: Clock,
-        },
+        }, */
         {
-          title: "Library",
-          url: "#",
+          title: "Truyện đang theo dõi",
+          url: "/user/profile?tab=favorites",
           icon: Library,
         },
         {
-          title: "Reading History",
-          url: "#",
+          title: "Lịch sử đọc",
+          url: "/user/profile?tab=history",
           icon: BookOpen,
         },
       ],
     },
     {
-      title: "Titles",
+      title: "Truyện",
       url: "#",
       icon: Search,
       items: [
         {
-          title: "Advanced Search",
-          url: "#",
+          title: "Tìm kiếm nâng cao",
+          url: "/search",
           icon: Search,
         },
-        {
-          title: "Latest Updates",
+        /* {
+          title: "Cập nhật gần đây",
           url: "#",
           icon: Clock,
-        },
+        }, */
         {
-          title: "AI Searching",
-          url: "#",
+          title: "Tìm kiếm AI",
+          url: "/search?ai=true",
           icon: Sparkles,
         },
       ],
     },
-    {
-      title: "Our Team",
+    /* {
+      title: "Đội ngũ",
       url: "#",
       icon: Users,
       items: [
         {
-          title: "About Us",
+          title: "Về chúng tôi",
           url: "#",
           icon: Info,
         },
         {
-          title: "Contact",
+          title: "Liên hệ",
           url: "#",
           icon: Mail,
         },
       ],
-    },
+    }, */
   ],
 };
 
@@ -118,7 +118,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </div>
         </Link>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="p-2">
         {/* Map through navigation items */}
         {data.navMain.map((item, index) => {
           if (item.isTopLevel) {
@@ -130,13 +130,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       <SidebarMenuItem>
                         {/* Special Homepage Button */}
                         <SidebarMenuButton asChild>
-                          <a
-                            href={item.url}
-                            className="flex items-center gap-2 rounded-lg py-4 font-bold text-lg"
+                          <Link
+                            to={item.url}
+                            className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1 font-medium text-base text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
                           >
                             <item.icon className="h-5 w-5" />
                             <span>{item.title}</span>
-                          </a>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     </SidebarMenu>
@@ -151,7 +151,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           return (
             <React.Fragment key={item.title}>
               <SidebarGroup>
-                <SidebarGroupLabel className="flex items-center gap-2">
+                <SidebarGroupLabel className="flex items-center gap-2 px-2 mb-1 text-xs font-medium text-sidebar-foreground/60">
                   <item.icon className="h-4 w-4" />
                   {item.title}
                 </SidebarGroupLabel>
@@ -160,13 +160,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     {item.items?.map((subItem) => (
                       <SidebarMenuItem key={subItem.title}>
                         <SidebarMenuButton asChild>
-                          <a
-                            href={subItem.url}
-                            className="flex items-center gap-2"
+                          <Link
+                            to={subItem.url}
+                            className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
                           >
                             <subItem.icon className="h-4 w-4" />
-                            {subItem.title}
-                          </a>
+                            <span className="text-sm">{subItem.title}</span>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
