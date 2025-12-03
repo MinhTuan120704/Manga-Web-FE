@@ -25,6 +25,11 @@ const UserSettings = lazy(() =>
     default: module.UserSettings,
   }))
 );
+const AdvancedSearch = lazy(() =>
+  import("@/pages/AdvancedSearch/AdvancedSearch").then((module) => ({
+    default: module.AdvancedSearch,
+  }))
+);
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +37,14 @@ export const router = createBrowserRouter([
     element: (
       <Suspense fallback={<PageLoader />}>
         <Homepage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/search",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <AdvancedSearch />
       </Suspense>
     ),
   },

@@ -19,7 +19,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Moon, Sun, Search, User, LogOut, Settings, BookOpen, LayoutDashboard, ArrowLeftRight } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  Search,
+  User,
+  LogOut,
+  Settings,
+  BookOpen,
+  LayoutDashboard,
+  ArrowLeftRight,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
@@ -100,8 +110,9 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // TODO: Implement search functionality
-      console.log("Searching for:", searchQuery);
+      // Chuyển hướng đến trang tìm kiếm nâng cao với query
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery(""); // Reset search input
     }
   };
 
@@ -260,7 +271,9 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
                         <LayoutDashboard className="mr-2 h-4 w-4" />
                         <span>Dashboard</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate("/uploader/mangas")}>
+                      <DropdownMenuItem
+                        onClick={() => navigate("/uploader/mangas")}
+                      >
                         <BookOpen className="mr-2 h-4 w-4" />
                         <span>Truyện của tôi</span>
                       </DropdownMenuItem>
@@ -294,7 +307,7 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
             )}
           </div>
         </header>
-        
+
         <main className="flex-1 overflow-auto">
           <div className="p-4">{children}</div>
           {/* <Footer /> */}
