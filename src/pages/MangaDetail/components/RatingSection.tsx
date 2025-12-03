@@ -190,7 +190,7 @@ export const RatingSection = ({
               className="w-full sm:w-auto"
             >
               {submitting
-                ? "Đang gử i..."
+                ? "Đang gửi..."
                 : userRating
                 ? "Cập nhật đánh giá"
                 : "Gửi đánh giá"}

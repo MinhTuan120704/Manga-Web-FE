@@ -31,7 +31,9 @@ axiosInstance.interceptors.response.use(
     if (
       response.data &&
       typeof response.data === "object" &&
-      "data" in response.data
+       "status" in response.data &&
+      "data" in response.data &&
+      typeof response.data.data === "object"
     ) {
       return response.data.data;
     }
