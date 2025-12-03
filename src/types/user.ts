@@ -4,24 +4,26 @@ export interface User {
   _id: string;
   username: string;
   email: string;
-  password?: string; 
+  password?: string;
   role: "reader" | "uploader" | "admin";
   avatarUrl?: string;
-  followedMangas?: string[]; 
+  followedMangas?: string[];
   readingHistory?: ReadingHistoryItem[];
-  uploadedMangas?: string[]; 
+  uploadedMangas?: string[];
   createdAt: string;
   updatedAt: string;
 }
 
 export interface ReadingHistoryItem {
-  mangaId: string;
+  _id?: string;
+  manga: string;
   chapterId: string;
-  lastReadAt: string; 
+  lastReadAt: string;
 }
 
 export interface UpdateProfileRequest {
   username?: string;
+  email?: string;
   avatarUrl?: string;
 }
 

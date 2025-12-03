@@ -4,16 +4,19 @@ import type { User } from "./user";
 
 export interface Comment {
   _id: string;
-  mangaId: string;
+  manga?: string;
+  chapter?: string;
   userId: string | User;
   content: string;
-  parentId?: string | null; 
+  parentId?: string | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateCommentRequest {
   content: string;
-  parentId?: string | null;
+  manga?: string;
+  chapter?: string;
 }
 
 export interface UpdateCommentRequest {
@@ -27,5 +30,70 @@ export interface Rating {
 }
 
 export interface RatingRequest {
-  score: number; 
+  score: number;
 }
+
+export interface RatingResponse {
+  averageRating: number;
+  totalRatings: number;
+}
+
+export interface UserRatingResponse {
+  rating: Rating | null;
+}
+
+// ========== Report Types ==========
+
+export interface Report {
+  _id: string;
+  manga: string;
+  user: string | User;
+  reason: string;
+  status?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateReportRequest {
+  reason: string;
+}
+
+export interface ReportListResponse {
+  reports: Report[];
+}
+
+// ========== Statistics Types ==========
+
+export interface BasicStatistics {
+  users: {
+    total: number;
+  };
+  mangas: {
+    total: number;
+  };
+  reports: {
+    total: number;
+  };
+}
+
+export interface DetailedStatistics {
+  users: {
+    total: number;
+    uploaders: number;
+    readers: number;
+    admins: number;
+  };
+  mangas: {
+    total: number;
+    ongoing: number;
+    completed: number;
+    hiatus: number;
+  };
+  reports: {
+    total: number;
+    pending: number;
+    resolved: number;
+  };
+}
+
+// Note: CommentListResponse is defined in api.ts to avoid duplicate exports

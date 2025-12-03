@@ -4,5 +4,8 @@ export * from "./manga.service";
 export * from "./chapter.service";
 export * from "./user.service";
 export * from "./comment.service";
+export * from "./rating.service";
+export * from "./report.service";
+export * from "./statistics.service";
 export * from "./genre.service";
 export * from "./ai.service";

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { mangaService } from "@/services/manga.service";
+import { userService } from "@/services/user.service";
+import { authService } from "@/services/auth.service";
 import type { Manga, Genre, Chapter } from "@/types";
 import {
   MangaInfo,
@@ -9,6 +11,7 @@ import {
   MangaDetailSkeleton,
   MangaDetailError,
 } from "./components";
+import { CommentSection } from "@/components/common/CommentSection";
 
 export function MangaDetail() {
   const { id } = useParams<{ id: string }>();
@@ -53,9 +56,30 @@ export function MangaDetail() {
     }
   };
 
-  const handleFollowToggle = () => {
-    setIsFollowing(!isFollowing);
-    // TODO: Call API to follow/unfollow manga
+  const handleFollowToggle = async () => {
+    if (!authService.isAuthenticated()) {
+      alert("Vui lòng đăng nhập để theo dõi truyện");
+      navigate("/login");
+      return;
+    }
+
+    if (!id) return;
+
+    try {
+      if (isFollowing) {
+        await userService.unfollowManga(id);
+        setIsFollowing(false);
+      } else {
+        await userService.followManga({ mangaId: id });
+        setIsFollowing(true);
+      }
+
+      // Refresh manga data to get updated follower count
+      fetchMangaDetail(id);
+    } catch (error) {
+      console.error("Failed to toggle follow:", error);
+      alert("Có lỗi xảy ra. Vui lòng thử lại.");
+    }
   };
 
   const handleShare = () => {
@@ -128,7 +152,15 @@ export function MangaDetail() {
         </div>
 
         {/* Chapters Section */}
-        <ChapterList chapters={chapters} onChapterClick={handleChapterClick} />
+        <div className="mb-8">
+          <ChapterList
+            chapters={chapters}
+            onChapterClick={handleChapterClick}
+          />
+        </div>
+
+        {/* Comments Section */}
+        <CommentSection mangaId={id} />
       </div>
     </MainLayout>
   );

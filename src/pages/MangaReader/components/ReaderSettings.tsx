@@ -27,7 +27,7 @@ export function ReaderSettings({
     <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-end animate-in fade-in">
       <Card className="w-full max-w-md h-full rounded-none border-l shadow-2xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle className="text-xl font-bold">Reader Settings</CardTitle>
+          <CardTitle className="text-xl font-bold">Cài đặt đọc truyện</CardTitle>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-5 w-5" />
           </Button>
@@ -38,7 +38,7 @@ export function ReaderSettings({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Book className="h-4 w-4 text-muted-foreground" />
-              <Label htmlFor="reading-mode">Reading Mode</Label>
+              <Label htmlFor="reading-mode">Chế độ đọc</Label>
             </div>
             <Select
               value={settings.readingMode}
@@ -52,17 +52,17 @@ export function ReaderSettings({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="single">Single Page</SelectItem>
-                <SelectItem value="double">Double Page</SelectItem>
-                <SelectItem value="long-strip">Long Strip (Webtoon)</SelectItem>
+                <SelectItem value="single">Trang đơn</SelectItem>
+                <SelectItem value="double">Trang đôi</SelectItem>
+                <SelectItem value="long-strip">Cuộn dài (Webtoon)</SelectItem>
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              {settings.readingMode === "single" && "Read one page at a time"}
+              {settings.readingMode === "single" && "Đọc từng trang một"}
               {settings.readingMode === "double" &&
-                "Read two pages side by side"}
+                "Đọc hai trang cạnh nhau"}
               {settings.readingMode === "long-strip" &&
-                "Scroll vertically through all pages"}
+                "Cuộn dọc qua tất cả các trang"}
             </p>
           </div>
 
@@ -71,7 +71,7 @@ export function ReaderSettings({
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                <Label htmlFor="reading-direction">Reading Direction</Label>
+                <Label htmlFor="reading-direction">Hướng đọc</Label>
               </div>
               <Select
                 value={settings.readingDirection}
@@ -86,14 +86,14 @@ export function ReaderSettings({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ltr">Left to Right</SelectItem>
-                  <SelectItem value="rtl">Right to Left (Manga)</SelectItem>
+                  <SelectItem value="ltr">Trái sang phải</SelectItem>
+                  <SelectItem value="rtl">Phải sang trái (Manga)</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
                 {settings.readingDirection === "ltr"
-                  ? "Western comics style"
-                  : "Traditional manga style"}
+                  ? "Kiểu truyện phương Tây"
+                  : "Kiểu manga truyền thống"}
               </p>
             </div>
           )}
@@ -103,10 +103,10 @@ export function ReaderSettings({
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="double-page-offset" className="cursor-pointer">
-                  Offset First Page
+                  Tách trang đầu
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  Display first page alone (for cover pages)
+                  Hiển thị trang đầu riêng (cho trang bìa)
                 </p>
               </div>
               <Switch
@@ -124,7 +124,7 @@ export function ReaderSettings({
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Maximize className="h-4 w-4 text-muted-foreground" />
-                <Label htmlFor="fit-mode">Fit Mode</Label>
+                <Label htmlFor="fit-mode">Chế độ khung hình</Label>
               </div>
               <Select
                 value={settings.fitMode}
@@ -138,9 +138,9 @@ export function ReaderSettings({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="fit-width">Fit Width</SelectItem>
-                  <SelectItem value="fit-height">Fit Height</SelectItem>
-                  <SelectItem value="original">Original Size</SelectItem>
+                  <SelectItem value="fit-width">Vừa chiều rộng</SelectItem>
+                  <SelectItem value="fit-height">Vừa chiều cao</SelectItem>
+                  <SelectItem value="original">Kích thước gốc</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -151,7 +151,7 @@ export function ReaderSettings({
             <div className="flex items-center gap-2">
               <Eye className="h-4 w-4 text-muted-foreground" />
               <Label htmlFor="show-page-number" className="cursor-pointer">
-                Show Page Number
+                Hiện số trang
               </Label>
             </div>
             <Switch
@@ -165,30 +165,30 @@ export function ReaderSettings({
 
           {/* Keyboard Shortcuts Help */}
           <div className="pt-4 border-t space-y-2">
-            <h4 className="font-medium text-sm">Keyboard Shortcuts</h4>
+            <h4 className="font-medium text-sm">Phím tắt</h4>
             <div className="space-y-1 text-xs text-muted-foreground">
               <div className="flex justify-between">
-                <span>Next/Previous Page:</span>
+                <span>Trang sau/trước:</span>
                 <span className="font-mono">← →</span>
               </div>
               <div className="flex justify-between">
-                <span>Scroll (Long Strip):</span>
+                <span>Cuộn (Webtoon):</span>
                 <span className="font-mono">↑ ↓</span>
               </div>
               <div className="flex justify-between">
-                <span>First/Last Page:</span>
+                <span>Trang đầu/cuối:</span>
                 <span className="font-mono">Home / End</span>
               </div>
               <div className="flex justify-between">
-                <span>Toggle Settings:</span>
+                <span>Bật/tắt cài đặt:</span>
                 <span className="font-mono">S</span>
               </div>
               <div className="flex justify-between">
-                <span>Toggle Navigation:</span>
+                <span>Bật/tắt điều hướng:</span>
                 <span className="font-mono">N</span>
               </div>
               <div className="flex justify-between">
-                <span>Close Panel:</span>
+                <span>Đóng bảng:</span>
                 <span className="font-mono">Esc</span>
               </div>
             </div>

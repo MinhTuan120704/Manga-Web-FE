@@ -17,8 +17,8 @@ export function PopularMangaGrid({
   return (
     <div className="mb-8">
       <SectionHeader
-        title="Popular Manga"
-        subtitle="Most viewed manga this week"
+        title="Truyện phổ biến"
+        subtitle="Truyện được xem nhiều nhất tuần này"
         showViewAll
       />
 
