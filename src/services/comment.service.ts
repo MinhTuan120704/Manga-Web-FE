@@ -11,9 +11,7 @@ export const commentService = {
   /**
    * Tạo bình luận mới
    */
-  createComment: async (
-    data: CreateCommentRequest
-  ): Promise<Comment> => {
+  createComment: async (data: CreateCommentRequest): Promise<Comment> => {
     return axiosInstance.post(API_ENDPOINTS.COMMENT.CREATE, data);
   },
 

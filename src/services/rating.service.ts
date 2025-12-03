@@ -19,9 +19,7 @@ export const ratingService = {
   /**
    * Lấy điểm đánh giá trung bình của manga
    */
-  getMangaAverageRating: async (
-    mangaId: string
-  ): Promise<RatingResponse> => {
+  getMangaAverageRating: async (mangaId: string): Promise<RatingResponse> => {
     return axiosInstance.get(API_ENDPOINTS.RATING.MANGA_AVERAGE(mangaId));
   },
 

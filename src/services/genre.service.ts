@@ -22,16 +22,14 @@ export const genreService = {
    */
   searchGenres: async (searchTerm: string): Promise<Genre[]> => {
     return axiosInstance.get(API_ENDPOINTS.GENRE.SEARCH, {
-      params: { query: searchTerm }
+      params: { query: searchTerm },
     });
   },
 
   /**
    * Tạo thể loại mới (Admin)
    */
-  createGenre: async (
-    data: CreateGenreRequest
-  ): Promise<Genre> => {
+  createGenre: async (data: CreateGenreRequest): Promise<Genre> => {
     return axiosInstance.post(API_ENDPOINTS.GENRE.CREATE, data);
   },
 

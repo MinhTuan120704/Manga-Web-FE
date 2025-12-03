@@ -13,9 +13,7 @@ export const mangaService = {
   /**
    * Lấy danh sách truyện với phân trang, lọc, sắp xếp
    */
-  getMangas: async (
-    params?: MangaQueryParams
-  ): Promise<MangaListResponse> => {
+  getMangas: async (params?: MangaQueryParams): Promise<MangaListResponse> => {
     return axiosInstance.get(API_ENDPOINTS.MANGA.LIST, { params });
   },
 
@@ -38,9 +36,7 @@ export const mangaService = {
   /**
    * Đăng truyện mới (Uploader, Admin)
    */
-  createManga: async (
-    data: CreateMangaRequest
-  ): Promise<Manga> => {
+  createManga: async (data: CreateMangaRequest): Promise<Manga> => {
     if (data.coverImage instanceof File) {
       const formData = new FormData();
       formData.append("title", data.title);

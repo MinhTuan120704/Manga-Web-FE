@@ -1,10 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
-import type {
-  Report,
-  ReportListResponse,
-  CreateReportRequest,
-} from "@/types";
+import type { Report, ReportListResponse, CreateReportRequest } from "@/types";
 
 export const reportService = {
   /**
@@ -27,9 +23,7 @@ export const reportService = {
   /**
    * Lấy reports của một manga cụ thể (Admin only)
    */
-  getReportsByMangaId: async (
-    mangaId: string
-  ): Promise<ReportListResponse> => {
+  getReportsByMangaId: async (mangaId: string): Promise<ReportListResponse> => {
     return axiosInstance.get(API_ENDPOINTS.REPORT.BY_MANGA(mangaId));
   },
 

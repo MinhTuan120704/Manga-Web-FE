@@ -19,10 +19,10 @@ export const authService = {
    * Đăng nhập
    */
   login: async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await axiosInstance.post(
+    const response = (await axiosInstance.post(
       API_ENDPOINTS.AUTH.LOGIN,
       data
-    ) as LoginResponse;
+    )) as LoginResponse;
 
     // Lưu token và user info vào localStorage
     if (response?.accessToken) {
