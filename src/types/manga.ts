@@ -7,7 +7,7 @@ export interface Manga {
   _id: string;
   title: string;
   description: string;
-  coverImage: File | string; 
+  coverImage: string; 
   author: string;
   artist?: string;
   genres: Genre[] | string[];
