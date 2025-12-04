@@ -1,11 +1,14 @@
 import { userService } from "@/services/user.service";
-import type { User } from "@/types/user";
-import { Users, Shield, Trash2, Ban, Search } from "lucide-react";
+import type { UserListResponse } from "@/types/api";
+import { Users, Trash2, Ban, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function UserManagement() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [userList, setUserList] = useState<User[]>([]);
+  const [userList, setUserList] = useState<UserListResponse>({
+    users: [],
+    pagination: { currentPage: 1, totalPages: 1, totalItems: 0, total: 0 },
+  });
 
   const [loadingUsers, setLoadingUsers] = useState(false);
 
@@ -16,8 +19,10 @@ export default function UserManagement() {
         page: 1,
         limit: 10,
       });
-      if (response.data) {
-        setUserList(response.data);
+      console.log(response);
+
+      if (response) {
+        setUserList(response);
       }
       console.log(response);
     } catch (error) {
@@ -39,8 +44,8 @@ export default function UserManagement() {
         limit: 10,
         search: searchTerm,
       });
-      if (response.data) {
-        setUserList(response.data);
+      if (response) {
+        setUserList(response);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -184,7 +189,7 @@ export default function UserManagement() {
               </tr>
             </thead>
             <tbody>
-              {userList.map((user, index) => (
+              {userList.users.map((user, index) => (
                 <tr
                   key={user._id}
                   className={`border-b border-border hover:bg-accent/50 transition ${

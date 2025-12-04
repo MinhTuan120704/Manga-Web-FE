@@ -18,6 +18,10 @@ export interface LoginResponse {
   user: {
     _id: string;
     username: string;
-    role: string;
+    email: string;
+    role: "reader" | "uploader" | "admin";
+    avatarUrl?: string;
+    createdAt: string;
+    updatedAt: string;
   };
 }

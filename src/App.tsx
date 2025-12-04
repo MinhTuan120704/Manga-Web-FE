@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import { router } from "@/router";
+import { Toaster } from "sonner";
+import { SidebarProvider } from "./components/ui/sidebar";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -28,7 +30,20 @@ function App() {
     }
   }, [darkMode]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <SidebarProvider>
+        <RouterProvider router={router} />
+      </SidebarProvider>
+      <Toaster
+        position="top-right"
+        theme={darkMode ? "dark" : "light"}
+        richColors
+        closeButton
+        duration={3000}
+      />
+    </>
+  );
 }
 
 export default App;

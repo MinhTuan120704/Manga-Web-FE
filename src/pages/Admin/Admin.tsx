@@ -1,6 +1,11 @@
 import { lazy, Suspense, useState } from "react";
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 
-const AdminSidebar = lazy(() => import("@/components/admin/AdminSidebar"));
+const AdminSidebar = lazy(() => import("@/components/app-sidebar-admin"));
 const DashboardOverview = lazy(
   () => import("@/components/admin/DashboardOverview")
 );
@@ -59,9 +64,15 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <SidebarProvider>
       <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <main className="flex-1 overflow-auto">{renderContent()}</main>
-    </div>
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <SidebarTrigger className="-ml-1" />
+          <div className="flex-1" />
+        </header>
+        <main className="flex-1 overflow-auto">{renderContent()}</main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

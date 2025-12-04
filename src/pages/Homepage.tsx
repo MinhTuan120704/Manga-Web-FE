@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 import { mangaService } from "@/services/manga.service";
 import type { Manga } from "@/types/manga";
 
-export default function Homepage() {
+export const Homepage = () => {
   const breadcrumbs = [{ label: "Home" }];
   const [showPreview, setShowPreview] = useState(false);
   const [selectedManga, setSelectedManga] = useState<Manga | null>(null);
@@ -27,14 +27,6 @@ export default function Homepage() {
   const [loadingRecent, setLoadingRecent] = useState(true);
   const [loadingNew, setLoadingNew] = useState(true);
 
-  // Fetch data khi component mount
-  useEffect(() => {
-    fetchFeaturedMangas();
-    fetchPopularMangas();
-    fetchRecentMangas();
-    fetchNewReleases();
-  }, []);
-
   const fetchFeaturedMangas = async () => {
     try {
       setLoadingFeatured(true);
@@ -43,8 +35,9 @@ export default function Homepage() {
         limit: 5,
         sortBy: "-averageRating", // Dấu - để sort desc
       });
-      if (response.data) {
-        setFeaturedMangas(response.data.mangas);
+
+      if (response) {
+        setFeaturedMangas(response.mangas);
       }
     } catch (error) {
       console.error("Error fetching featured mangas:", error);
@@ -61,8 +54,8 @@ export default function Homepage() {
         limit: 12,
         sortBy: "-viewCount",
       });
-      if (response.data) {
-        setPopularMangas(response.data.mangas);
+      if (response) {
+        setPopularMangas(response.mangas);
       }
     } catch (error) {
       console.error("Error fetching popular mangas:", error);
@@ -79,8 +72,8 @@ export default function Homepage() {
         limit: 9,
         sortBy: "-updatedAt",
       });
-      if (response.data) {
-        setRecentMangas(response.data.mangas);
+      if (response) {
+        setRecentMangas(response.mangas);
       }
     } catch (error) {
       console.error("Error fetching recent mangas:", error);
@@ -97,8 +90,8 @@ export default function Homepage() {
         limit: 6,
         sortBy: "-createdAt",
       });
-      if (response.data) {
-        setNewReleases(response.data.mangas);
+      if (response) {
+        setNewReleases(response.mangas);
       }
     } catch (error) {
       console.error("Error fetching new releases:", error);
@@ -106,6 +99,13 @@ export default function Homepage() {
       setLoadingNew(false);
     }
   };
+  // Fetch data khi component mount
+  useEffect(() => {
+    fetchFeaturedMangas();
+    fetchPopularMangas();
+    fetchRecentMangas();
+    fetchNewReleases();
+  }, []);
 
   const handlePreview = (manga: Manga) => {
     setSelectedManga(manga);
@@ -180,4 +180,4 @@ export default function Homepage() {
       />
     </>
   );
-}
+};

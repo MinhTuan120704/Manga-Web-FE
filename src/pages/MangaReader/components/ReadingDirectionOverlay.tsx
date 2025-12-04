@@ -34,7 +34,7 @@ export function ReadingDirectionOverlay({
             <>
               <ArrowLeft className="h-6 w-6 animate-pulse" />
               <div className="text-center">
-                <div className="font-semibold text-lg">Right to Left</div>
+                <div className="font-semibold text-lg">Phải sang trái</div>
               </div>
               <ArrowLeft className="h-6 w-6 animate-pulse" />
             </>
@@ -42,7 +42,7 @@ export function ReadingDirectionOverlay({
             <>
               <ArrowRight className="h-6 w-6 animate-pulse" />
               <div className="text-center">
-                <div className="font-semibold text-lg">Left to Right</div>
+                <div className="font-semibold text-lg">Trái sang phải</div>
               </div>
               <ArrowRight className="h-6 w-6 animate-pulse" />
             </>

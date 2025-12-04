@@ -18,7 +18,7 @@ interface ChapterListProps {
   onChapterClick: (chapterId: string) => void;
 }
 
-export function ChapterList({ chapters, onChapterClick }: ChapterListProps) {
+export const ChapterList = ({ chapters, onChapterClick }: ChapterListProps) => {
   const [chapterSearch, setChapterSearch] = useState("");
   const [chapterSort, setChapterSort] = useState<"asc" | "desc">("desc");
 
@@ -28,30 +28,30 @@ export function ChapterList({ chapters, onChapterClick }: ChapterListProps) {
     const diffInMs = now.getTime() - date.getTime();
     const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
 
-    if (diffInMinutes < 1) return "Just now";
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1) return "Vừa xong";
+    if (diffInMinutes < 60) return `${diffInMinutes} phút trước`;
 
     const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 24) return `${diffInHours} giờ trước`;
 
     const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ago`;
+    if (diffInDays < 7) return `${diffInDays} ngày trước`;
 
     const diffInWeeks = Math.floor(diffInDays / 7);
-    if (diffInWeeks < 4) return `${diffInWeeks}w ago`;
+    if (diffInWeeks < 4) return `${diffInWeeks} tuần trước`;
 
     const diffInMonths = Math.floor(diffInDays / 30);
-    if (diffInMonths < 12) return `${diffInMonths}mo ago`;
+    if (diffInMonths < 12) return `${diffInMonths} tháng trước`;
 
     const diffInYears = Math.floor(diffInDays / 365);
-    return `${diffInYears}y ago`;
+    return `${diffInYears} năm trước`;
   };
 
   const getUploader = (uploader: string | UserType | undefined): string => {
-    if (!uploader) return "Unknown";
+    if (!uploader) return "Không rõ";
     return typeof uploader === "string"
       ? uploader
-      : uploader.username || "Unknown";
+      : uploader.username || "Không rõ";
   };
 
   const filteredChapters = chapters
@@ -73,8 +73,8 @@ export function ChapterList({ chapters, onChapterClick }: ChapterListProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <span>Chapters</span>
-          <Badge variant="outline">{chapters.length} Chapters</Badge>
+          <span>Danh sách chapter</span>
+          <Badge variant="outline">{chapters.length} Chapter</Badge>
         </CardTitle>
 
         {/* Chapter Filters */}
@@ -82,7 +82,7 @@ export function ChapterList({ chapters, onChapterClick }: ChapterListProps) {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search chapters..."
+              placeholder="Tìm kiếm chapter..."
               value={chapterSearch}
               onChange={(e) => setChapterSearch(e.target.value)}
               className="pl-10"
@@ -96,8 +96,8 @@ export function ChapterList({ chapters, onChapterClick }: ChapterListProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="desc">Newest First</SelectItem>
-              <SelectItem value="asc">Oldest First</SelectItem>
+              <SelectItem value="desc">Mới nhất</SelectItem>
+              <SelectItem value="asc">Cũ nhất</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -109,8 +109,8 @@ export function ChapterList({ chapters, onChapterClick }: ChapterListProps) {
             <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
             <p className="text-muted-foreground">
               {chapters.length === 0
-                ? "No chapters available"
-                : "No chapters match your search"}
+                ? "Chưa có chapter nào"
+                : "Không tìm thấy chapter phù hợp"}
             </p>
           </div>
         ) : (
@@ -144,7 +144,7 @@ export function ChapterList({ chapters, onChapterClick }: ChapterListProps) {
                     {chapter.pages && chapter.pages.length > 0 && (
                       <div className="flex items-center gap-1">
                         <BookOpen className="h-3 w-3" />
-                        <span>{chapter.pages.length} pages</span>
+                        <span>{chapter.pages.length} trang</span>
                       </div>
                     )}
                   </div>
@@ -154,7 +154,7 @@ export function ChapterList({ chapters, onChapterClick }: ChapterListProps) {
                   size="sm"
                   className="ml-4 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  Read
+                  Đọc
                 </Button>
               </div>
             ))}
@@ -163,4 +163,4 @@ export function ChapterList({ chapters, onChapterClick }: ChapterListProps) {
       </CardContent>
     </Card>
   );
-}
+};

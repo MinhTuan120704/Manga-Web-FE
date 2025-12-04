@@ -1,29 +1,35 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
 import type {
-  ApiResponse,
   Genre,
-  GenreListResponse,
   CreateGenreRequest,
   UpdateGenreRequest,
-  MangaListResponse,
   GenreMangaQueryParams,
-} from "@/types";
+} from "@/types/genre";
+import type { MangaListResponse } from "@/types/api";
 
 export const genreService = {
   /**
    * Lấy danh sách tất cả thể loại (Public)
+   * Backend trả về Array trực tiếp, không có wrapper
    */
-  getGenres: async (): Promise<ApiResponse<GenreListResponse>> => {
+  getGenres: async (): Promise<Genre[]> => {
     return axiosInstance.get(API_ENDPOINTS.GENRE.LIST);
+  },
+
+  /**
+   * Tìm kiếm thể loại
+   */
+  searchGenres: async (searchTerm: string): Promise<Genre[]> => {
+    return axiosInstance.get(API_ENDPOINTS.GENRE.SEARCH, {
+      params: { query: searchTerm },
+    });
   },
 
   /**
    * Tạo thể loại mới (Admin)
    */
-  createGenre: async (
-    data: CreateGenreRequest
-  ): Promise<ApiResponse<Genre>> => {
+  createGenre: async (data: CreateGenreRequest): Promise<Genre> => {
     return axiosInstance.post(API_ENDPOINTS.GENRE.CREATE, data);
   },
 
@@ -33,14 +39,14 @@ export const genreService = {
   updateGenre: async (
     genreId: string,
     data: UpdateGenreRequest
-  ): Promise<ApiResponse<Genre>> => {
+  ): Promise<Genre> => {
     return axiosInstance.put(API_ENDPOINTS.GENRE.UPDATE(genreId), data);
   },
 
   /**
    * Xóa một thể loại (Admin)
    */
-  deleteGenre: async (genreId: string): Promise<ApiResponse<void>> => {
+  deleteGenre: async (genreId: string): Promise<void> => {
     return axiosInstance.delete(API_ENDPOINTS.GENRE.DELETE(genreId));
   },
 
@@ -50,7 +56,7 @@ export const genreService = {
   getMangasByGenre: async (
     slug: string,
     params?: GenreMangaQueryParams
-  ): Promise<ApiResponse<MangaListResponse & { genre: Genre }>> => {
+  ): Promise<MangaListResponse & { genre: Genre }> => {
     return axiosInstance.get(API_ENDPOINTS.GENRE.MANGAS(slug), { params });
   },
 };

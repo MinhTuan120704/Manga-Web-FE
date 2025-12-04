@@ -8,17 +8,19 @@ export interface Manga {
   title: string;
   description: string;
   coverImage: string;
+
   author: string;
   artist?: string;
   genres: Genre[] | string[];
   status: "ongoing" | "completed" | "hiatus" | "cancelled";
   uploaderId?: string | User;
   viewCount?: number;
-  followedCount?: number;
   averageRating?: number;
-  chapterCount?: number;
   createdAt: string;
   updatedAt: string;
+  progress?: number;
+  chapterCount?: number;
+  followedCount?: number;
 }
 
 export interface CreateMangaRequest {
@@ -28,7 +30,7 @@ export interface CreateMangaRequest {
   artist?: string;
   genres: string[]; // Array of genre IDs
   status: "ongoing" | "completed" | "hiatus" | "cancelled";
-  coverImageUrl: File | string;
+  coverImage: File;
 }
 
 export interface UpdateMangaRequest {
@@ -38,7 +40,7 @@ export interface UpdateMangaRequest {
   artist?: string;
   genres?: string[];
   status?: "ongoing" | "completed" | "hiatus" | "cancelled";
-  coverImageUrl?: File | string;
+  coverImage?: File | string;
 }
 
 export interface MangaQueryParams {
@@ -46,6 +48,7 @@ export interface MangaQueryParams {
   limit?: number;
   genre?: string;
   status?: "ongoing" | "completed" | "hiatus" | "cancelled";
+  sortBy?: string;
   search?: string;
 }
 

@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { chapterService } from "@/services/chapter.service";
 import { mangaService } from "@/services/manga.service";
+import { userService } from "@/services/user.service";
+import { authService } from "@/services/auth.service";
 import type { Chapter, Manga } from "@/types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +16,7 @@ import {
   ReaderError,
   ReadingDirectionOverlay,
 } from "./components";
+import { CommentSection } from "@/components/common/CommentSection";
 
 export type ReadingMode = "single" | "double" | "long-strip";
 export type ReadingDirection = "ltr" | "rtl";
@@ -43,6 +46,7 @@ export function MangaReader() {
   const [showNavigation, setShowNavigation] = useState(true);
   const [showHeader, setShowHeader] = useState(true);
   const [showDirectionOverlay, setShowDirectionOverlay] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   const [settings, setSettings] = useState<ReaderSettings>({
     readingMode: "double",
     readingDirection: "rtl",
@@ -62,8 +66,32 @@ export function MangaReader() {
   useEffect(() => {
     if (chapter && !loading) {
       setShowDirectionOverlay(true);
+      setShowComments(false); // Reset comments when chapter changes
     }
   }, [chapter, loading]);
+
+  // Update reading history when chapter loads
+  useEffect(() => {
+    const updateReadingHistory = async () => {
+      if (chapter && manga && authService.isAuthenticated()) {
+        try {
+          const mangaId =
+            typeof chapter.mangaId === "string"
+              ? chapter.mangaId
+              : chapter.mangaId._id;
+
+          await userService.updateReadingHistory({
+            manga: mangaId,
+            chapterId: chapter._id,
+          });
+        } catch (error) {
+          console.error("Failed to update reading history:", error);
+        }
+      }
+    };
+
+    updateReadingHistory();
+  }, [chapter, manga]);
 
   // Load settings from localStorage
   useEffect(() => {
@@ -89,11 +117,11 @@ export function MangaReader() {
 
       // Fetch chapter details
       const chapterResponse = await chapterService.getChapterById(id);
-      if (!chapterResponse.data) {
+      if (!chapterResponse) {
         throw new Error("Chapter not found");
       }
 
-      const chapterData = chapterResponse.data;
+      const chapterData = chapterResponse;
       setChapter(chapterData);
 
       const mangaId =
@@ -107,13 +135,13 @@ export function MangaReader() {
         mangaService.getChaptersByMangaId(mangaId),
       ]);
 
-      if (mangaResponse.data) {
-        setManga(mangaResponse.data);
+      if (mangaResponse) {
+        setManga(mangaResponse);
       }
 
-      if (chaptersResponse.data) {
-        const chapters = Array.isArray(chaptersResponse.data)
-          ? chaptersResponse.data
+      if (chaptersResponse) {
+        const chapters = Array.isArray(chaptersResponse)
+          ? chaptersResponse
           : [];
         setAllChapters(
           chapters.sort((a, b) => a.chapterNumber - b.chapterNumber)
@@ -151,13 +179,19 @@ export function MangaReader() {
 
     if (currentPage + pagesToSkip <= chapter.pages.length) {
       setCurrentPage((prev) => prev + pagesToSkip);
+      setShowComments(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (currentPage < chapter.pages.length) {
       // Jump to last page if we can't skip full pages
       setCurrentPage(chapter.pages.length);
+      setShowComments(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (!showComments) {
+      // Show comments section
+      setShowComments(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      // Go to next chapter
+      // Go to next chapter from comments
       const currentIndex = allChapters.findIndex(
         (ch) => ch._id === chapter._id
       );
@@ -165,6 +199,7 @@ export function MangaReader() {
         const nextChapter = allChapters[currentIndex + 1];
         navigate(`/reader/${nextChapter._id}`);
         setCurrentPage(1);
+        setShowComments(false);
       }
     }
   }, [
@@ -174,6 +209,7 @@ export function MangaReader() {
     navigate,
     settings.readingMode,
     settings.doublePageOffset,
+    showComments,
   ]);
 
   const handlePreviousPage = useCallback(() => {
@@ -196,7 +232,13 @@ export function MangaReader() {
       }
     }
 
-    if (currentPage - pagesToSkip >= 1) {
+    if (showComments) {
+      // If showing comments, go back to last page
+      if (!chapter) return;
+      setShowComments(false);
+      setCurrentPage(chapter.pages.length);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (currentPage - pagesToSkip >= 1) {
       setCurrentPage((prev) => prev - pagesToSkip);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (currentPage > 1) {
@@ -222,6 +264,7 @@ export function MangaReader() {
     navigate,
     settings.readingMode,
     settings.doublePageOffset,
+    showComments,
   ]);
 
   const handleNextChapter = () => {
@@ -232,6 +275,7 @@ export function MangaReader() {
       const nextChapter = allChapters[currentIndex + 1];
       navigate(`/reader/${nextChapter._id}`);
       setCurrentPage(1);
+      setShowComments(false);
     }
   };
 
@@ -243,6 +287,7 @@ export function MangaReader() {
       const prevChapter = allChapters[currentIndex - 1];
       navigate(`/reader/${prevChapter._id}`);
       setCurrentPage(1);
+      setShowComments(false);
     }
   };
 
@@ -406,8 +451,8 @@ export function MangaReader() {
         <ReaderHeader
           manga={manga}
           chapter={chapter}
-          currentPage={currentPage}
-          totalPages={chapter.pages.length}
+          currentPage={showComments ? chapter.pages.length + 1 : currentPage}
+          totalPages={chapter.pages.length + 1}
           onReturnToManga={handleReturnToManga}
           onToggleSettings={() => setShowSettings((prev) => !prev)}
           onToggleNavigation={() => setShowNavigation((prev) => !prev)}
@@ -426,24 +471,26 @@ export function MangaReader() {
       )}
 
       {/* Reader Content */}
-      <ReaderContent
-        chapter={chapter}
-        currentPage={currentPage}
-        settings={settings}
-        showNavigation={showNavigation}
-        showHeader={showHeader}
-        onPageChange={setCurrentPage}
-        onNextPage={handleNextPage}
-        onPreviousPage={handlePreviousPage}
-      />
+      {!showComments && (
+        <ReaderContent
+          chapter={chapter}
+          currentPage={currentPage}
+          settings={settings}
+          showNavigation={showNavigation}
+          showHeader={showHeader}
+          onPageChange={setCurrentPage}
+          onNextPage={handleNextPage}
+          onPreviousPage={handlePreviousPage}
+        />
+      )}
 
       {/* Bottom Navigation */}
       {showNavigation && (
         <ReaderNavigation
           chapter={chapter}
           allChapters={allChapters}
-          currentPage={currentPage}
-          totalPages={chapter.pages.length}
+          currentPage={showComments ? chapter.pages.length + 1 : currentPage}
+          totalPages={chapter.pages.length + 1}
           hasNextChapter={hasNextChapter()}
           hasPreviousChapter={hasPreviousChapter()}
           onNextPage={handleNextPage}
@@ -451,9 +498,38 @@ export function MangaReader() {
           onNextChapter={handleNextChapter}
           onPreviousChapter={handlePreviousChapter}
           onChapterSelect={handleChapterSelect}
-          onPageChange={setCurrentPage}
+          onPageChange={(page) => {
+            if (page > chapter.pages.length) {
+              setShowComments(true);
+            } else {
+              setShowComments(false);
+              setCurrentPage(page);
+            }
+          }}
           settings={settings}
         />
+      )}
+
+      {/* Comments Section - Show when showComments is true */}
+      {showComments && (
+        <div className="w-full bg-background py-8">
+          <div className="container mx-auto px-4 max-w-5xl space-y-6">
+            <CommentSection chapterId={chapterId} title="Bình luận chapter" />
+
+            {/* Next Chapter Button */}
+            {hasNextChapter() && (
+              <div className="flex justify-center pt-4">
+                <Button
+                  size="lg"
+                  onClick={handleNextChapter}
+                  className="min-w-[200px]"
+                >
+                  Chuyển sang chapter tiếp theo
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

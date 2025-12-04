@@ -9,17 +9,30 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
 import { mangaService } from "@/services/manga.service";
 import type { Manga } from "@/types/manga";
+import type { MangaListResponse } from "@/types/api";
 
-export default function Homepage() {
-  const breadcrumbs = [{ label: "Home" }];
+export function Homepage() {
+  const breadcrumbs = [{ label: "Trang chủ" }];
   const [showPreview, setShowPreview] = useState(false);
   const [selectedManga, setSelectedManga] = useState<Manga | null>(null);
 
   // State cho các danh sách manga
-  const [featuredMangas, setFeaturedMangas] = useState<Manga[]>([]);
-  const [popularMangas, setPopularMangas] = useState<Manga[]>([]);
-  const [recentMangas, setRecentMangas] = useState<Manga[]>([]);
-  const [newReleases, setNewReleases] = useState<Manga[]>([]);
+  const [featuredMangas, setFeaturedMangas] = useState<MangaListResponse>({
+    mangas: [],
+    pagination: { currentPage: 1, totalPages: 1, totalItems: 0, total: 0 },
+  });
+  const [popularMangas, setPopularMangas] = useState<MangaListResponse>({
+    mangas: [],
+    pagination: { currentPage: 1, totalPages: 1, totalItems: 0, total: 0 },
+  });
+  const [recentMangas, setRecentMangas] = useState<MangaListResponse>({
+    mangas: [],
+    pagination: { currentPage: 1, totalPages: 1, totalItems: 0, total: 0 },
+  });
+  const [newReleases, setNewReleases] = useState<MangaListResponse>({
+    mangas: [],
+    pagination: { currentPage: 1, totalPages: 1, totalItems: 0, total: 0 },
+  });
 
   // Loading states
   const [loadingFeatured, setLoadingFeatured] = useState(true);
@@ -41,10 +54,10 @@ export default function Homepage() {
       const response = await mangaService.getMangas({
         page: 1,
         limit: 5,
-        sortBy: "-averageRating", // Dấu - để sort desc
+        sortBy: "-averageRating",
       });
-      if (response.data) {
-        setFeaturedMangas(response.data.mangas);
+      if (response) {
+        setFeaturedMangas(response);
       }
     } catch (error) {
       console.error("Error fetching featured mangas:", error);
@@ -61,8 +74,8 @@ export default function Homepage() {
         limit: 12,
         sortBy: "-viewCount",
       });
-      if (response.data) {
-        setPopularMangas(response.data.mangas);
+      if (response) {
+        setPopularMangas(response);
       }
     } catch (error) {
       console.error("Error fetching popular mangas:", error);
@@ -79,8 +92,8 @@ export default function Homepage() {
         limit: 9,
         sortBy: "-updatedAt",
       });
-      if (response.data) {
-        setRecentMangas(response.data.mangas);
+      if (response) {
+        setRecentMangas(response);
       }
     } catch (error) {
       console.error("Error fetching recent mangas:", error);
@@ -97,8 +110,8 @@ export default function Homepage() {
         limit: 6,
         sortBy: "-createdAt",
       });
-      if (response.data) {
-        setNewReleases(response.data.mangas);
+      if (response) {
+        setNewReleases(response);
       }
     } catch (error) {
       console.error("Error fetching new releases:", error);
@@ -123,21 +136,21 @@ export default function Homepage() {
         <div className="space-y-8">
           {/* Featured Carousel */}
           <FeaturedCarousel
-            featuredManga={featuredMangas}
+            featuredManga={featuredMangas.mangas}
             onPreview={handlePreview}
             loading={loadingFeatured}
           />
 
           {/* Recent Updates */}
           <RecentUpdates
-            updates={recentMangas}
+            updates={recentMangas.mangas}
             onPreview={handlePreview}
             loading={loadingRecent}
           />
 
           {/* Popular Manga */}
           <PopularMangaGrid
-            popularManga={popularMangas}
+            popularManga={popularMangas.mangas}
             onPreview={handlePreview}
             loading={loadingPopular}
           />
@@ -145,8 +158,8 @@ export default function Homepage() {
           {/* New Releases */}
           <div>
             <SectionHeader
-              title="New Releases"
-              subtitle="Fresh manga just added"
+              title="Mới phát hành"
+              subtitle="Truyện mới vừa được thêm"
               showViewAll
             />
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-4">
@@ -159,7 +172,7 @@ export default function Homepage() {
                       <Skeleton className="h-3 w-1/2" />
                     </div>
                   ))
-                : newReleases.map((manga) => (
+                : newReleases.mangas.map((manga) => (
                     <MangaCard
                       key={manga._id}
                       manga={manga}

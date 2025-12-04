@@ -55,7 +55,7 @@ const statusColors = {
   cancelled: "bg-red-500",
 };
 
-export function MangaInfo({
+export const MangaInfo = ({
   coverImage,
   title,
   status,
@@ -72,7 +72,7 @@ export function MangaInfo({
   onStartReading,
   onFollowToggle,
   onShare,
-}: MangaInfoProps) {
+}: MangaInfoProps) => {
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   const formatDate = (dateString: string): string => {
@@ -109,7 +109,7 @@ export function MangaInfo({
             disabled={chaptersCount === 0}
           >
             <BookOpen className="mr-2 h-5 w-5" />
-            {chaptersCount > 0 ? "Start Reading" : "No Chapters"}
+            {chaptersCount > 0 ? "Bắt đầu đọc" : "Chưa có chapter"}
           </Button>
           <div className="grid grid-cols-2 gap-2">
             <Button
@@ -119,11 +119,11 @@ export function MangaInfo({
               <Heart
                 className={`mr-2 h-4 w-4 ${isFollowing ? "fill-current" : ""}`}
               />
-              {isFollowing ? "Following" : "Follow"}
+              {isFollowing ? "Đang theo dõi" : "Theo dõi"}
             </Button>
             <Button variant="outline" onClick={onShare}>
               <Share2 className="mr-2 h-4 w-4" />
-              Share
+              Chia sẻ
             </Button>
           </div>
         </div>
@@ -150,7 +150,7 @@ export function MangaInfo({
                     <span>{author}</span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>Author</TooltipContent>
+                <TooltipContent>Tác giả</TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
@@ -163,7 +163,7 @@ export function MangaInfo({
                       <span>{artist}</span>
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent>Artist</TooltipContent>
+                  <TooltipContent>Họa sĩ</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
@@ -184,7 +184,7 @@ export function MangaInfo({
 
         {/* Genres */}
         <div>
-          <h3 className="text-sm font-semibold mb-2">Genres</h3>
+          <h3 className="text-sm font-semibold mb-2">Thể loại</h3>
           <div className="flex flex-wrap gap-2">
             {genres.map((genre) => (
               <Badge
@@ -200,7 +200,7 @@ export function MangaInfo({
 
         {/* Description */}
         <div>
-          <h3 className="text-sm font-semibold mb-2">Description</h3>
+          <h3 className="text-sm font-semibold mb-2">Mô tả</h3>
           <Card>
             <CardContent className="pt-6">
               <p
@@ -219,11 +219,11 @@ export function MangaInfo({
                 >
                   {showFullDescription ? (
                     <>
-                      Show Less <ChevronUp className="ml-1 h-4 w-4" />
+                      Thu gọn <ChevronUp className="ml-1 h-4 w-4" />
                     </>
                   ) : (
                     <>
-                      Show More <ChevronDown className="ml-1 h-4 w-4" />
+                      Xem thêm <ChevronDown className="ml-1 h-4 w-4" />
                     </>
                   )}
                 </Button>
@@ -240,7 +240,7 @@ export function MangaInfo({
               <div className="text-2xl font-bold">
                 {viewCount?.toLocaleString() || 0}
               </div>
-              <div className="text-xs text-muted-foreground">Total Views</div>
+              <div className="text-xs text-muted-foreground">Lượt xem</div>
             </CardContent>
           </Card>
           <Card>
@@ -249,7 +249,9 @@ export function MangaInfo({
               <div className="text-2xl font-bold">
                 {followerCount?.toLocaleString() || 0}
               </div>
-              <div className="text-xs text-muted-foreground">Followers</div>
+              <div className="text-xs text-muted-foreground">
+                Người theo dõi
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -258,18 +260,18 @@ export function MangaInfo({
               <div className="text-2xl font-bold">
                 {averageRating?.toFixed(1) || "N/A"}
               </div>
-              <div className="text-xs text-muted-foreground">Rating</div>
+              <div className="text-xs text-muted-foreground">Đánh giá</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6 text-center">
               <BookOpen className="h-8 w-8 mx-auto mb-2 text-blue-500" />
               <div className="text-2xl font-bold">{chaptersCount}</div>
-              <div className="text-xs text-muted-foreground">Chapters</div>
+              <div className="text-xs text-muted-foreground">Chapter</div>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
   );
-}
+};

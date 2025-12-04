@@ -7,7 +7,9 @@ export const API_ENDPOINTS = {
   AUTH: {
     REGISTER: "/auth/register",
     LOGIN: "/auth/login",
+    USER: "/auth/user",
     ME: "/auth/me",
+    CHANGE_PASSWORD: "/auth/change-password",
   },
 
   // ========== Manga ==========
@@ -24,23 +26,32 @@ export const API_ENDPOINTS = {
 
   // ========== Chapter ==========
   CHAPTER: {
-    DETAIL: (id: string) => `/chapters/${id}`,
-    UPDATE: (id: string) => `/chapters/${id}`,
-    DELETE: (id: string) => `/chapters/${id}`,
+    DETAIL: (chapterId: string) => `/chapters/${chapterId}`,
+    UPDATE: (chapterId: string) => `/chapters/${chapterId}`,
+    DELETE: (chapterId: string) => `/chapters/${chapterId}`,
+    COUNT_BY_UPLOADER: "/chapters/count/uploader", // 🆕 Add this
   },
 
   // ========== User ==========
   USER: {
+    PROFILE: "/users/profile",
+    UPDATE_PROFILE: "/users/profile",
+    DELETE_PROFILE: "/users/profile",
+    FOLLOW: "/users/follow",
+    UNFOLLOW: "/users/unfollow",
+    READING_HISTORY: "/users/reading-history",
+    UPLOADED_MANGAS: "/users/uploaded-mangas",
+    FOLLOWED_MANGAS: "/users/followed-mangas",
     ME: "/users/me",
-    UPDATE_PROFILE: "/users/me",
-    FOLLOW: "/users/me/follow",
-    FOLLOWED_MANGAS: "/users/me/follow",
-    UNFOLLOW: (mangaId: string) => `/users/me/follow/${mangaId}`,
+
     GET_USERS: "/users",
   },
 
   // ========== Comment ==========
   COMMENT: {
+    CREATE: "/comments",
+    BY_MANGA: (mangaId: string) => `/comments/manga/${mangaId}`,
+    BY_CHAPTER: (chapterId: string) => `/comments/chapter/${chapterId}`,
     UPDATE: (id: string) => `/comments/${id}`,
     DELETE: (id: string) => `/comments/${id}`,
   },
@@ -48,14 +59,37 @@ export const API_ENDPOINTS = {
   // ========== Genre ==========
   GENRE: {
     LIST: "/genres",
+    SEARCH: "/genres/search",
     CREATE: "/genres",
     UPDATE: (id: string) => `/genres/${id}`,
     DELETE: (id: string) => `/genres/${id}`,
     MANGAS: (slug: string) => `/genres/${slug}/mangas`,
   },
 
+  // ========== Rating ==========
+  RATING: {
+    RATE: "/ratings",
+    MANGA_AVERAGE: (mangaId: string) => `/ratings/manga/${mangaId}`,
+    USER_RATING: (mangaId: string) => `/ratings/manga/${mangaId}/user`,
+  },
+
+  // ========== Report ==========
+  REPORT: {
+    CREATE: (mangaId: string) => `/reports/${mangaId}`,
+    LIST: "/reports",
+    BY_MANGA: (mangaId: string) => `/reports/manga/${mangaId}`,
+    DETAIL: (reportId: string) => `/reports/${reportId}`,
+  },
+
+  // ========== Statistics ==========
+  STATISTICS: {
+    BASIC: "/statistics",
+    DETAILED: "/statistics/detailed",
+  },
+
   // ========== AI ==========
   AI: {
     GET_MANGA: "/ai/get-manga",
+    GENERATE_MANGA: "/ai/generate-manga",
   },
 } as const;

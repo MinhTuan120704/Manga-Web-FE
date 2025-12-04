@@ -15,13 +15,15 @@ export interface User {
 }
 
 export interface ReadingHistoryItem {
-  mangaId: string;
+  _id?: string;
+  manga: string;
   chapterId: string;
   lastReadAt: string;
 }
 
 export interface UpdateProfileRequest {
   username?: string;
+  email?: string;
   avatarUrl?: string;
 }
 

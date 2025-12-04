@@ -37,6 +37,13 @@ export interface UpdateChapterRequest {
   pages?: Page[];
 }
 
+// 🆕 Add this
+export interface ChapterCountResponse {
+  uploaderId: string;
+  totalChapters: number;
+  totalMangas: number;
+}
+
 import type { Manga } from "./manga";
 
 export interface RecentUpdate {

@@ -16,7 +16,7 @@ export default function MangaManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [mangaList, setMangaList] = useState<MangaListResponse>({
     mangas: [],
-    pagination: { currentPage: 1, totalPages: 1, totalItems: 0 },
+    pagination: { currentPage: 1, totalPages: 1, totalItems: 0, total: 0 },
   });
 
   const [loadingManga, setLoadingManga] = useState(false);
@@ -28,8 +28,9 @@ export default function MangaManagement() {
         page: 1,
         limit: 10,
       });
-      if (response.data) {
-        setMangaList(response.data);
+      console.log(response);
+      if (response) {
+        setMangaList(response);
       }
     } catch (error) {
       console.error("Error fetching featured mangas:", error);
@@ -50,8 +51,8 @@ export default function MangaManagement() {
         limit: 10,
         search: searchTerm,
       });
-      if (response.data) {
-        setMangaList(response.data);
+      if (response) {
+        setMangaList(response);
       }
       console.log(response);
     } catch (error) {

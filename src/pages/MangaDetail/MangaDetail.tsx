@@ -2,17 +2,22 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { mangaService } from "@/services/manga.service";
+import { userService } from "@/services/user.service";
+import { authService } from "@/services/auth.service";
 import type { Manga } from "@/types/manga";
 import {
   MangaInfo,
   ChapterList,
   MangaDetailSkeleton,
   MangaDetailError,
+  RatingSection,
 } from "./components";
+import { CommentSection } from "@/components/common/CommentSection";
+import { toast } from "sonner";
 import type { Chapter } from "@/types/chapter";
 import type { Genre } from "@/types/genre";
 
-export default function MangaDetail() {
+export const MangaDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -26,15 +31,32 @@ export default function MangaDetail() {
     if (id) {
       fetchMangaDetail(id);
       fetchChapters(id);
+      checkIfFollowing(id);
     }
   }, [id]);
+
+  const checkIfFollowing = async (mangaId: string) => {
+    if (!authService.isAuthenticated()) {
+      setIsFollowing(false);
+      return;
+    }
+
+    try {
+      const profile = await userService.getMyProfile();
+      if (profile?.followedMangas) {
+        setIsFollowing(profile.followedMangas.includes(mangaId));
+      }
+    } catch (error) {
+      console.error("Failed to check follow status:", error);
+    }
+  };
 
   const fetchMangaDetail = async (mangaId: string) => {
     try {
       setLoading(true);
       const response = await mangaService.getMangaById(mangaId);
-      if (response.data) {
-        setManga(response.data);
+      if (response) {
+        setManga(response);
       }
     } catch (err) {
       setError("Failed to load manga details");
@@ -47,17 +69,40 @@ export default function MangaDetail() {
   const fetchChapters = async (mangaId: string) => {
     try {
       const response = await mangaService.getChaptersByMangaId(mangaId);
-      if (response.data) {
-        setChapters(Array.isArray(response.data) ? response.data : []);
+      if (response) {
+        setChapters(Array.isArray(response) ? response : []);
       }
     } catch (err) {
       console.error("Failed to load chapters:", err);
     }
   };
 
-  const handleFollowToggle = () => {
-    setIsFollowing(!isFollowing);
-    // TODO: Call API to follow/unfollow manga
+  const handleFollowToggle = async () => {
+    if (!authService.isAuthenticated()) {
+      toast.error("Vui lòng đăng nhập để theo dõi truyện");
+      navigate("/login");
+      return;
+    }
+
+    if (!id) return;
+
+    try {
+      if (isFollowing) {
+        await userService.unfollowManga(id);
+        setIsFollowing(false);
+        toast.success("Đã hủy theo dõi truyện");
+      } else {
+        await userService.followManga({ mangaId: id });
+        setIsFollowing(true);
+        toast.success("Đã theo dõi truyện");
+      }
+
+      // Refresh manga data to get updated follower count
+      fetchMangaDetail(id);
+    } catch (error) {
+      console.error("Failed to toggle follow:", error);
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
+    }
   };
 
   const handleShare = () => {
@@ -69,7 +114,7 @@ export default function MangaDetail() {
       });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      // TODO: Show toast notification
+      toast.success("Đã sao chép liên kết!");
     }
   };
 
@@ -120,7 +165,7 @@ export default function MangaDetail() {
             genres={genres}
             averageRating={manga.averageRating}
             viewCount={manga.viewCount}
-            followerCount={manga.followerCount}
+            followerCount={manga.followedCount}
             chaptersCount={chapters.length}
             isFollowing={isFollowing}
             onStartReading={handleStartReading}
@@ -130,8 +175,25 @@ export default function MangaDetail() {
         </div>
 
         {/* Chapters Section */}
-        <ChapterList chapters={chapters} onChapterClick={handleChapterClick} />
+        <div className="mb-8">
+          <ChapterList
+            chapters={chapters}
+            onChapterClick={handleChapterClick}
+          />
+        </div>
+
+        {/* Rating Section */}
+        <div className="mb-8">
+          <RatingSection
+            mangaId={id!}
+            initialAverageRating={manga.averageRating}
+            initialTotalRatings={0}
+          />
+        </div>
+
+        {/* Comments Section */}
+        <CommentSection mangaId={id} />
       </div>
     </MainLayout>
   );
-}
+};
