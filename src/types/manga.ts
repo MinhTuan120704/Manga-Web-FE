@@ -14,7 +14,7 @@ export interface Manga {
   status: "ongoing" | "completed" | "hiatus" | "cancelled";
   uploaderId?: string | User;
   viewCount?: number;
-  followerCount?: number;
+  followedCount?: number;
   averageRating?: number;
   chapterCount?: number;
   createdAt: string;
@@ -46,7 +46,7 @@ export interface MangaQueryParams {
   limit?: number;
   genre?: string;
   status?: "ongoing" | "completed" | "hiatus" | "cancelled";
-  sortBy?: string;
+  search?: string;
 }
 
 export interface PopularManga {

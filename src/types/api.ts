@@ -2,6 +2,7 @@ import type { Manga } from "./manga";
 import type { Chapter } from "./chapter";
 import type { Comment } from "./comment";
 import type { Genre } from "./genre";
+import type { User } from "./user";
 
 // ========== API Response Types ==========
 

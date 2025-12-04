@@ -36,6 +36,7 @@ export const API_ENDPOINTS = {
     FOLLOW: "/users/me/follow",
     FOLLOWED_MANGAS: "/users/me/follow",
     UNFOLLOW: (mangaId: string) => `/users/me/follow/${mangaId}`,
+    GET_USERS: "/users",
   },
 
   // ========== Comment ==========

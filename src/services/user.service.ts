@@ -1,12 +1,12 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
+import type { ApiResponse, MangaListResponse } from "@/types/api";
 import type {
-  ApiResponse,
+  FollowMangaRequest,
   UpdateProfileRequest,
   User,
-  FollowMangaRequest,
-  MangaListResponse,
-} from "@/types";
+  UserQueryParams,
+} from "@/types/user";
 
 export const userService = {
   /**
@@ -37,5 +37,9 @@ export const userService = {
    */
   unfollowManga: async (mangaId: string): Promise<ApiResponse<void>> => {
     return axiosInstance.delete(API_ENDPOINTS.USER.UNFOLLOW(mangaId));
+  },
+
+  getUsers: async (params?: UserQueryParams) => {
+    return axiosInstance.get(API_ENDPOINTS.USER.GET_USERS, { params });
   },
 };
