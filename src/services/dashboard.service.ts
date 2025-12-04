@@ -1,7 +1,7 @@
 import { userService } from "./user.service";
 import { mangaService } from "./manga.service";
-import { chapterService } from "./chapter.service"; // 🆕 Import chapter service
-import type { DashboardData, DashboardStats, MangaWithChapters, Manga, Chapter } from "@/types";
+import { chapterService } from "./chapter.service";
+import type { DashboardData, DashboardStats, MangaWithChapters, Manga, Chapter, ApiResponse } from "@/types";
 
 export const dashboardService = {
   /**
@@ -9,25 +9,68 @@ export const dashboardService = {
    */
   getDashboardData: async (): Promise<DashboardData> => {
     try {
+      console.log("🚀 Starting dashboard data fetch...");
+      
       // 1. Fetch song song: mangas và chapter count
       const [mangasResponse, chapterCountResponse] = await Promise.all([
         userService.getUploadedMangas(),
-        chapterService.getChapterCountByUploader(), // 🆕 Fetch từ API
+        chapterService.getChapterCountByUploader(),
       ]);
 
-      const mangas: Manga[] = mangasResponse.data || [];
+      console.log("📦 Mangas Response:", mangasResponse);
+      console.log("📖 Chapter Count Response:", chapterCountResponse);
+
+      // ✅ FIX: Type-safe extraction với proper type checking
+      let mangas: Manga[] = [];
+      
+      // Handle different response structures
+      if (Array.isArray(mangasResponse)) {
+        // Case 1: Response trực tiếp là array
+        mangas = mangasResponse;
+        console.log("📚 Case 1: Direct array");
+      } else if (mangasResponse && typeof mangasResponse === 'object') {
+        // Case 2: Response có structure {data: ...}
+        const responseData = mangasResponse as ApiResponse<Manga[] | { mangas: Manga[] }>;
+        
+        if (responseData.data) {
+          if (Array.isArray(responseData.data)) {
+            // Case 2a: {data: [...]}
+            mangas = responseData.data;
+            console.log("📚 Case 2a: data is array");
+          } else if (responseData.data && typeof responseData.data === 'object' && 'mangas' in responseData.data) {
+            // Case 2b: {data: {mangas: [...]}
+            mangas = responseData.data.mangas;
+            console.log("📚 Case 2b: data.mangas is array");
+          }
+        }
+      }
+
+      console.log("📚 Extracted mangas:", mangas);
+      console.log("📚 Total mangas:", mangas.length);
+
       const chapterCountData = chapterCountResponse.data;
 
-      console.log("Chapter count from API:", chapterCountData);
-
-      // 2. Fetch chapters cho mỗi manga (parallel) - để lấy latest chapter
+      // 2. Fetch chapters cho mỗi manga (parallel)
       const mangasWithChapters: MangaWithChapters[] = await Promise.all(
         mangas.map(async (manga) => {
           try {
             const chaptersResponse = await mangaService.getChaptersByMangaId(manga._id);
-            const chapters: Chapter[] = chaptersResponse.data || [];
             
-            // Sort chapters by number descending để lấy latest
+            // ✅ FIX: Type-safe chapters extraction
+            let chapters: Chapter[] = [];
+            
+            if (Array.isArray(chaptersResponse)) {
+              chapters = chaptersResponse;
+            } else if (chaptersResponse && typeof chaptersResponse === 'object') {
+              const chapterData = chaptersResponse as ApiResponse<Chapter[]>;
+              if (chapterData.data && Array.isArray(chapterData.data)) {
+                chapters = chapterData.data;
+              }
+            }
+            
+            console.log(`📖 Manga "${manga.title}": ${chapters.length} chapters`);
+            
+            // Sort chapters by number descending
             const sortedChapters = [...chapters].sort(
               (a, b) => b.chapterNumber - a.chapterNumber
             );
@@ -38,7 +81,7 @@ export const dashboardService = {
               latestChapter: sortedChapters[0] || undefined,
             };
           } catch (error) {
-            console.error(`Failed to fetch chapters for manga ${manga._id}:`, error);
+            console.error(`❌ Failed to fetch chapters for manga ${manga._id}:`, error);
             return {
               ...manga,
               chapters: [],
@@ -48,10 +91,12 @@ export const dashboardService = {
         })
       );
 
-      // 3. Calculate statistics - SỬ DỤNG DỮ LIỆU TỪ API
+      console.log("📦 Mangas with chapters:", mangasWithChapters.length);
+
+      // 3. Calculate statistics
       const stats: DashboardStats = {
-        totalMangas: chapterCountData?.totalMangas || mangas.length, // 🆕 Từ API
-        totalChapters: chapterCountData?.totalChapters || 0, // 🆕 Từ API (chính xác hơn)
+        totalMangas: chapterCountData?.totalMangas || mangas.length,
+        totalChapters: chapterCountData?.totalChapters || 0,
         totalViews: mangasWithChapters.reduce(
           (sum, manga) => sum + (manga.viewCount || 0),
           0
@@ -68,11 +113,15 @@ export const dashboardService = {
           : 0,
       };
 
-      console.log("Dashboard stats:", stats);
+      console.log("📊 Dashboard stats:", stats);
 
-      // 4. Get recently updated mangas (có chapters mới nhất)
+      // 4. Get recently updated mangas
       const recentlyUpdated = [...mangasWithChapters]
-        .filter(manga => manga.latestChapter)
+        .filter(manga => {
+          const hasLatestChapter = !!manga.latestChapter;
+          console.log(`🔍 "${manga.title}": hasLatestChapter=${hasLatestChapter}`);
+          return hasLatestChapter;
+        })
         .sort((a, b) => {
           const dateA = a.latestChapter?.createdAt || a.updatedAt;
           const dateB = b.latestChapter?.createdAt || b.updatedAt;
@@ -80,19 +129,35 @@ export const dashboardService = {
         })
         .slice(0, 5);
 
-      // 5. Get popular mangas (sorted by views)
+      console.log("🆕 Recently updated:", recentlyUpdated.length);
+
+      // 5. Get popular mangas
       const popularMangas = [...mangasWithChapters]
-        .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+        .sort((a, b) => {
+          const viewsA = a.viewCount || 0;
+          const viewsB = b.viewCount || 0;
+          return viewsB - viewsA;
+        })
         .slice(0, 5);
 
-      return {
+      console.log("🔥 Popular mangas:", popularMangas.length);
+
+      const result = {
         mangas: mangasWithChapters,
         stats,
         recentlyUpdated,
         popularMangas,
       };
+
+      console.log("✅ Final dashboard data:", {
+        totalMangas: result.mangas.length,
+        recentlyUpdatedCount: result.recentlyUpdated.length,
+        popularMangasCount: result.popularMangas.length
+      });
+
+      return result;
     } catch (error) {
-      console.error("Failed to fetch dashboard data:", error);
+      console.error("❌ Failed to fetch dashboard data:", error);
       throw error;
     }
   },

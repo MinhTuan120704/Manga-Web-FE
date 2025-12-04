@@ -8,10 +8,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { mangaService } from "@/services/manga.service";
 import { genreService } from "@/services/genre.service";
-import { ArrowLeft, Upload, BookOpen, Loader2, X, Search, AlertCircle } from "lucide-react";
+import { ArrowLeft, Upload, BookOpen, Loader2, X, Search, AlertCircle, CheckCircle2, Eye } from "lucide-react";
 import type { Genre, CreateMangaRequest } from "@/types";
 
 // Validation errors type
@@ -31,15 +39,19 @@ export function CreateManga() {
   const [loadingGenres, setLoadingGenres] = useState(true);
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
   const [coverPreview, setCoverPreview] = useState<string>("");
-  
+
   // Validation errors
   const [errors, setErrors] = useState<ValidationErrors>({});
-  
+
   // Genre search states
   const [genreSearch, setGenreSearch] = useState("");
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
   const genreInputRef = useRef<HTMLInputElement>(null);
   const genreDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [createdMangaId, setCreatedMangaId] = useState<string>("");
+  const [createdMangaTitle, setCreatedMangaTitle] = useState<string>("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -47,19 +59,35 @@ export function CreateManga() {
     author: "",
     artist: "",
     status: "ongoing" as "ongoing" | "completed" | "hiatus",
-    coverImage: null as File | null, 
+    coverImage: null as File | null,
   });
 
-  // Fetch genres khi component mount
+  // ✅ FIX: Fetch genres với proper type checking
   useEffect(() => {
     const fetchGenres = async () => {
       try {
         const response = await genreService.getGenres();
-        console.log("📦 Genres loaded:", response);
-        setGenres(response || []);
+        console.log("Raw genres response:", response);
+        
+        let genreList: Genre[] = [];
+        
+        if (Array.isArray(response)) {
+          genreList = response;
+        } else if (response && typeof response === 'object') {
+          const apiResponse = response as { data?: Genre[] };
+          if (apiResponse.data && Array.isArray(apiResponse.data)) {
+            genreList = apiResponse.data;
+          }
+        }
+        
+        console.log("Extracted genres:", genreList);
+        console.log("Total genres:", genreList.length);
+        
+        setGenres(genreList);
       } catch (error) {
-        console.error("❌ Error loading genres:", error);
+        console.error("Error loading genres:", error);
         toast.error("Không thể tải danh sách thể loại");
+        setGenres([]);
       } finally {
         setLoadingGenres(false);
       }
@@ -86,10 +114,8 @@ export function CreateManga() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error khi user nhập
-    if (errors[field as keyof ValidationErrors]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
+    // Clear error khi user bắt đầu nhập
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
   const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,21 +123,27 @@ export function CreateManga() {
     if (file) {
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        setErrors((prev) => ({ ...prev, coverImage: "Kích thước ảnh không được vượt quá 5MB" }));
-        toast.error("Kích thước ảnh không được vượt quá 5MB");
+        setErrors((prev) => ({
+          ...prev,
+          coverImage: "Kích thước file không được vượt quá 5MB",
+        }));
+        toast.error("Kích thước file không được vượt quá 5MB");
         return;
       }
 
       // Validate file type
       if (!file.type.startsWith("image/")) {
-        setErrors((prev) => ({ ...prev, coverImage: "Vui lòng chọn file ảnh hợp lệ" }));
+        setErrors((prev) => ({
+          ...prev,
+          coverImage: "Vui lòng chọn file ảnh hợp lệ",
+        }));
         toast.error("Vui lòng chọn file ảnh hợp lệ");
         return;
       }
 
       setFormData((prev) => ({ ...prev, coverImage: file }));
       setErrors((prev) => ({ ...prev, coverImage: undefined }));
-      
+
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -122,18 +154,22 @@ export function CreateManga() {
   };
 
   const handleRemoveCover = () => {
-    setFormData((prev) => ({ ...prev, coverImage: null })); 
+    setFormData((prev) => ({ ...prev, coverImage: null }));
     setCoverPreview("");
     setErrors((prev) => ({ ...prev, coverImage: undefined }));
   };
 
-  // Filter genres - Hiển thị tất cả nếu search rỗng
-  const filteredGenres = genres.filter((genre) => {
-    const matchesSearch = genreSearch.trim() === "" || 
-      genre.name.toLowerCase().includes(genreSearch.toLowerCase());
-    const notSelected = !selectedGenres.some((selected) => selected._id === genre._id);
-    return matchesSearch && notSelected;
-  });
+  const filteredGenres = Array.isArray(genres) 
+    ? genres.filter((genre) => {
+        const matchesSearch =
+          genreSearch.trim() === "" ||
+          genre.name.toLowerCase().includes(genreSearch.toLowerCase());
+        const notSelected = !selectedGenres.some(
+          (selected) => selected._id === genre._id
+        );
+        return matchesSearch && notSelected;
+      })
+    : [];
 
   const handleGenreSelect = (genre: Genre) => {
     if (selectedGenres.length >= 5) {
@@ -143,9 +179,7 @@ export function CreateManga() {
     setSelectedGenres((prev) => [...prev, genre]);
     setGenreSearch("");
     setShowGenreDropdown(false);
-    // Clear genre error
     setErrors((prev) => ({ ...prev, genres: undefined }));
-    // Focus lại input để tiếp tục chọn
     setTimeout(() => {
       genreInputRef.current?.focus();
     }, 100);
@@ -155,11 +189,9 @@ export function CreateManga() {
     setSelectedGenres((prev) => prev.filter((g) => g._id !== genreId));
   };
 
-  // ✅ FIXED: Chỉ validate title
   const validateForm = (): boolean => {
     const newErrors: ValidationErrors = {};
 
-    // Title validation - BẮT BUỘC
     if (!formData.title.trim()) {
       newErrors.title = "Tên truyện là bắt buộc";
     } else if (formData.title.trim().length < 3) {
@@ -192,7 +224,6 @@ export function CreateManga() {
 
     setLoading(true);
     try {
-      // ✅ FIXED: Tự động điền "Đang cập nhật" nếu để trống
       const description = formData.description.trim() || "Đang cập nhật";
       const author = formData.author.trim() || "Đang cập nhật";
       const artist = formData.artist.trim() || author;
@@ -207,18 +238,24 @@ export function CreateManga() {
         coverImage: formData.coverImage!,
       };
 
-      console.log("📤 Submitting manga:", {
+      console.log("Submitting manga:", {
         ...requestData,
         coverImage: requestData.coverImage || null
       });
 
       const response = await mangaService.createManga(requestData);
-      console.log("✅ Response:", response);
+      console.log("Response:", response);
+      
+      const mangaId = response.data?._id || "";
+      const mangaTitle = formData.title.trim();
+      
+      setCreatedMangaId(mangaId);
+      setCreatedMangaTitle(mangaTitle);
+      setShowSuccessDialog(true);
       
       toast.success("Tạo truyện mới thành công!");
-      navigate(`/uploader/manga/${response.data?._id || ""}`);
     } catch (error: unknown) { 
-      console.error("❌ Error creating manga:", error);
+      console.error("Error creating manga:", error);
       
       // Parse error message từ response
       let errorMessage = "Có lỗi xảy ra khi tạo truyện";
@@ -264,6 +301,32 @@ export function CreateManga() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewManga = () => {
+    setShowSuccessDialog(false);
+    navigate(`/uploader/manga/${createdMangaId}`);
+  };
+
+  const handleCreateAnother = () => {
+    setShowSuccessDialog(false);
+    setFormData({
+      title: "",
+      description: "",
+      author: "",
+      artist: "",
+      status: "ongoing",
+      coverImage: null,
+    });
+    setSelectedGenres([]);
+    setCoverPreview("");
+    setErrors({});
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleBackToDashboard = () => {
+    setShowSuccessDialog(false);
+    navigate("/uploader");
   };
 
   const getStatusLabel = (status: string) => {
@@ -639,6 +702,51 @@ export function CreateManga() {
           </div>
         </div>
       </form>
+
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center justify-center mb-4">
+              <div className="h-16 w-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="h-10 w-10 text-green-600 dark:text-green-400" />
+              </div>
+            </div>
+            <DialogTitle className="text-center text-2xl">
+              Tạo truyện thành công!
+            </DialogTitle>
+            <DialogDescription className="text-center pt-2">
+              Truyện <span className="font-semibold text-foreground">"{createdMangaTitle}"</span> đã được tạo thành công.
+              <br />
+              Bạn có thể xem truyện hoặc tiếp tục tạo truyện mới.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col sm:flex-col gap-2 mt-4">
+            <Button 
+              onClick={handleViewManga}
+              className="w-full"
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              Xem truyện
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleCreateAnother}
+              className="w-full"
+            >
+              <BookOpen className="mr-2 h-4 w-4" />
+              Tạo truyện khác
+            </Button>
+            <Button 
+              variant="ghost" 
+              onClick={handleBackToDashboard}
+              className="w-full"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Quay về Dashboard
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
