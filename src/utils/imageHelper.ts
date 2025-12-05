@@ -55,21 +55,35 @@ export const sanitizeImageUrl = (url: string | undefined | null): string => {
   }
 
   // Special handling for Cloudinary URLs
-  if (url.includes("cloudinary.com")) {
-    // Ensure HTTPS
-    const secureUrl = url.replace(/^http:/, "https:");
+  try {
+    const urlObj = new URL(url);
+    const allowedCloudinaryHosts = [
+      "res.cloudinary.com",
+      "cloudinary.com"
+    ];
+    // Check if hostname is exactly an allowed cloudinary host or a subdomain.
+    const hostname = urlObj.hostname;
+    const isCloudinary = allowedCloudinaryHosts.some(
+      (host) => hostname === host || hostname.endsWith(`.${host}`)
+    );
+    if (isCloudinary) {
+      // Ensure HTTPS
+      const secureUrl = url.replace(/^http:/, "https:");
 
-    // Add Cloudinary transformations for optimization (optional)
-    // Example: auto format, auto quality
-    if (!secureUrl.includes("/upload/")) {
-      return secureUrl;
+      // Add Cloudinary transformations for optimization (optional)
+      // Example: auto format, auto quality
+      if (!secureUrl.includes("/upload/")) {
+        return secureUrl;
+      }
+
+      // Insert transformations after /upload/
+      // This helps with loading and can fix some CORS issues
+      const transformed = secureUrl.replace("/upload/", "/upload/f_auto,q_auto/");
+
+      return transformed;
     }
-
-    // Insert transformations after /upload/
-    // This helps with loading and can fix some CORS issues
-    const transformed = secureUrl.replace("/upload/", "/upload/f_auto,q_auto/");
-
-    return transformed;
+  } catch (e) {
+    // If URL parsing fails, proceed with fallback handling below
   }
 
   // Nếu không phải http/https, return placeholder
