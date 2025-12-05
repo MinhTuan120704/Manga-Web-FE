@@ -13,6 +13,7 @@ import {
   RatingSection,
 } from "./components";
 import { CommentSection } from "@/components/common/CommentSection";
+import { ShareModal } from "@/components/common/ShareModal";
 import { toast } from "sonner";
 import type { Chapter } from "@/types/chapter";
 import type { Genre } from "@/types/genre";
@@ -26,6 +27,7 @@ export const MangaDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -106,16 +108,7 @@ export const MangaDetail = () => {
   };
 
   const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: manga?.title,
-        text: manga?.description,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Đã sao chép liên kết!");
-    }
+    setShareModalOpen(true);
   };
 
   const handleStartReading = () => {
@@ -194,6 +187,14 @@ export const MangaDetail = () => {
         {/* Comments Section */}
         <CommentSection mangaId={id} />
       </div>
+
+      <ShareModal
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        title={manga.title}
+        description={manga.description}
+        url={window.location.href}
+      />
     </MainLayout>
   );
 };

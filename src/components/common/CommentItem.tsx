@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { ThumbsUp, Trash2, Edit2, MoreVertical } from "lucide-react";
+import { ThumbsUp, Trash2, Edit2, MoreVertical, X, Check } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +28,8 @@ export function CommentItem({
   onLike,
 }: CommentItemProps) {
   const [likes] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(comment.content);
 
   const getTimeAgo = (dateString: string): string => {
     const date = new Date(dateString);
@@ -47,17 +50,36 @@ export function CommentItem({
     return `${diffInWeeks} tuần trước`;
   };
 
-  const getUsername = (userId: string | User): string => {
-    if (typeof userId === "string") return "Anonymous";
-    return userId.username || "Anonymous";
+  const getUsername = (user: string | User): string => {
+    if (typeof user === "string") return "Anonymous";
+    return user.username || "Anonymous";
   };
 
-  const getUserId = (userId: string | User): string => {
-    if (typeof userId === "string") return userId;
-    return userId._id;
+  const getUserId = (user: string | User): string => {
+    if (typeof user === "string") return user;
+    return user._id;
   };
 
-  const isOwner = currentUserId && getUserId(comment.userId) === currentUserId;
+  const isOwner = currentUserId && getUserId(comment.user) === currentUserId;
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setEditContent(comment.content);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditContent(comment.content);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editContent.trim() || editContent === comment.content) {
+      setIsEditing(false);
+      return;
+    }
+    onEdit?.(comment._id, editContent);
+    setIsEditing(false);
+  };
 
   return (
     <div className="flex gap-3 py-4 border-b border-border last:border-0">
@@ -65,11 +87,11 @@ export function CommentItem({
       <Avatar className="w-10 h-10 shrink-0">
         <AvatarImage
           src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-            getUsername(comment.userId)
+            getUsername(comment.user)
           )}&background=random&size=40`}
         />
         <AvatarFallback>
-          {getUsername(comment.userId).charAt(0).toUpperCase()}
+          {getUsername(comment.user).charAt(0).toUpperCase()}
         </AvatarFallback>
       </Avatar>
 
@@ -78,7 +100,7 @@ export function CommentItem({
         <div className="flex items-start justify-between gap-2 mb-1">
           <div>
             <span className="font-semibold text-foreground text-sm">
-              {getUsername(comment.userId)}
+              {getUsername(comment.user)}
             </span>
             <span className="text-xs text-muted-foreground ml-2">
               {getTimeAgo(comment.createdAt)}
@@ -99,9 +121,7 @@ export function CommentItem({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {onEdit && (
-                  <DropdownMenuItem
-                    onClick={() => onEdit(comment._id, comment.content)}
-                  >
+                  <DropdownMenuItem onClick={handleEditClick}>
                     <Edit2 className="h-4 w-4 mr-2" />
                     Chỉnh sửa
                   </DropdownMenuItem>
@@ -120,23 +140,50 @@ export function CommentItem({
           )}
         </div>
 
-        {/* Comment Text */}
-        <p className="text-sm text-foreground whitespace-pre-wrap wrap-break-word">
-          {comment.content}
-        </p>
+        {/* Comment Text or Edit Mode */}
+        {isEditing ? (
+          <div className="space-y-2">
+            <Textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              className="min-h-[80px] resize-none"
+              autoFocus
+            />
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                onClick={handleSaveEdit}
+                disabled={!editContent.trim()}
+              >
+                <Check className="h-4 w-4 mr-1" />
+                Lưu
+              </Button>
+              <Button size="sm" variant="outline" onClick={handleCancelEdit}>
+                <X className="h-4 w-4 mr-1" />
+                Hủy
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <p className="text-sm text-foreground whitespace-pre-wrap wrap-break-word">
+              {comment.content}
+            </p>
 
-        {/* Like Button */}
-        <div className="flex items-center gap-4 mt-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-auto p-0 text-muted-foreground hover:text-primary"
-            onClick={() => onLike?.(comment._id)}
-          >
-            <ThumbsUp className="h-3.5 w-3.5 mr-1" />
-            <span className="text-xs">{likes > 0 ? likes : ""}</span>
-          </Button>
-        </div>
+            {/* Like Button */}
+            <div className="flex items-center gap-4 mt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-auto p-0 text-muted-foreground hover:text-primary"
+                onClick={() => onLike?.(comment._id)}
+              >
+                <ThumbsUp className="h-3.5 w-3.5 mr-1" />
+                <span className="text-xs">{likes > 0 ? likes : ""}</span>
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

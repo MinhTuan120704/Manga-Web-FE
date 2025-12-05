@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
   // ========== Manga ==========
   MANGA: {
     LIST: "/mangas",
+    SEARCH: "/mangas/search",
     DETAIL: (id: string) => `/mangas/${id}`,
     CREATE: "/mangas",
     UPDATE: (id: string) => `/mangas/${id}`,
@@ -42,8 +43,6 @@ export const API_ENDPOINTS = {
     READING_HISTORY: "/users/reading-history",
     UPLOADED_MANGAS: "/users/uploaded-mangas",
     FOLLOWED_MANGAS: "/users/followed-mangas",
-    ME: "/users/me",
-
     GET_USERS: "/users",
   },
 

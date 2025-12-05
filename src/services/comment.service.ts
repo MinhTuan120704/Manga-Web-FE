@@ -5,7 +5,6 @@ import type {
   CreateCommentRequest,
   UpdateCommentRequest,
 } from "@/types/comment";
-import type { CommentListResponse } from "@/types/api";
 
 export const commentService = {
   /**
@@ -18,18 +17,14 @@ export const commentService = {
   /**
    * Lấy bình luận của một bộ truyện
    */
-  getCommentsByMangaId: async (
-    mangaId: string
-  ): Promise<CommentListResponse> => {
+  getCommentsByMangaId: async (mangaId: string): Promise<Comment[]> => {
     return axiosInstance.get(API_ENDPOINTS.COMMENT.BY_MANGA(mangaId));
   },
 
   /**
    * Lấy bình luận của một chapter
    */
-  getCommentsByChapterId: async (
-    chapterId: string
-  ): Promise<CommentListResponse> => {
+  getCommentsByChapterId: async (chapterId: string): Promise<Comment[]> => {
     return axiosInstance.get(API_ENDPOINTS.COMMENT.BY_CHAPTER(chapterId));
   },
 
