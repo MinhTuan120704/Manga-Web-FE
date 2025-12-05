@@ -4,16 +4,20 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { mangaService } from "@/services/manga.service";
 import { userService } from "@/services/user.service";
 import { authService } from "@/services/auth.service";
-import type { Manga, Genre, Chapter } from "@/types";
+import type { Manga } from "@/types/manga";
 import {
   MangaInfo,
   ChapterList,
   MangaDetailSkeleton,
   MangaDetailError,
+  RatingSection,
 } from "./components";
 import { CommentSection } from "@/components/common/CommentSection";
+import { toast } from "sonner";
+import type { Chapter } from "@/types/chapter";
+import type { Genre } from "@/types/genre";
 
-export function MangaDetail() {
+export const MangaDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -27,15 +31,32 @@ export function MangaDetail() {
     if (id) {
       fetchMangaDetail(id);
       fetchChapters(id);
+      checkIfFollowing(id);
     }
   }, [id]);
+
+  const checkIfFollowing = async (mangaId: string) => {
+    if (!authService.isAuthenticated()) {
+      setIsFollowing(false);
+      return;
+    }
+
+    try {
+      const profile = await userService.getMyProfile();
+      if (profile?.followedMangas) {
+        setIsFollowing(profile.followedMangas.includes(mangaId));
+      }
+    } catch (error) {
+      console.error("Failed to check follow status:", error);
+    }
+  };
 
   const fetchMangaDetail = async (mangaId: string) => {
     try {
       setLoading(true);
       const response = await mangaService.getMangaById(mangaId);
-      if (response.data) {
-        setManga(response.data);
+      if (response) {
+        setManga(response);
       }
     } catch (err) {
       setError("Failed to load manga details");
@@ -48,8 +69,8 @@ export function MangaDetail() {
   const fetchChapters = async (mangaId: string) => {
     try {
       const response = await mangaService.getChaptersByMangaId(mangaId);
-      if (response.data) {
-        setChapters(Array.isArray(response.data) ? response.data : []);
+      if (response) {
+        setChapters(Array.isArray(response) ? response : []);
       }
     } catch (err) {
       console.error("Failed to load chapters:", err);
@@ -58,7 +79,7 @@ export function MangaDetail() {
 
   const handleFollowToggle = async () => {
     if (!authService.isAuthenticated()) {
-      alert("Vui lòng đăng nhập để theo dõi truyện");
+      toast.error("Vui lòng đăng nhập để theo dõi truyện");
       navigate("/login");
       return;
     }
@@ -69,16 +90,18 @@ export function MangaDetail() {
       if (isFollowing) {
         await userService.unfollowManga(id);
         setIsFollowing(false);
+        toast.success("Đã hủy theo dõi truyện");
       } else {
         await userService.followManga({ mangaId: id });
         setIsFollowing(true);
+        toast.success("Đã theo dõi truyện");
       }
 
       // Refresh manga data to get updated follower count
       fetchMangaDetail(id);
     } catch (error) {
       console.error("Failed to toggle follow:", error);
-      alert("Có lỗi xảy ra. Vui lòng thử lại.");
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
     }
   };
 
@@ -91,7 +114,7 @@ export function MangaDetail() {
       });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      // TODO: Show toast notification
+      toast.success("Đã sao chép liên kết!");
     }
   };
 
@@ -142,7 +165,7 @@ export function MangaDetail() {
             genres={genres}
             averageRating={manga.averageRating}
             viewCount={manga.viewCount}
-            followerCount={manga.followerCount}
+            followedCount={manga.followedCount}
             chaptersCount={chapters.length}
             isFollowing={isFollowing}
             onStartReading={handleStartReading}
@@ -159,9 +182,18 @@ export function MangaDetail() {
           />
         </div>
 
+        {/* Rating Section */}
+        <div className="mb-8">
+          <RatingSection
+            mangaId={id!}
+            initialAverageRating={manga.averageRating}
+            initialTotalRatings={0}
+          />
+        </div>
+
         {/* Comments Section */}
         <CommentSection mangaId={id} />
       </div>
     </MainLayout>
   );
-}
+};

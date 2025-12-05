@@ -1,7 +1,8 @@
 import { ArrowLeft, Settings, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import type { Manga, Chapter } from "@/types";
+import type { Manga } from "@/types/manga";
+import type { Chapter } from "@/types/chapter";
 import type { ReaderSettings } from "../MangaReader";
 
 interface ReaderHeaderProps {

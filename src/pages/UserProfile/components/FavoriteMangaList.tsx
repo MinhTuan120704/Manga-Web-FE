@@ -1,59 +1,44 @@
 import { useEffect, useState } from "react";
-import { userService } from "@/services/user.service";
 import { mangaService } from "@/services/manga.service";
 import { MangaCard } from "@/components/common/MangaCard";
-import type { Manga, ReadingHistoryItem } from "@/types";
+import type { Manga } from "@/types/manga";
 
-export const FavoriteMangaList = () => {
+interface FavoriteMangaListProps {
+  followedMangaIds: string[];
+}
+
+export const FavoriteMangaList = ({
+  followedMangaIds,
+}: FavoriteMangaListProps) => {
   const [mangas, setMangas] = useState<Manga[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFollowedMangas = async () => {
+      if (followedMangaIds.length === 0) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        // Get reading history which contains manga references
-        const response = await userService.getReadingHistory();
-
-        // API returns array directly without data wrapper
-        let readingHistory: ReadingHistoryItem[] = [];
-
-        if (Array.isArray(response)) {
-          // Response is directly an array (axios already extracted data)
-          readingHistory = response;
-        } else if (Array.isArray(response.data)) {
-          // Data is in response.data
-          readingHistory = response.data;
-        } else if (response.data?.readingHistory) {
-          // Data is nested in readingHistory property
-          readingHistory = response.data.readingHistory;
-        }
-
-        const mangaIds = Array.from(
-          new Set(readingHistory.map((item: ReadingHistoryItem) => item.manga))
-        ) as string[];
-
-        console.log("Manga IDs:", mangaIds);
-
-        // Fetch manga details for each unique manga
-        if (mangaIds.length > 0) {
-          const mangaPromises = mangaIds.map((id) =>
-            mangaService.getMangaById(id).catch(() => null)
-          );
-          const mangaResults = await Promise.all(mangaPromises);
-          const validMangas = mangaResults
-            .filter((result) => result?.data)
-            .map((result) => result!.data!);
-          setMangas(validMangas);
-        }
+        // Fetch manga details for each followed manga ID
+        const mangaPromises = followedMangaIds.map((id) =>
+          mangaService.getMangaById(id).catch(() => null)
+        );
+        const mangaResults = await Promise.all(mangaPromises);
+        const validMangas = mangaResults
+          .filter((result) => result)
+          .map((result) => result!);
+        setMangas(validMangas);
       } catch (error) {
-        console.error("Failed to fetch reading history:", error);
+        console.error("Failed to fetch followed mangas:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchFollowedMangas();
-  }, []);
+  }, [followedMangaIds]);
 
   if (loading) {
     return (
@@ -66,12 +51,12 @@ export const FavoriteMangaList = () => {
   return (
     <div className="w-full">
       <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">
-        Truyện đã đọc gần đây
+        Truyện yêu thích
       </h2>
       {mangas.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-base sm:text-lg">
-            Chưa có truyện nào được đọc gần đây
+            Chưa có truyện nào được theo dõi
           </p>
         </div>
       ) : (

@@ -6,7 +6,8 @@ import { CommentInput } from "./CommentInput";
 import { CommentItem } from "./CommentItem";
 import { commentService } from "@/services/comment.service";
 import { authService } from "@/services/auth.service";
-import type { Comment } from "@/types";
+import type { Comment } from "@/types/comment";
+import { toast } from "sonner";
 
 interface CommentSectionProps {
   mangaId?: string;
@@ -35,8 +36,8 @@ export function CommentSection({
         response = await commentService.getCommentsByChapterId(chapterId);
       }
 
-      if (response?.data?.comments) {
-        setComments(response.data.comments);
+      if (response?.comments) {
+        setComments(response.comments);
       }
     } catch (error) {
       console.error("Failed to fetch comments:", error);
@@ -52,7 +53,7 @@ export function CommentSection({
 
   const handleSubmitComment = async (content: string) => {
     if (!currentUser) {
-      alert("Vui lòng đăng nhập để bình luận");
+      toast.error("Vui lòng đăng nhập để bình luận");
       return;
     }
 
@@ -64,11 +65,12 @@ export function CommentSection({
         chapter: chapterId,
       });
 
+      toast.success("Bình luận thành công!");
       // Refresh comments
       await fetchComments();
     } catch (error) {
       console.error("Failed to submit comment:", error);
-      alert("Không thể gửi bình luận. Vui lòng thử lại.");
+      toast.error("Không thể gửi bình luận. Vui lòng thử lại.");
     } finally {
       setSubmitting(false);
     }
@@ -80,10 +82,11 @@ export function CommentSection({
 
     try {
       await commentService.updateComment(commentId, { content: newContent });
+      toast.success("Cập nhật bình luận thành công!");
       await fetchComments();
     } catch (error) {
       console.error("Failed to edit comment:", error);
-      alert("Không thể chỉnh sửa bình luận. Vui lòng thử lại.");
+      toast.error("Không thể chỉnh sửa bình luận. Vui lòng thử lại.");
     }
   };
 
@@ -92,10 +95,11 @@ export function CommentSection({
 
     try {
       await commentService.deleteComment(commentId);
+      toast.success("Xóa bình luận thành công!");
       await fetchComments();
     } catch (error) {
       console.error("Failed to delete comment:", error);
-      alert("Không thể xóa bình luận. Vui lòng thử lại.");
+      toast.error("Không thể xóa bình luận. Vui lòng thử lại.");
     }
   };
 

@@ -24,13 +24,17 @@ export interface UpdateCommentRequest {
 }
 
 export interface Rating {
-  userId: string;
-  score: number;
+  _id?: string;
+  userId?: string;
+  user?: string;
+  manga?: string;
+  star: number;
   createdAt: string;
 }
 
 export interface RatingRequest {
-  score: number;
+  manga: string;
+  star: number;
 }
 
 export interface RatingResponse {

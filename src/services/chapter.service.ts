@@ -1,18 +1,17 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
 import type {
-  ApiResponse,
   Chapter,
   CreateChapterRequest,
   UpdateChapterRequest,
   ChapterCountResponse,
-} from "@/types";
+} from "@/types/chapter";
 
 export const chapterService = {
   /**
    * Lấy chi tiết một chương (để đọc)
    */
-  getChapterById: async (chapterId: string): Promise<ApiResponse<Chapter>> => {
+  getChapterById: async (chapterId: string): Promise<Chapter> => {
     return axiosInstance.get(API_ENDPOINTS.CHAPTER.DETAIL(chapterId));
   },
 
@@ -22,7 +21,7 @@ export const chapterService = {
   createChapter: async (
     mangaId: string,
     data: CreateChapterRequest
-  ): Promise<ApiResponse<Chapter>> => {
+  ): Promise<Chapter> => {
     const formData = new FormData();
     formData.append("chapterNumber", data.chapterNumber.toString());
     formData.append("title", data.title);
@@ -46,18 +45,18 @@ export const chapterService = {
   updateChapter: async (
     chapterId: string,
     data: UpdateChapterRequest
-  ): Promise<ApiResponse<Chapter>> => {
+  ): Promise<Chapter> => {
     return axiosInstance.put(API_ENDPOINTS.CHAPTER.UPDATE(chapterId), data);
   },
 
   /**
    * Xóa chương (Admin, Uploader)
    */
-  deleteChapter: async (chapterId: string): Promise<ApiResponse<void>> => {
+  deleteChapter: async (chapterId: string): Promise<void> => {
     return axiosInstance.delete(API_ENDPOINTS.CHAPTER.DELETE(chapterId));
   },
 
-  getChapterCountByUploader: async (): Promise<ApiResponse<ChapterCountResponse>> => {
+  getChapterCountByUploader: async (): Promise<ChapterCountResponse> => {
     return axiosInstance.get(API_ENDPOINTS.CHAPTER.COUNT_BY_UPLOADER);
   },
 };

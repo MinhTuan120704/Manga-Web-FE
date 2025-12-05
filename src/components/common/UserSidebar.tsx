@@ -23,8 +23,8 @@ export const UserSidebar = ({ isOpen, onClose }: UserSidebarProps) => {
   };
 
   const navItems = [
-    { icon: User, label: "Profile", path: "/user/profile" },
     { icon: Home, label: "Trang chủ", path: "/" },
+    { icon: User, label: "Trang cá nhân", path: "/user/profile" },
     { icon: Settings, label: "Cài đặt", path: "/user/settings" },
   ];
 

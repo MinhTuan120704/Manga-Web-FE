@@ -4,7 +4,8 @@ import { chapterService } from "@/services/chapter.service";
 import { mangaService } from "@/services/manga.service";
 import { userService } from "@/services/user.service";
 import { authService } from "@/services/auth.service";
-import type { Chapter, Manga } from "@/types";
+import type { Chapter } from "@/types/chapter";
+import type { Manga } from "@/types/manga";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -117,11 +118,11 @@ export function MangaReader() {
 
       // Fetch chapter details
       const chapterResponse = await chapterService.getChapterById(id);
-      if (!chapterResponse.data) {
+      if (!chapterResponse) {
         throw new Error("Chapter not found");
       }
 
-      const chapterData = chapterResponse.data;
+      const chapterData = chapterResponse;
       setChapter(chapterData);
 
       const mangaId =
@@ -135,13 +136,13 @@ export function MangaReader() {
         mangaService.getChaptersByMangaId(mangaId),
       ]);
 
-      if (mangaResponse.data) {
-        setManga(mangaResponse.data);
+      if (mangaResponse) {
+        setManga(mangaResponse);
       }
 
-      if (chaptersResponse.data) {
-        const chapters = Array.isArray(chaptersResponse.data)
-          ? chaptersResponse.data
+      if (chaptersResponse) {
+        const chapters = Array.isArray(chaptersResponse)
+          ? chaptersResponse
           : [];
         setAllChapters(
           chapters.sort((a, b) => a.chapterNumber - b.chapterNumber)

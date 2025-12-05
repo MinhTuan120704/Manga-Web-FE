@@ -1,20 +1,17 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
 import type {
-  ApiResponse,
   Comment,
-  CommentListResponse,
   CreateCommentRequest,
   UpdateCommentRequest,
-} from "@/types";
+} from "@/types/comment";
+import type { CommentListResponse } from "@/types/api";
 
 export const commentService = {
   /**
    * Tạo bình luận mới
    */
-  createComment: async (
-    data: CreateCommentRequest
-  ): Promise<ApiResponse<Comment>> => {
+  createComment: async (data: CreateCommentRequest): Promise<Comment> => {
     return axiosInstance.post(API_ENDPOINTS.COMMENT.CREATE, data);
   },
 
@@ -23,7 +20,7 @@ export const commentService = {
    */
   getCommentsByMangaId: async (
     mangaId: string
-  ): Promise<ApiResponse<CommentListResponse>> => {
+  ): Promise<CommentListResponse> => {
     return axiosInstance.get(API_ENDPOINTS.COMMENT.BY_MANGA(mangaId));
   },
 
@@ -32,7 +29,7 @@ export const commentService = {
    */
   getCommentsByChapterId: async (
     chapterId: string
-  ): Promise<ApiResponse<CommentListResponse>> => {
+  ): Promise<CommentListResponse> => {
     return axiosInstance.get(API_ENDPOINTS.COMMENT.BY_CHAPTER(chapterId));
   },
 
@@ -42,14 +39,14 @@ export const commentService = {
   updateComment: async (
     commentId: string,
     data: UpdateCommentRequest
-  ): Promise<ApiResponse<Comment>> => {
+  ): Promise<Comment> => {
     return axiosInstance.put(API_ENDPOINTS.COMMENT.UPDATE(commentId), data);
   },
 
   /**
    * Xóa bình luận
    */
-  deleteComment: async (commentId: string): Promise<ApiResponse<void>> => {
+  deleteComment: async (commentId: string): Promise<void> => {
     return axiosInstance.delete(API_ENDPOINTS.COMMENT.DELETE(commentId));
   },
 };

@@ -20,7 +20,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
-import type { Genre } from "@/types";
+import type { Genre } from "@/types/genre";
 
 interface MangaInfoProps {
   // Cover & Basic Info
@@ -38,7 +38,7 @@ interface MangaInfoProps {
   // Stats
   averageRating?: number;
   viewCount?: number;
-  followerCount?: number;
+  followedCount?: number;
   chaptersCount: number;
 
   // Actions
@@ -55,7 +55,7 @@ const statusColors = {
   cancelled: "bg-red-500",
 };
 
-export function MangaInfo({
+export const MangaInfo = ({
   coverImage,
   title,
   status,
@@ -66,13 +66,13 @@ export function MangaInfo({
   genres,
   averageRating,
   viewCount,
-  followerCount,
+  followedCount,
   chaptersCount,
   isFollowing,
   onStartReading,
   onFollowToggle,
   onShare,
-}: MangaInfoProps) {
+}: MangaInfoProps) => {
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   const formatDate = (dateString: string): string => {
@@ -247,9 +247,11 @@ export function MangaInfo({
             <CardContent className="pt-6 text-center">
               <Heart className="h-8 w-8 mx-auto mb-2 text-red-500" />
               <div className="text-2xl font-bold">
-                {followerCount?.toLocaleString() || 0}
+                {followedCount?.toLocaleString() || 0}
               </div>
-              <div className="text-xs text-muted-foreground">Người theo dõi</div>
+              <div className="text-xs text-muted-foreground">
+                Người theo dõi
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -272,4 +274,4 @@ export function MangaInfo({
       </div>
     </div>
   );
-}
+};

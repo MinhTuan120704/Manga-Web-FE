@@ -7,10 +7,10 @@ interface MangaDetailErrorProps {
   onReturnHome: () => void;
 }
 
-export function MangaDetailError({
+export const MangaDetailError = ({
   error,
   onReturnHome,
-}: MangaDetailErrorProps) {
+}: MangaDetailErrorProps) => {
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-16 text-center">
@@ -23,4 +23,4 @@ export function MangaDetailError({
       </div>
     </MainLayout>
   );
-}
+};

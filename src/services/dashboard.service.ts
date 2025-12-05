@@ -1,7 +1,19 @@
 import { userService } from "./user.service";
 import { mangaService } from "./manga.service";
-import { chapterService } from "./chapter.service";
-import type { DashboardData, DashboardStats, MangaWithChapters, Manga, Chapter, ApiResponse } from "@/types";
+import { chapterService } from "./chapter.service"; // 🆕 Import chapter service
+import type {
+  DashboardData,
+  DashboardStats,
+  MangaWithChapters,
+} from "@/types/dashboard";
+import type { Manga } from "@/types/manga";
+import type { Chapter } from "@/types/chapter";
+
+interface ChapterCountData {
+  uploaderId: string;
+  totalChapters: number;
+  totalMangas: number;
+}
 
 export const dashboardService = {
   /**
@@ -10,67 +22,25 @@ export const dashboardService = {
   getDashboardData: async (): Promise<DashboardData> => {
     try {
       console.log("🚀 Starting dashboard data fetch...");
-      
+
       // 1. Fetch song song: mangas và chapter count
       const [mangasResponse, chapterCountResponse] = await Promise.all([
         userService.getUploadedMangas(),
-        chapterService.getChapterCountByUploader(),
+        chapterService.getChapterCountByUploader(), // 🆕 Fetch từ API
       ]);
-
-      console.log("📦 Mangas Response:", mangasResponse);
-      console.log("📖 Chapter Count Response:", chapterCountResponse);
-
-      // ✅ FIX: Type-safe extraction với proper type checking
-      let mangas: Manga[] = [];
-      
-      // Handle different response structures
-      if (Array.isArray(mangasResponse)) {
-        // Case 1: Response trực tiếp là array
-        mangas = mangasResponse;
-        console.log("📚 Case 1: Direct array");
-      } else if (mangasResponse && typeof mangasResponse === 'object') {
-        // Case 2: Response có structure {data: ...}
-        const responseData = mangasResponse as ApiResponse<Manga[] | { mangas: Manga[] }>;
-        
-        if (responseData.data) {
-          if (Array.isArray(responseData.data)) {
-            // Case 2a: {data: [...]}
-            mangas = responseData.data;
-            console.log("📚 Case 2a: data is array");
-          } else if (responseData.data && typeof responseData.data === 'object' && 'mangas' in responseData.data) {
-            // Case 2b: {data: {mangas: [...]}
-            mangas = responseData.data.mangas;
-            console.log("📚 Case 2b: data.mangas is array");
-          }
-        }
-      }
-
-      console.log("📚 Extracted mangas:", mangas);
-      console.log("📚 Total mangas:", mangas.length);
-
-      const chapterCountData = chapterCountResponse.data;
+      const mangas: Manga[] = mangasResponse || [];
+      const chapterCountData = chapterCountResponse as ChapterCountData;
 
       // 2. Fetch chapters cho mỗi manga (parallel)
       const mangasWithChapters: MangaWithChapters[] = await Promise.all(
         mangas.map(async (manga) => {
           try {
-            const chaptersResponse = await mangaService.getChaptersByMangaId(manga._id);
-            
-            // ✅ FIX: Type-safe chapters extraction
-            let chapters: Chapter[] = [];
-            
-            if (Array.isArray(chaptersResponse)) {
-              chapters = chaptersResponse;
-            } else if (chaptersResponse && typeof chaptersResponse === 'object') {
-              const chapterData = chaptersResponse as ApiResponse<Chapter[]>;
-              if (chapterData.data && Array.isArray(chapterData.data)) {
-                chapters = chapterData.data;
-              }
-            }
-            
-            console.log(`📖 Manga "${manga.title}": ${chapters.length} chapters`);
-            
-            // Sort chapters by number descending
+            const chaptersResponse = await mangaService.getChaptersByMangaId(
+              manga._id
+            );
+            const chapters: Chapter[] = chaptersResponse || [];
+
+            // Sort chapters by number descending để lấy latest
             const sortedChapters = [...chapters].sort(
               (a, b) => b.chapterNumber - a.chapterNumber
             );
@@ -81,7 +51,10 @@ export const dashboardService = {
               latestChapter: sortedChapters[0] || undefined,
             };
           } catch (error) {
-            console.error(`❌ Failed to fetch chapters for manga ${manga._id}:`, error);
+            console.error(
+              `Failed to fetch chapters for manga ${manga._id}:`,
+              error
+            );
             return {
               ...manga,
               chapters: [],
@@ -105,23 +78,20 @@ export const dashboardService = {
           (sum, manga) => sum + (manga.followedCount || 0),
           0
         ),
-        avgRating: mangasWithChapters.length > 0
-          ? mangasWithChapters.reduce(
-              (sum, manga) => sum + (manga.averageRating || 0),
-              0
-            ) / mangasWithChapters.length
-          : 0,
+        avgRating:
+          mangasWithChapters.length > 0
+            ? mangasWithChapters.reduce(
+                (sum, manga) => sum + (manga.averageRating || 0),
+                0
+              ) / mangasWithChapters.length
+            : 0,
       };
 
       console.log("📊 Dashboard stats:", stats);
 
       // 4. Get recently updated mangas
       const recentlyUpdated = [...mangasWithChapters]
-        .filter(manga => {
-          const hasLatestChapter = !!manga.latestChapter;
-          console.log(`🔍 "${manga.title}": hasLatestChapter=${hasLatestChapter}`);
-          return hasLatestChapter;
-        })
+        .filter((manga) => manga.latestChapter)
         .sort((a, b) => {
           const dateA = a.latestChapter?.createdAt || a.updatedAt;
           const dateB = b.latestChapter?.createdAt || b.updatedAt;
@@ -152,7 +122,7 @@ export const dashboardService = {
       console.log("✅ Final dashboard data:", {
         totalMangas: result.mangas.length,
         recentlyUpdatedCount: result.recentlyUpdated.length,
-        popularMangasCount: result.popularMangas.length
+        popularMangasCount: result.popularMangas.length,
       });
 
       return result;

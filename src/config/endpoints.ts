@@ -41,6 +41,10 @@ export const API_ENDPOINTS = {
     UNFOLLOW: "/users/unfollow",
     READING_HISTORY: "/users/reading-history",
     UPLOADED_MANGAS: "/users/uploaded-mangas",
+    FOLLOWED_MANGAS: "/users/followed-mangas",
+    ME: "/users/me",
+
+    GET_USERS: "/users",
   },
 
   // ========== Comment ==========

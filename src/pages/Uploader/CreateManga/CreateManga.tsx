@@ -1,11 +1,23 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
@@ -19,8 +31,18 @@ import {
 import { toast } from "sonner";
 import { mangaService } from "@/services/manga.service";
 import { genreService } from "@/services/genre.service";
-import { ArrowLeft, Upload, BookOpen, Loader2, X, Search, AlertCircle, CheckCircle2, Eye } from "lucide-react";
-import type { Genre, CreateMangaRequest } from "@/types";
+import {
+  ArrowLeft,
+  Upload,
+  BookOpen,
+  Loader2,
+  X,
+  Search,
+  AlertCircle,
+} from "lucide-react";
+import type { Genre } from "@/types/genre";
+import type { CreateMangaRequest } from "@/types/manga";
+
 
 // Validation errors type
 interface ValidationErrors {
@@ -40,8 +62,10 @@ export function CreateManga() {
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
   const [coverPreview, setCoverPreview] = useState<string>("");
 
+
   // Validation errors
   const [errors, setErrors] = useState<ValidationErrors>({});
+
 
   // Genre search states
   const [genreSearch, setGenreSearch] = useState("");
@@ -59,6 +83,7 @@ export function CreateManga() {
     author: "",
     artist: "",
     status: "ongoing" as "ongoing" | "completed" | "hiatus",
+    coverImage: null as File | null,
     coverImage: null as File | null,
   });
 
@@ -125,6 +150,11 @@ export function CreateManga() {
       if (file.size > 5 * 1024 * 1024) {
         setErrors((prev) => ({
           ...prev,
+          coverImage: "Kích thước ảnh không được vượt quá 5MB",
+        }));
+        toast.error("Kích thước ảnh không được vượt quá 5MB");
+        setErrors((prev) => ({
+          ...prev,
           coverImage: "Kích thước file không được vượt quá 5MB",
         }));
         toast.error("Kích thước file không được vượt quá 5MB");
@@ -137,12 +167,17 @@ export function CreateManga() {
           ...prev,
           coverImage: "Vui lòng chọn file ảnh hợp lệ",
         }));
+        setErrors((prev) => ({
+          ...prev,
+          coverImage: "Vui lòng chọn file ảnh hợp lệ",
+        }));
         toast.error("Vui lòng chọn file ảnh hợp lệ");
         return;
       }
 
       setFormData((prev) => ({ ...prev, coverImage: file }));
       setErrors((prev) => ({ ...prev, coverImage: undefined }));
+
 
       // Create preview
       const reader = new FileReader();
@@ -155,10 +190,21 @@ export function CreateManga() {
 
   const handleRemoveCover = () => {
     setFormData((prev) => ({ ...prev, coverImage: null }));
+    setFormData((prev) => ({ ...prev, coverImage: null }));
     setCoverPreview("");
     setErrors((prev) => ({ ...prev, coverImage: undefined }));
   };
 
+  // Filter genres - Hiển thị tất cả nếu search rỗng
+  const filteredGenres = genres.filter((genre) => {
+    const matchesSearch =
+      genreSearch.trim() === "" ||
+      genre.name.toLowerCase().includes(genreSearch.toLowerCase());
+    const notSelected = !selectedGenres.some(
+      (selected) => selected._id === genre._id
+    );
+    return matchesSearch && notSelected;
+  });
   const filteredGenres = Array.isArray(genres) 
     ? genres.filter((genre) => {
         const matchesSearch =
@@ -240,13 +286,15 @@ export function CreateManga() {
 
       console.log("Submitting manga:", {
         ...requestData,
-        coverImage: requestData.coverImage || null
+        coverImage: requestData.coverImage || null,
       });
 
       const response = await mangaService.createManga(requestData);
+      console.log("✅ Response:", response);
+
       console.log("Response:", response);
       
-      const mangaId = response.data?._id || "";
+      const mangaId = response?._id || "";
       const mangaTitle = formData.title.trim();
       
       setCreatedMangaId(mangaId);
@@ -254,32 +302,34 @@ export function CreateManga() {
       setShowSuccessDialog(true);
       
       toast.success("Tạo truyện mới thành công!");
+      navigate(`/uploader/manga/${response._id || ""}`);
+    } catch (error: unknown) {
+      console.error("❌ Error creating manga:", error);
+
     } catch (error: unknown) { 
       console.error("Error creating manga:", error);
       
       // Parse error message từ response
       let errorMessage = "Có lỗi xảy ra khi tạo truyện";
-      
+
       // Type guard cho axios error
-      if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { 
-          response?: { 
-            data?: { 
-              message?: string; 
-              errors?: Record<string, string> 
-            } 
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as {
+          response?: {
+            message?: string;
+            errors?: Record<string, string>;
           };
           message?: string;
         };
-        
-        if (axiosError.response?.data) {
-          const data = axiosError.response.data;
-          
+
+        if (axiosError.response) {
+          const data = axiosError.response;
+
           // Nếu có message từ API
           if (data.message) {
             errorMessage = data.message;
           }
-          
+
           // Nếu có validation errors từ API
           if (data.errors) {
             const apiErrors: ValidationErrors = {};
@@ -294,7 +344,7 @@ export function CreateManga() {
       } else if (error instanceof Error) {
         errorMessage = error.message;
       }
-      
+
       // Set general error
       setErrors((prev) => ({ ...prev, general: errorMessage }));
       toast.error(errorMessage);
@@ -355,7 +405,9 @@ export function CreateManga() {
             <BookOpen className="h-7 w-7 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Tạo truyện mới</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Tạo truyện mới
+            </h1>
             <p className="text-muted-foreground mt-1">
               Thêm một bộ truyện mới vào kho của bạn
             </p>
@@ -384,7 +436,10 @@ export function CreateManga() {
             <CardContent className="space-y-5">
               {/* Tên truyện - BẮT BUỘC */}
               <div className="space-y-2" id="title">
-                <Label htmlFor="title-input" className={errors.title ? "text-destructive" : ""}>
+                <Label
+                  htmlFor="title-input"
+                  className={errors.title ? "text-destructive" : ""}
+                >
                   Tên truyện <span className="text-destructive">*</span>
                 </Label>
                 <Input
@@ -419,7 +474,9 @@ export function CreateManga() {
                   id="description-input"
                   placeholder="Nhập mô tả về nội dung truyện, cốt truyện, nhân vật..."
                   value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("description", e.target.value)
+                  }
                   disabled={loading}
                   rows={6}
                   maxLength={2000}
@@ -442,7 +499,9 @@ export function CreateManga() {
                     id="author-input"
                     placeholder="Nhập tên tác giả"
                     value={formData.author}
-                    onChange={(e) => handleInputChange("author", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("author", e.target.value)
+                    }
                     disabled={loading}
                     maxLength={100}
                   />
@@ -458,7 +517,9 @@ export function CreateManga() {
                     id="artist"
                     placeholder="Nhập tên họa sĩ"
                     value={formData.artist}
-                    onChange={(e) => handleInputChange("artist", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("artist", e.target.value)
+                    }
                     disabled={loading}
                     maxLength={100}
                   />
@@ -468,11 +529,12 @@ export function CreateManga() {
               {/* Trạng thái - BẮT BUỘC (có default) */}
               <div className="space-y-2">
                 <Label htmlFor="status">
-                  Trạng thái phát hành <span className="text-destructive">*</span>
+                  Trạng thái phát hành{" "}
+                  <span className="text-destructive">*</span>
                 </Label>
                 <Select
                   value={formData.status}
-                  onValueChange={(value: "ongoing" | "completed" | "hiatus") => 
+                  onValueChange={(value: "ongoing" | "completed" | "hiatus") =>
                     handleInputChange("status", value)
                   }
                   disabled={loading}
@@ -501,7 +563,8 @@ export function CreateManga() {
             <CardHeader>
               <CardTitle>Ảnh bìa</CardTitle>
               <CardDescription>
-                Upload ảnh bìa cho truyện (tùy chọn, tỷ lệ khuyến nghị 2:3, tối đa 5MB)
+                Upload ảnh bìa cho truyện (tùy chọn, tỷ lệ khuyến nghị 2:3, tối
+                đa 5MB)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -516,12 +579,18 @@ export function CreateManga() {
                         disabled={loading}
                         className="flex-1"
                       />
-                      <Button 
-                        type="button" 
-                        variant="outline" 
+                      <Button
+                        type="button"
+                        variant="outline"
                         size="icon"
                         disabled={loading}
-                        onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
+                        onClick={() =>
+                          document
+                            .querySelector<HTMLInputElement>(
+                              'input[type="file"]'
+                            )
+                            ?.click()
+                        }
                       >
                         <Upload className="h-4 w-4" />
                       </Button>
@@ -629,14 +698,16 @@ export function CreateManga() {
                     )}
 
                     {/* No results */}
-                    {showGenreDropdown && genreSearch.trim() !== "" && filteredGenres.length === 0 && (
-                      <div
-                        ref={genreDropdownRef}
-                        className="absolute z-50 w-full mt-2 bg-popover border border-border rounded-lg shadow-lg p-4 text-center text-sm text-muted-foreground"
-                      >
-                        Không tìm thấy thể loại "{genreSearch}"
-                      </div>
-                    )}
+                    {showGenreDropdown &&
+                      genreSearch.trim() !== "" &&
+                      filteredGenres.length === 0 && (
+                        <div
+                          ref={genreDropdownRef}
+                          className="absolute z-50 w-full mt-2 bg-popover border border-border rounded-lg shadow-lg p-4 text-center text-sm text-muted-foreground"
+                        >
+                          Không tìm thấy thể loại "{genreSearch}"
+                        </div>
+                      )}
                   </div>
 
                   {/* Selected Genres */}
@@ -673,7 +744,9 @@ export function CreateManga() {
                       ? "Click vào ô tìm kiếm để xem tất cả thể loại"
                       : selectedGenres.length >= 5
                       ? "Đã đạt giới hạn 5 thể loại"
-                      : `Còn có thể chọn thêm ${5 - selectedGenres.length} thể loại`}
+                      : `Còn có thể chọn thêm ${
+                          5 - selectedGenres.length
+                        } thể loại`}
                   </p>
                 </>
               )}
@@ -691,8 +764,8 @@ export function CreateManga() {
             >
               Hủy bỏ
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={loading}
               className="order-1 sm:order-2"
             >

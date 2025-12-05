@@ -1,22 +1,14 @@
 import { useState, useEffect } from "react";
 import { UploaderLayout } from "@/components/layout/UploaderLayout";
 import { dashboardService } from "@/services/dashboard.service";
-import { 
-  BookOpen, 
-  Eye, 
-  Users, 
-  TrendingUp,
-  Loader2 
-} from "lucide-react";
-import { 
-  StatsCard, 
-  RecentUploads, 
-  PopularMangas 
-} from "./components";
-import type { DashboardData } from "@/types";
+import { BookOpen, Eye, Users, TrendingUp, Loader2 } from "lucide-react";
+import { StatsCard, RecentUploads, PopularMangas } from "./components";
+import type { DashboardData } from "@/types/dashboard";
 
 export function Dashboard() {
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,7 +18,7 @@ export function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      
+
       const data = await dashboardService.getDashboardData();
       console.log("Dashboard data loaded:", data);
       setDashboardData(data);
@@ -56,7 +48,7 @@ export function Dashboard() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center space-y-4">
             <p className="text-destructive">Không thể tải dữ liệu dashboard</p>
-            <button 
+            <button
               onClick={fetchDashboardData}
               className="text-primary hover:underline"
             >

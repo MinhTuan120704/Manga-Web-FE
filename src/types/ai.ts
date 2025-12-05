@@ -4,11 +4,15 @@ export interface AIGetMangaRequest {
   description: string;
 }
 
+export interface AIRecommendation {
+  title: string;
+  description: string;
+  genres: string[];
+  suggestedAuthor: string;
+  estimatedChapters: number;
+}
+
 export interface AIGetMangaResponse {
-  suggestedGenres: string[];
-  recommendedMangas: {
-    id: string;
-    name: string;
-    reason: string;
-  }[];
+  status: string;
+  recommendations: AIRecommendation[];
 }
