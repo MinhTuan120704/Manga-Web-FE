@@ -43,7 +43,13 @@ export const ShareModal = ({
           url,
         });
       } catch (error) {
+        // Handle user cancellation (AbortError) separately
+        if (error && typeof error === "object" && (error as any).name === "AbortError") {
+          // User cancelled the share dialog; do not show an error toast
+          return;
+        }
         console.error("Failed to share:", error);
+        toast.error("Không thể chia sẻ liên kết");
       }
     }
   };
