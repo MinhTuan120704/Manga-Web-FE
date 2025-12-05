@@ -2,8 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
 import { uploaderRoutes } from "./uploaderRoutes";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
-
+import { PageLoader } from "@/components/common/PageLoader";
 // Lazy load all components
 const MangaDetail = lazy(() =>
   import("@/pages/MangaDetail/MangaDetail").then((module) => ({
@@ -58,6 +57,11 @@ const UserProfile = lazy(() =>
     default: module.UserProfile,
   }))
 );
+const MangaReader = lazy(() =>
+  import("@/pages/MangaReader/MangaReader").then((module) => ({
+    default: module.MangaReader,
+  }))
+);
 
 const AdvancedSearch = lazy(() =>
   import("@/pages/AdvancedSearch/AdvancedSearch").then((module) => ({
@@ -81,7 +85,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<PageLoader />}>
         <Homepage />
       </Suspense>
     ),
@@ -90,7 +94,7 @@ export const router = createBrowserRouter([
   {
     path: "/search",
     element: (
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<PageLoader />}>
         <AdvancedSearch />
       </Suspense>
     ),
@@ -98,7 +102,7 @@ export const router = createBrowserRouter([
   {
     path: "/ai-recommendation",
     element: (
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<PageLoader />}>
         <AIRecommendation />
       </Suspense>
     ),
@@ -106,9 +110,9 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: (
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<PageLoader />}>
         <AuthLayout disableScroll={true}>
-          <Suspense fallback={<LoadingSpinner />}>
+          <Suspense fallback={<PageLoader />}>
             <Login />
           </Suspense>
         </AuthLayout>
@@ -118,9 +122,9 @@ export const router = createBrowserRouter([
   {
     path: "/register",
     element: (
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<PageLoader />}>
         <AuthLayout>
-          <Suspense fallback={<LoadingSpinner />}>
+          <Suspense fallback={<PageLoader />}>
             <Register />
           </Suspense>
         </AuthLayout>
@@ -130,7 +134,7 @@ export const router = createBrowserRouter([
   {
     path: "/user",
     element: (
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<PageLoader />}>
         <UserLayout />
       </Suspense>
     ),
@@ -138,7 +142,7 @@ export const router = createBrowserRouter([
       {
         path: "profile",
         element: (
-          <Suspense fallback={<LoadingSpinner />}>
+          <Suspense fallback={<PageLoader />}>
             <UserProfile />
           </Suspense>
         ),
@@ -146,7 +150,7 @@ export const router = createBrowserRouter([
       {
         path: "settings",
         element: (
-          <Suspense fallback={<LoadingSpinner />}>
+          <Suspense fallback={<PageLoader />}>
             <UserSettings />
           </Suspense>
         ),
@@ -156,15 +160,19 @@ export const router = createBrowserRouter([
   {
     path: "/manga/:id",
     element: (
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<PageLoader />}>
         <MangaDetail />
       </Suspense>
     ),
   },
   {
+    path: "/reader/:chapterId",
+    element: <MangaReader />,
+  },
+  {
     path: "/admin",
     element: (
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<PageLoader />}>
         <AdminPage />
       </Suspense>
     ),
@@ -176,7 +184,7 @@ export const router = createBrowserRouter([
   {
     path: "*",
     element: (
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<PageLoader />}>
         <NotFound />
       </Suspense>
     ),
