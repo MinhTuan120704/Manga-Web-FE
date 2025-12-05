@@ -39,10 +39,11 @@ import {
   X,
   Search,
   AlertCircle,
+  CheckCircle2,
+  Eye,
 } from "lucide-react";
 import type { Genre } from "@/types/genre";
 import type { CreateMangaRequest } from "@/types/manga";
-
 
 // Validation errors type
 interface ValidationErrors {
@@ -62,10 +63,8 @@ export function CreateManga() {
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
   const [coverPreview, setCoverPreview] = useState<string>("");
 
-
   // Validation errors
   const [errors, setErrors] = useState<ValidationErrors>({});
-
 
   // Genre search states
   const [genreSearch, setGenreSearch] = useState("");
@@ -84,7 +83,6 @@ export function CreateManga() {
     artist: "",
     status: "ongoing" as "ongoing" | "completed" | "hiatus",
     coverImage: null as File | null,
-    coverImage: null as File | null,
   });
 
   // ✅ FIX: Fetch genres với proper type checking
@@ -93,21 +91,21 @@ export function CreateManga() {
       try {
         const response = await genreService.getGenres();
         console.log("Raw genres response:", response);
-        
+
         let genreList: Genre[] = [];
-        
+
         if (Array.isArray(response)) {
           genreList = response;
-        } else if (response && typeof response === 'object') {
+        } else if (response && typeof response === "object") {
           const apiResponse = response as { data?: Genre[] };
           if (apiResponse.data && Array.isArray(apiResponse.data)) {
             genreList = apiResponse.data;
           }
         }
-        
+
         console.log("Extracted genres:", genreList);
         console.log("Total genres:", genreList.length);
-        
+
         setGenres(genreList);
       } catch (error) {
         console.error("Error loading genres:", error);
@@ -178,7 +176,6 @@ export function CreateManga() {
       setFormData((prev) => ({ ...prev, coverImage: file }));
       setErrors((prev) => ({ ...prev, coverImage: undefined }));
 
-
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -196,16 +193,7 @@ export function CreateManga() {
   };
 
   // Filter genres - Hiển thị tất cả nếu search rỗng
-  const filteredGenres = genres.filter((genre) => {
-    const matchesSearch =
-      genreSearch.trim() === "" ||
-      genre.name.toLowerCase().includes(genreSearch.toLowerCase());
-    const notSelected = !selectedGenres.some(
-      (selected) => selected._id === genre._id
-    );
-    return matchesSearch && notSelected;
-  });
-  const filteredGenres = Array.isArray(genres) 
+  const filteredGenres = Array.isArray(genres)
     ? genres.filter((genre) => {
         const matchesSearch =
           genreSearch.trim() === "" ||
@@ -293,22 +281,19 @@ export function CreateManga() {
       console.log("✅ Response:", response);
 
       console.log("Response:", response);
-      
+
       const mangaId = response?._id || "";
       const mangaTitle = formData.title.trim();
-      
+
       setCreatedMangaId(mangaId);
       setCreatedMangaTitle(mangaTitle);
       setShowSuccessDialog(true);
-      
+
       toast.success("Tạo truyện mới thành công!");
       navigate(`/uploader/manga/${response._id || ""}`);
     } catch (error: unknown) {
       console.error("❌ Error creating manga:", error);
 
-    } catch (error: unknown) { 
-      console.error("Error creating manga:", error);
-      
       // Parse error message từ response
       let errorMessage = "Có lỗi xảy ra khi tạo truyện";
 
@@ -788,29 +773,30 @@ export function CreateManga() {
               Tạo truyện thành công!
             </DialogTitle>
             <DialogDescription className="text-center pt-2">
-              Truyện <span className="font-semibold text-foreground">"{createdMangaTitle}"</span> đã được tạo thành công.
+              Truyện{" "}
+              <span className="font-semibold text-foreground">
+                "{createdMangaTitle}"
+              </span>{" "}
+              đã được tạo thành công.
               <br />
               Bạn có thể xem truyện hoặc tiếp tục tạo truyện mới.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex-col sm:flex-col gap-2 mt-4">
-            <Button 
-              onClick={handleViewManga}
-              className="w-full"
-            >
+            <Button onClick={handleViewManga} className="w-full">
               <Eye className="mr-2 h-4 w-4" />
               Xem truyện
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={handleCreateAnother}
               className="w-full"
             >
               <BookOpen className="mr-2 h-4 w-4" />
               Tạo truyện khác
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={handleBackToDashboard}
               className="w-full"
             >
