@@ -35,9 +35,17 @@ const UserLayout = lazy(() =>
   }))
 );
 
-const NotFound = lazy(() => import("@/pages/NotFound/NotFound"));
+const NotFound = lazy(() =>
+  import("@/pages/NotFound/NotFound").then((module) => ({
+    default: module.default,
+  }))
+);
 
-const AdminPage = lazy(() => import("@/pages/Admin/Admin"));
+const AdminPage = lazy(() =>
+  import("@/pages/Admin/Admin").then((module) => ({
+    default: module.default,
+  }))
+);
 
 const Homepage = lazy(() =>
   import("@/pages/Home/Homepage").then((module) => ({
@@ -158,18 +166,19 @@ export const router = createBrowserRouter([
   ...uploaderRoutes,
 
   {
-    path: "*",
-    element: (
-      <Suspense fallback={<LoadingSpinner />}>
-        <NotFound />
-      </Suspense>
-    ),
-  },
-  {
     path: "/admin",
     element: (
       <Suspense fallback={<LoadingSpinner />}>
         <AdminPage />
+      </Suspense>
+    ),
+  },
+
+  {
+    path: "*",
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <NotFound />
       </Suspense>
     ),
   },
