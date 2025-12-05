@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { authService } from "@/services/auth.service";
 import { BookOpen, Eye, EyeOff, Loader2 } from "lucide-react";
-import type { LoginRequest } from "@/types";
+import type { LoginRequest } from "@/types/auth";
 
 export function Login() {
   const navigate = useNavigate();

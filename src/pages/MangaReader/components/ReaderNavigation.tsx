@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import type { Chapter } from "@/types";
+import type { Chapter } from "@/types/chapter";
 import type { ReaderSettings } from "../MangaReader";
 
 interface ReaderNavigationProps {

@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Eye, Book } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import type { Manga } from "@/types";
+import type { Manga } from "@/types/manga";
 
 interface RecentUploadsProps {
   mangas: Manga[];
@@ -13,7 +13,10 @@ export function RecentUploads({ mangas }: RecentUploadsProps) {
 
   // Sort by updatedAt và lấy 5 truyện mới nhất
   const recentMangas = [...mangas]
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )
     .slice(0, 5);
 
   const formatDate = (date: string) => {

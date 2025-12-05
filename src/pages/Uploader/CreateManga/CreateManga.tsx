@@ -32,7 +32,8 @@ import {
   Search,
   AlertCircle,
 } from "lucide-react";
-import type { Genre, CreateMangaRequest } from "@/types";
+import type { Genre } from "@/types/genre";
+import type { CreateMangaRequest } from "@/types/manga";
 
 // Validation errors type
 interface ValidationErrors {

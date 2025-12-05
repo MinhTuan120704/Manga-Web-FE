@@ -4,7 +4,8 @@ import { chapterService } from "@/services/chapter.service";
 import { mangaService } from "@/services/manga.service";
 import { userService } from "@/services/user.service";
 import { authService } from "@/services/auth.service";
-import type { Chapter, Manga } from "@/types";
+import type { Chapter } from "@/types/chapter";
+import type { Manga } from "@/types/manga";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Chapter } from "@/types";
+import type { Chapter } from "@/types/chapter";
 import type { ReaderSettings } from "../MangaReader";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";

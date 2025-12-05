@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { aiService } from "@/services/ai.service";
-import type { AIRecommendation as AIRecommendationType } from "@/types";
+import type { AIRecommendation as AIRecommendationType } from "@/types/ai";
 import { DescriptionInput, RecommendationList, EmptyState } from "./components";
 import { toast } from "sonner";
 import { Alert } from "@/components/ui/alert";

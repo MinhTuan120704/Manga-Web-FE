@@ -165,7 +165,7 @@ export const MangaDetail = () => {
             genres={genres}
             averageRating={manga.averageRating}
             viewCount={manga.viewCount}
-            followerCount={manga.followedCount}
+            followedCount={manga.followedCount}
             chaptersCount={chapters.length}
             isFollowing={isFollowing}
             onStartReading={handleStartReading}

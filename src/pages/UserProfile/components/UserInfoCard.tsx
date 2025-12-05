@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UpdateUserInfoModal } from "./UpdateUserInfoModal";
-import type { User } from "@/types";
+import type { User } from "@/types/user";
 
 interface UserInfoCardProps {
   user: User | null;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { mangaService } from "@/services/manga.service";
 import { MangaCard } from "@/components/common/MangaCard";
-import type { Manga } from "@/types";
+import type { Manga } from "@/types/manga";
 
 interface FavoriteMangaListProps {
   followedMangaIds: string[];

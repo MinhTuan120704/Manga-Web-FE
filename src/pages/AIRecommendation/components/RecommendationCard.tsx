@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { User, Hash } from "lucide-react";
-import type { AIRecommendation } from "@/types";
+import type { AIRecommendation } from "@/types/ai";
 
 interface RecommendationCardProps {
   recommendation: AIRecommendation;

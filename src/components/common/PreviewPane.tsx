@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
-import type { Manga, Genre } from "@/types";
+import type { Manga } from "@/types/manga";
+import type { Genre } from "@/types/genre";
 
 interface PreviewPaneProps {
   show: boolean;

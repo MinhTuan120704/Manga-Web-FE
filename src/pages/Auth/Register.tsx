@@ -3,11 +3,25 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { authService } from "@/services/auth.service";
-import { BookOpen, Eye, EyeOff, Loader2, UserCircle, Upload } from "lucide-react";
-import type { RegisterRequest } from "@/types";
+import {
+  BookOpen,
+  Eye,
+  EyeOff,
+  Loader2,
+  UserCircle,
+  Upload,
+} from "lucide-react";
+import type { RegisterRequest } from "@/types/auth";
 
 export function Register() {
   const navigate = useNavigate();
@@ -47,19 +61,19 @@ export function Register() {
     try {
       // Đăng ký
       await authService.register(formData);
-      
+
       // Tự động đăng nhập sau khi đăng ký thành công
       await authService.login({
         email: formData.email,
         password: formData.password,
       });
-      
+
       // Chuyển về trang chủ
       navigate("/");
       window.location.reload();
     } catch (err: unknown) {
       // Xử lý error một cách an toàn
-      if (err && typeof err === 'object' && 'message' in err) {
+      if (err && typeof err === "object" && "message" in err) {
         setError(err.message as string);
       } else {
         setError("Đăng ký thất bại. Vui lòng thử lại.");
@@ -72,14 +86,16 @@ export function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 relative">
       {/* Logo - Top left corner */}
-      <Link 
-        to="/" 
+      <Link
+        to="/"
         className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent transition-colors"
       >
         <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
           <BookOpen className="h-5 w-5 text-primary-foreground" />
         </div>
-        <span className="font-semibold text-lg hidden sm:inline">Manga Web</span>
+        <span className="font-semibold text-lg hidden sm:inline">
+          Manga Web
+        </span>
       </Link>
 
       <Card className="w-full max-w-md shadow-lg">
@@ -208,7 +224,10 @@ export function Register() {
               >
                 <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-accent/50 transition-colors">
                   <RadioGroupItem value="reader" id="reader" />
-                  <Label htmlFor="reader" className="cursor-pointer flex-1 font-normal">
+                  <Label
+                    htmlFor="reader"
+                    className="cursor-pointer flex-1 font-normal"
+                  >
                     <div className="flex items-center gap-2">
                       <UserCircle className="h-5 w-5 text-primary" />
                       <div>
@@ -220,10 +239,13 @@ export function Register() {
                     </div>
                   </Label>
                 </div>
-                
+
                 <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-accent/50 transition-colors">
                   <RadioGroupItem value="uploader" id="uploader" />
-                  <Label htmlFor="uploader" className="cursor-pointer flex-1 font-normal">
+                  <Label
+                    htmlFor="uploader"
+                    className="cursor-pointer flex-1 font-normal"
+                  >
                     <div className="flex items-center gap-2">
                       <Upload className="h-5 w-5 text-primary" />
                       <div>
@@ -240,7 +262,11 @@ export function Register() {
           </CardContent>
 
           <CardFooter className="flex flex-col space-y-4 pb-6">
-            <Button type="submit" className="w-full h-11 text-base" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full h-11 text-base"
+              disabled={loading}
+            >
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
