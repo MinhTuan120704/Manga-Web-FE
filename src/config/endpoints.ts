@@ -43,6 +43,7 @@ export const API_ENDPOINTS = {
     READING_HISTORY: "/users/reading-history",
     UPLOADED_MANGAS: "/users/uploaded-mangas",
     FOLLOWED_MANGAS: "/users/followed-mangas",
+    GET_USERS: "/users",
   },
 
   // ========== Comment ==========
