@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CommentInput } from "./CommentInput";
 import { CommentItem } from "./CommentItem";
+import { ConfirmationModal } from "./ConfirmationModal";
 import { commentService } from "@/services/comment.service";
 import { authService } from "@/services/auth.service";
 import type { Comment } from "@/types/comment";
@@ -23,6 +24,9 @@ export function CommentSection({
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const currentUser = authService.getStoredUser();
 
   const fetchComments = async () => {
@@ -36,8 +40,8 @@ export function CommentSection({
         response = await commentService.getCommentsByChapterId(chapterId);
       }
 
-      if (response?.comments) {
-        setComments(response.comments);
+      if (response) {
+        setComments(response);
       }
     } catch (error) {
       console.error("Failed to fetch comments:", error);
@@ -76,10 +80,7 @@ export function CommentSection({
     }
   };
 
-  const handleEditComment = async (commentId: string, content: string) => {
-    const newContent = prompt("Chỉnh sửa bình luận:", content);
-    if (!newContent || newContent === content) return;
-
+  const handleEditComment = async (commentId: string, newContent: string) => {
     try {
       await commentService.updateComment(commentId, { content: newContent });
       toast.success("Cập nhật bình luận thành công!");
@@ -90,16 +91,26 @@ export function CommentSection({
     }
   };
 
-  const handleDeleteComment = async (commentId: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa bình luận này?")) return;
+  const handleDeleteComment = (commentId: string) => {
+    setCommentToDelete(commentId);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDeleteComment = async () => {
+    if (!commentToDelete) return;
 
     try {
-      await commentService.deleteComment(commentId);
+      setDeleting(true);
+      await commentService.deleteComment(commentToDelete);
       toast.success("Xóa bình luận thành công!");
       await fetchComments();
+      setDeleteModalOpen(false);
+      setCommentToDelete(null);
     } catch (error) {
       console.error("Failed to delete comment:", error);
       toast.error("Không thể xóa bình luận. Vui lòng thử lại.");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -174,6 +185,21 @@ export function CommentSection({
           )}
         </div>
       </CardContent>
+
+      <ConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setCommentToDelete(null);
+        }}
+        onConfirm={confirmDeleteComment}
+        title="Xóa bình luận"
+        message="Bạn có chắc chắn muốn xóa bình luận này? Hành động này không thể hoàn tác."
+        confirmText="Xóa"
+        cancelText="Hủy"
+        variant="danger"
+        loading={deleting}
+      />
     </Card>
   );
 }

@@ -6,7 +6,7 @@ export interface Comment {
   _id: string;
   manga?: string;
   chapter?: string;
-  userId: string | User;
+  user: string | User; // Changed from userId to user to match API response
   content: string;
   parentId?: string | null;
   createdAt: string;
