@@ -161,10 +161,6 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-
-  // ========== UPLOADER ROUTES ==========
-  ...uploaderRoutes,
-
   {
     path: "/admin",
     element: (
@@ -173,6 +169,9 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
+
+  // ========== UPLOADER ROUTES ==========
+  ...uploaderRoutes,
 
   {
     path: "*",
