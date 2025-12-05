@@ -21,6 +21,8 @@ export const dashboardService = {
    */
   getDashboardData: async (): Promise<DashboardData> => {
     try {
+      console.log("🚀 Starting dashboard data fetch...");
+
       // 1. Fetch song song: mangas và chapter count
       const [mangasResponse, chapterCountResponse] = await Promise.all([
         userService.getUploadedMangas(),
@@ -29,9 +31,7 @@ export const dashboardService = {
       const mangas: Manga[] = mangasResponse || [];
       const chapterCountData = chapterCountResponse as ChapterCountData;
 
-      console.log("Chapter count from API:", chapterCountData);
-
-      // 2. Fetch chapters cho mỗi manga (parallel) - để lấy latest chapter
+      // 2. Fetch chapters cho mỗi manga (parallel)
       const mangasWithChapters: MangaWithChapters[] = await Promise.all(
         mangas.map(async (manga) => {
           try {
@@ -64,10 +64,12 @@ export const dashboardService = {
         })
       );
 
-      // 3. Calculate statistics - SỬ DỤNG DỮ LIỆU TỪ API
+      console.log("📦 Mangas with chapters:", mangasWithChapters.length);
+
+      // 3. Calculate statistics
       const stats: DashboardStats = {
-        totalMangas: chapterCountData?.totalMangas || mangas.length, // 🆕 Từ API
-        totalChapters: chapterCountData?.totalChapters || 0, // 🆕 Từ API (chính xác hơn)
+        totalMangas: chapterCountData?.totalMangas || mangas.length,
+        totalChapters: chapterCountData?.totalChapters || 0,
         totalViews: mangasWithChapters.reduce(
           (sum, manga) => sum + (manga.viewCount || 0),
           0
@@ -85,9 +87,9 @@ export const dashboardService = {
             : 0,
       };
 
-      console.log("Dashboard stats:", stats);
+      console.log("📊 Dashboard stats:", stats);
 
-      // 4. Get recently updated mangas (có chapters mới nhất)
+      // 4. Get recently updated mangas
       const recentlyUpdated = [...mangasWithChapters]
         .filter((manga) => manga.latestChapter)
         .sort((a, b) => {
@@ -97,19 +99,35 @@ export const dashboardService = {
         })
         .slice(0, 5);
 
-      // 5. Get popular mangas (sorted by views)
+      console.log("🆕 Recently updated:", recentlyUpdated.length);
+
+      // 5. Get popular mangas
       const popularMangas = [...mangasWithChapters]
-        .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+        .sort((a, b) => {
+          const viewsA = a.viewCount || 0;
+          const viewsB = b.viewCount || 0;
+          return viewsB - viewsA;
+        })
         .slice(0, 5);
 
-      return {
+      console.log("🔥 Popular mangas:", popularMangas.length);
+
+      const result = {
         mangas: mangasWithChapters,
         stats,
         recentlyUpdated,
         popularMangas,
       };
+
+      console.log("✅ Final dashboard data:", {
+        totalMangas: result.mangas.length,
+        recentlyUpdatedCount: result.recentlyUpdated.length,
+        popularMangasCount: result.popularMangas.length,
+      });
+
+      return result;
     } catch (error) {
-      console.error("Failed to fetch dashboard data:", error);
+      console.error("❌ Failed to fetch dashboard data:", error);
       throw error;
     }
   },
