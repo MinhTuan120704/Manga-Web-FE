@@ -167,7 +167,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/reader/:chapterId",
-    element: <MangaReader />,
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <MangaReader />
+      </Suspense>
+    ),
   },
   {
     path: "/admin",
