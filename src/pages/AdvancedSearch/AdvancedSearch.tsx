@@ -3,7 +3,8 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { useSearchParams } from "react-router-dom";
 import { genreService } from "@/services/genre.service";
 import { mangaService } from "@/services/manga.service";
-import type { Genre, Manga, MangaQueryParams } from "@/types";
+import type { Manga, MangaQueryParams } from "@/types/manga";
+import type { Genre } from "@/types/genre";
 import { SearchFilters } from "./components/SearchFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 

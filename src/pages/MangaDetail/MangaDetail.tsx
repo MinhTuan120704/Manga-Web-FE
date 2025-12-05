@@ -4,7 +4,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { mangaService } from "@/services/manga.service";
 import { userService } from "@/services/user.service";
 import { authService } from "@/services/auth.service";
-import type { Manga, Genre, Chapter } from "@/types";
+import type { Manga } from "@/types/manga";
 import {
   MangaInfo,
   ChapterList,
@@ -14,8 +14,10 @@ import {
 } from "./components";
 import { CommentSection } from "@/components/common/CommentSection";
 import { toast } from "sonner";
+import type { Chapter } from "@/types/chapter";
+import type { Genre } from "@/types/genre";
 
-export function MangaDetail() {
+export const MangaDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -163,7 +165,7 @@ export function MangaDetail() {
             genres={genres}
             averageRating={manga.averageRating}
             viewCount={manga.viewCount}
-            followerCount={manga.followerCount}
+            followedCount={manga.followedCount}
             chaptersCount={chapters.length}
             isFollowing={isFollowing}
             onStartReading={handleStartReading}
@@ -194,4 +196,4 @@ export function MangaDetail() {
       </div>
     </MainLayout>
   );
-}
+};

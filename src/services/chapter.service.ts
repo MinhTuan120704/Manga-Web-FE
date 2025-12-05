@@ -5,7 +5,7 @@ import type {
   CreateChapterRequest,
   UpdateChapterRequest,
   ChapterCountResponse,
-} from "@/types";
+} from "@/types/chapter";
 
 export const chapterService = {
   /**

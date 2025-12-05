@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { GenreSelector } from "./GenreSelector";
-import type { Genre } from "@/types";
+import type { Genre } from "@/types/genre";
 import { Filter, ArrowUpDown } from "lucide-react";
 
 interface SearchFiltersProps {
@@ -94,7 +94,7 @@ export const SearchFilters = ({
                 <SelectItem value="-updatedAt">Cập nhật gần đây</SelectItem>
                 <SelectItem value="-viewCount">Xem nhiều nhất</SelectItem>
                 <SelectItem value="-averageRating">Đánh giá cao</SelectItem>
-                <SelectItem value="-followerCount">Theo dõi nhiều</SelectItem>
+                <SelectItem value="-followedCount">Theo dõi nhiều</SelectItem>
                 <SelectItem value="title">Tên A-Z</SelectItem>
                 <SelectItem value="-title">Tên Z-A</SelectItem>
               </SelectContent>

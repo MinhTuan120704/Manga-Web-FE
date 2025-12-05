@@ -1,5 +1,5 @@
 import { RecommendationCard } from "./RecommendationCard";
-import type { AIRecommendation } from "@/types";
+import type { AIRecommendation } from "@/types/ai";
 import { Sparkles } from "lucide-react";
 
 interface RecommendationListProps {

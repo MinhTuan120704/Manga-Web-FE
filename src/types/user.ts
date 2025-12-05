@@ -30,3 +30,10 @@ export interface UpdateProfileRequest {
 export interface FollowMangaRequest {
   mangaId: string;
 }
+
+export interface UserQueryParams {
+  page?: number;
+  limit?: number;
+  role?: "reader" | "uploader" | "admin";
+  search?: string;
+}

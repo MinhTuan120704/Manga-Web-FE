@@ -11,14 +11,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Chapter, User as UserType } from "@/types";
+import type { User as UserType } from "@/types/user";
+import type { Chapter } from "@/types/chapter";
 
 interface ChapterListProps {
   chapters: Chapter[];
   onChapterClick: (chapterId: string) => void;
 }
 
-export function ChapterList({ chapters, onChapterClick }: ChapterListProps) {
+export const ChapterList = ({ chapters, onChapterClick }: ChapterListProps) => {
   const [chapterSearch, setChapterSearch] = useState("");
   const [chapterSort, setChapterSort] = useState<"asc" | "desc">("desc");
 
@@ -163,4 +164,4 @@ export function ChapterList({ chapters, onChapterClick }: ChapterListProps) {
       </CardContent>
     </Card>
   );
-}
+};

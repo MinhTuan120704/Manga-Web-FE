@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { mangaService } from "@/services/manga.service";
 import { MangaCard } from "@/components/common/MangaCard";
-import type { Manga, ReadingHistoryItem } from "@/types";
+import type { Manga } from "@/types/manga";
+import type { ReadingHistoryItem } from "@/types/user";
 
 interface MangaReadingHistoryProps {
   readingHistory: ReadingHistoryItem[];

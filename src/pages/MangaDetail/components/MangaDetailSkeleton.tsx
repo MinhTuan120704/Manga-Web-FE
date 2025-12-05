@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { MainLayout } from "@/components/layout/MainLayout";
 
-export function MangaDetailSkeleton() {
+export const MangaDetailSkeleton = () => {
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
@@ -19,4 +19,4 @@ export function MangaDetailSkeleton() {
       </div>
     </MainLayout>
   );
-}
+};

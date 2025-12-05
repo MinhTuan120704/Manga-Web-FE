@@ -10,7 +10,7 @@ import {
   EmptyTitle,
   EmptyDescription,
 } from "@/components/ui/empty";
-import type { Manga } from "@/types";
+import type { Manga } from "@/types/manga";
 import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 
 interface SearchResultsProps {

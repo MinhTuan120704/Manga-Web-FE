@@ -8,13 +8,13 @@ export interface Manga {
   title: string;
   description: string;
   coverImage: string;
+
   author: string;
   artist?: string;
   genres: Genre[] | string[];
   status: "ongoing" | "completed" | "hiatus" | "cancelled";
   uploaderId?: string | User;
   viewCount?: number;
-  followerCount?: number;
   averageRating?: number;
   createdAt: string;
   updatedAt: string;
@@ -49,7 +49,7 @@ export interface MangaQueryParams {
   genre?: string;
   status?: "ongoing" | "completed" | "hiatus" | "cancelled";
   sortBy?: string;
-  search?: string; // Search by title/description
+  search?: string;
 }
 
 export interface PopularManga {

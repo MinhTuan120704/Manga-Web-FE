@@ -1,6 +1,10 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
-import type { Report, ReportListResponse, CreateReportRequest } from "@/types";
+import type {
+  Report,
+  ReportListResponse,
+  CreateReportRequest,
+} from "@/types/comment";
 
 export const reportService = {
   /**

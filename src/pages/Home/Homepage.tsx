@@ -8,7 +8,8 @@ import { PreviewPane } from "@/components/common/PreviewPane";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
 import { mangaService } from "@/services/manga.service";
-import type { Manga } from "@/types";
+import type { Manga } from "@/types/manga";
+import type { MangaListResponse } from "@/types/api";
 
 export function Homepage() {
   const breadcrumbs = [{ label: "Trang chủ" }];
@@ -16,10 +17,22 @@ export function Homepage() {
   const [selectedManga, setSelectedManga] = useState<Manga | null>(null);
 
   // State cho các danh sách manga
-  const [featuredMangas, setFeaturedMangas] = useState<Manga[]>([]);
-  const [popularMangas, setPopularMangas] = useState<Manga[]>([]);
-  const [recentMangas, setRecentMangas] = useState<Manga[]>([]);
-  const [newReleases, setNewReleases] = useState<Manga[]>([]);
+  const [featuredMangas, setFeaturedMangas] = useState<MangaListResponse>({
+    mangas: [],
+    pagination: { currentPage: 1, totalPages: 1, totalItems: 0, total: 0 },
+  });
+  const [popularMangas, setPopularMangas] = useState<MangaListResponse>({
+    mangas: [],
+    pagination: { currentPage: 1, totalPages: 1, totalItems: 0, total: 0 },
+  });
+  const [recentMangas, setRecentMangas] = useState<MangaListResponse>({
+    mangas: [],
+    pagination: { currentPage: 1, totalPages: 1, totalItems: 0, total: 0 },
+  });
+  const [newReleases, setNewReleases] = useState<MangaListResponse>({
+    mangas: [],
+    pagination: { currentPage: 1, totalPages: 1, totalItems: 0, total: 0 },
+  });
 
   // Loading states
   const [loadingFeatured, setLoadingFeatured] = useState(true);
@@ -41,10 +54,10 @@ export function Homepage() {
       const response = await mangaService.getMangas({
         page: 1,
         limit: 5,
-        sortBy: "-averageRating", // Dấu - để sort desc
+        sortBy: "-averageRating",
       });
       if (response) {
-        setFeaturedMangas(response.mangas);
+        setFeaturedMangas(response);
       }
     } catch (error) {
       console.error("Error fetching featured mangas:", error);
@@ -62,7 +75,7 @@ export function Homepage() {
         sortBy: "-viewCount",
       });
       if (response) {
-        setPopularMangas(response.mangas);
+        setPopularMangas(response);
       }
     } catch (error) {
       console.error("Error fetching popular mangas:", error);
@@ -80,7 +93,7 @@ export function Homepage() {
         sortBy: "-updatedAt",
       });
       if (response) {
-        setRecentMangas(response.mangas);
+        setRecentMangas(response);
       }
     } catch (error) {
       console.error("Error fetching recent mangas:", error);
@@ -98,7 +111,7 @@ export function Homepage() {
         sortBy: "-createdAt",
       });
       if (response) {
-        setNewReleases(response.mangas);
+        setNewReleases(response);
       }
     } catch (error) {
       console.error("Error fetching new releases:", error);
@@ -123,21 +136,21 @@ export function Homepage() {
         <div className="space-y-8">
           {/* Featured Carousel */}
           <FeaturedCarousel
-            featuredManga={featuredMangas}
+            featuredManga={featuredMangas.mangas}
             onPreview={handlePreview}
             loading={loadingFeatured}
           />
 
           {/* Recent Updates */}
           <RecentUpdates
-            updates={recentMangas}
+            updates={recentMangas.mangas}
             onPreview={handlePreview}
             loading={loadingRecent}
           />
 
           {/* Popular Manga */}
           <PopularMangaGrid
-            popularManga={popularMangas}
+            popularManga={popularMangas.mangas}
             onPreview={handlePreview}
             loading={loadingPopular}
           />
@@ -159,7 +172,7 @@ export function Homepage() {
                       <Skeleton className="h-3 w-1/2" />
                     </div>
                   ))
-                : newReleases.map((manga) => (
+                : newReleases.mangas.map((manga) => (
                     <MangaCard
                       key={manga._id}
                       manga={manga}

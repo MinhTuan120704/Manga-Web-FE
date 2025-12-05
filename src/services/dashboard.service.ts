@@ -5,9 +5,9 @@ import type {
   DashboardData,
   DashboardStats,
   MangaWithChapters,
-  Manga,
-  Chapter,
-} from "@/types";
+} from "@/types/dashboard";
+import type { Manga } from "@/types/manga";
+import type { Chapter } from "@/types/chapter";
 
 interface ChapterCountData {
   uploaderId: string;

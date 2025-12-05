@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, X } from "lucide-react";
-import type { Genre } from "@/types";
+import type { Genre } from "@/types/genre";
 
 interface GenreSelectorProps {
   genres: Genre[];

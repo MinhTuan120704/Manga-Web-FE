@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Eye, Star, TrendingUp, Book } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import type { Manga } from "@/types";
+import type { Manga } from "@/types/manga";
 
 interface PopularMangasProps {
   mangas: Manga[];
@@ -72,7 +72,9 @@ export function PopularMangas({ mangas }: PopularMangasProps) {
                   <div className="mt-2 space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="text-muted-foreground">Tiến độ</span>
-                      <span className="font-medium">{manga.progress || 0}%</span>
+                      <span className="font-medium">
+                        {manga.progress || 0}%
+                      </span>
                     </div>
                     <Progress value={manga.progress || 0} className="h-1" />
                   </div>

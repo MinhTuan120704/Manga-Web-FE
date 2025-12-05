@@ -6,7 +6,7 @@ import { UserTitle } from "./components/UserTitle";
 import { FavoriteMangaList } from "./components/FavoriteMangaList";
 import { MangaReadingHistory } from "./components/MangaReadingHistory";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { User } from "@/types";
+import type { User } from "@/types/user";
 
 export const UserProfile = () => {
   const [userProfile, setUserProfile] = useState<User | null>(null);

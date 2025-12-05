@@ -2,10 +2,10 @@ import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
 import type {
   Comment,
-  CommentListResponse,
   CreateCommentRequest,
   UpdateCommentRequest,
-} from "@/types";
+} from "@/types/comment";
+import type { CommentListResponse } from "@/types/api";
 
 export const commentService = {
   /**

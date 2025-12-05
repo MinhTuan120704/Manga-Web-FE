@@ -5,7 +5,7 @@ import type {
   RatingResponse,
   UserRatingResponse,
   Rating,
-} from "@/types";
+} from "@/types/comment";
 
 export const ratingService = {
   /**

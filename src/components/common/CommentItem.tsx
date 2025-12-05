@@ -8,7 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Comment, User } from "@/types";
+import type { User } from "@/types/user";
+import type { Comment } from "@/types/comment";
 
 interface CommentItemProps {
   comment: Comment;
@@ -61,7 +62,7 @@ export function CommentItem({
   return (
     <div className="flex gap-3 py-4 border-b border-border last:border-0">
       {/* Avatar */}
-      <Avatar className="w-10 h-10 flex-shrink-0">
+      <Avatar className="w-10 h-10 shrink-0">
         <AvatarImage
           src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
             getUsername(comment.userId)
@@ -120,7 +121,7 @@ export function CommentItem({
         </div>
 
         {/* Comment Text */}
-        <p className="text-sm text-foreground whitespace-pre-wrap break-words">
+        <p className="text-sm text-foreground whitespace-pre-wrap wrap-break-word">
           {comment.content}
         </p>
 

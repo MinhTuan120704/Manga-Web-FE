@@ -1,11 +1,13 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
 import type {
-  Manga,
   User,
   UpdateProfileRequest,
   FollowMangaRequest,
-} from "@/types";
+  UserQueryParams,
+} from "@/types/user";
+import type { Manga } from "@/types/manga";
+import type { UserListResponse } from "@/types/api";
 
 export const userService = {
   /**
@@ -72,5 +74,9 @@ export const userService = {
    */
   getFollowedMangas: async (): Promise<Manga[]> => {
     return axiosInstance.get(API_ENDPOINTS.USER.FOLLOWED_MANGAS);
+  },
+
+  getUsers: async (params?: UserQueryParams): Promise<UserListResponse> => {
+    return axiosInstance.get(API_ENDPOINTS.USER.GET_USERS, { params });
   },
 };

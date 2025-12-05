@@ -1,6 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
-import type { AIGetMangaRequest, AIGetMangaResponse } from "@/types";
+import type { AIGetMangaRequest, AIGetMangaResponse } from "@/types/ai";
 
 export const aiService = {
   /**

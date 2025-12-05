@@ -4,9 +4,9 @@ import type {
   Genre,
   CreateGenreRequest,
   UpdateGenreRequest,
-  MangaListResponse,
   GenreMangaQueryParams,
-} from "@/types";
+} from "@/types/genre";
+import type { MangaListResponse } from "@/types/api";
 
 export const genreService = {
   /**

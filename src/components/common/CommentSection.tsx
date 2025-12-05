@@ -6,7 +6,7 @@ import { CommentInput } from "./CommentInput";
 import { CommentItem } from "./CommentItem";
 import { commentService } from "@/services/comment.service";
 import { authService } from "@/services/auth.service";
-import type { Comment } from "@/types";
+import type { Comment } from "@/types/comment";
 import { toast } from "sonner";
 
 interface CommentSectionProps {

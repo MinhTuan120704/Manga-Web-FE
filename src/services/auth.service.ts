@@ -4,8 +4,8 @@ import type {
   LoginRequest,
   LoginResponse,
   RegisterRequest,
-  User,
-} from "@/types";
+} from "@/types/auth";
+import type { User } from "@/types/user";
 
 export const authService = {
   /**

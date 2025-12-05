@@ -1,13 +1,12 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
+import type { MangaListResponse, ChapterListResponse } from "@/types/api";
 import type {
-  Manga,
-  MangaListResponse,
-  MangaQueryParams,
-  ChapterListResponse,
   CreateMangaRequest,
+  Manga,
+  MangaQueryParams,
   UpdateMangaRequest,
-} from "@/types";
+} from "@/types/manga";
 
 export const mangaService = {
   /**
@@ -47,7 +46,7 @@ export const mangaService = {
       formData.append("coverImage", data.coverImage);
 
       // Append genres array
-      data.genres.forEach((genre) => {
+      data.genres.forEach((genre: any) => {
         formData.append("genres[]", genre);
       });
 
@@ -80,7 +79,7 @@ export const mangaService = {
       formData.append("coverImage", data.coverImage);
 
       if (data.genres) {
-        data.genres.forEach((genre) => {
+        data.genres.forEach((genre: any) => {
           formData.append("genres[]", genre);
         });
       }

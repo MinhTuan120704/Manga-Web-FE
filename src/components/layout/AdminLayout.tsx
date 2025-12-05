@@ -1,0 +1,156 @@
+import { lazy, Suspense } from "react";
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User, LogOut, Settings, Home } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { authService } from "@/services/auth.service";
+
+const AdminSidebar = lazy(() => import("@/components/app-sidebar-admin"));
+const LoadingSpinner = lazy(() => import("@/components/common/LoadingSpinner"));
+
+interface AdminLayoutProps {
+  children: React.ReactNode;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  breadcrumbs?: Array<{
+    label: string;
+    href?: string;
+  }>;
+}
+
+export const AdminLayout = ({
+  children,
+  activeTab,
+  setActiveTab,
+  breadcrumbs = [],
+}: AdminLayoutProps) => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      navigate("/auth/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  const user = authService.getStoredUser();
+
+  return (
+    <SidebarProvider>
+      <Suspense fallback={<LoadingSpinner />}>
+        <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      </Suspense>
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 sticky top-0 bg-background z-10">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+
+          {/* Breadcrumbs */}
+          {breadcrumbs.length > 0 && (
+            <Breadcrumb>
+              <BreadcrumbList>
+                {breadcrumbs.map((crumb, index) => (
+                  <div key={index} className="flex items-center">
+                    {index > 0 && <BreadcrumbSeparator />}
+                    <BreadcrumbItem>
+                      {crumb.href ? (
+                        <BreadcrumbLink
+                          onClick={() => navigate(crumb.href!)}
+                          className="cursor-pointer"
+                        >
+                          {crumb.label}
+                        </BreadcrumbLink>
+                      ) : (
+                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                      )}
+                    </BreadcrumbItem>
+                  </div>
+                ))}
+              </BreadcrumbList>
+            </Breadcrumb>
+          )}
+
+          <div className="flex-1" />
+
+          {/* User Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={user?.avatarUrl}
+                    alt={user?.username || "Admin"}
+                  />
+                  <AvatarFallback>
+                    {user?.username?.charAt(0).toUpperCase() || "A"}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <div className="flex items-center justify-start gap-2 p-2">
+                <div className="flex flex-col space-y-1 leading-none">
+                  <p className="font-medium text-sm">
+                    {user?.username || "Admin"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {user?.email || "admin@manga.com"}
+                  </p>
+                  <p className="text-xs text-muted-foreground capitalize">
+                    Role: {user?.role || "admin"}
+                  </p>
+                </div>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate("/")}>
+                <Home className="mr-2 h-4 w-4" />
+                <span>Home</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/user/profile")}>
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-destructive focus:text-destructive"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </header>
+
+        <main className="flex-1 overflow-auto">{children}</main>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+};

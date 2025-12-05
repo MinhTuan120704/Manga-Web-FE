@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { router } from "@/router";
 import { Toaster } from "sonner";
+import { SidebarProvider } from "./components/ui/sidebar";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);

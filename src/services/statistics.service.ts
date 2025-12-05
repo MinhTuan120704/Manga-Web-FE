@@ -1,6 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
-import type { BasicStatistics, DetailedStatistics } from "@/types";
+import type { BasicStatistics, DetailedStatistics } from "@/types/comment";
 
 export const statisticsService = {
   /**
