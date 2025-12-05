@@ -3,7 +3,7 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { useSearchParams } from "react-router-dom";
 import { genreService } from "@/services/genre.service";
 import { mangaService } from "@/services/manga.service";
-import type { Manga, MangaQueryParams } from "@/types/manga";
+import type { Manga, MangaSearchParams } from "@/types/manga";
 import type { Genre } from "@/types/genre";
 import { SearchFilters } from "./components/SearchFilters";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -71,10 +71,10 @@ export const AdvancedSearch = () => {
     const fetchMangas = async () => {
       try {
         setLoading(true);
-        const params: MangaQueryParams = {
+        const params: MangaSearchParams = {
           page: currentPage,
           limit: 12,
-          sortBy,
+          sortBy: sortBy as MangaSearchParams["sortBy"],
         };
 
         // Add search query if exists
@@ -84,23 +84,19 @@ export const AdvancedSearch = () => {
 
         // Add genre filter if selected
         if (selectedGenres.length > 0) {
-          params.genre = selectedGenres.join(",");
+          params.genres = selectedGenres.join(",");
         }
 
         // Add status filter if not "all"
         if (selectedStatus !== "all") {
-          params.status = selectedStatus as
-            | "ongoing"
-            | "completed"
-            | "hiatus"
-            | "cancelled";
+          params.status = selectedStatus as "ongoing" | "completed" /* | "hiatus" | "cancelled" */;
         }
 
-        const response = await mangaService.getMangas(params);
+        const response = await mangaService.searchMangas(params);
         if (response) {
           setMangas(response.mangas);
           setTotalPages(response.pagination.totalPages);
-          setTotalResults(response.pagination.total);
+          setTotalResults(response.pagination.totalItems);
         }
       } catch (error) {
         console.error("Failed to fetch mangas:", error);

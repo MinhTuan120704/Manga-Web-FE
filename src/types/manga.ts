@@ -8,13 +8,13 @@ export interface Manga {
   title: string;
   description: string;
   coverImage: string;
-
   author: string;
   artist?: string;
   genres: Genre[] | string[];
   status: "ongoing" | "completed" | "hiatus" | "cancelled";
   uploaderId?: string | User;
   viewCount?: number;
+  followerCount?: number;
   averageRating?: number;
   createdAt: string;
   updatedAt: string;
@@ -50,6 +50,15 @@ export interface MangaQueryParams {
   status?: "ongoing" | "completed" | "hiatus" | "cancelled";
   sortBy?: string;
   search?: string;
+}
+
+export interface MangaSearchParams {
+  search?: string;
+  status?: "ongoing" | "completed";
+  genres?: string;
+  sortBy?: "newest" | "oldest" | "mostViewed" | "highestRating" | "mostFollowed" | "az" | "za" | "updated";
+  page?: number;
+  limit?: number;
 }
 
 export interface PopularManga {

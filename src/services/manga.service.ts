@@ -5,6 +5,7 @@ import type {
   CreateMangaRequest,
   Manga,
   MangaQueryParams,
+  MangaSearchParams,
   UpdateMangaRequest,
 } from "@/types/manga";
 
@@ -14,6 +15,13 @@ export const mangaService = {
    */
   getMangas: async (params?: MangaQueryParams): Promise<MangaListResponse> => {
     return axiosInstance.get(API_ENDPOINTS.MANGA.LIST, { params });
+  },
+
+  /**
+   * Tìm kiếm truyện với các bộ lọc nâng cao
+   */
+  searchMangas: async (params?: MangaSearchParams): Promise<MangaListResponse> => {
+    return axiosInstance.get(API_ENDPOINTS.MANGA.SEARCH, { params });
   },
 
   /**
@@ -46,8 +54,8 @@ export const mangaService = {
       formData.append("coverImage", data.coverImage);
 
       // Append genres array
-      data.genres.forEach((genre: any) => {
-        formData.append("genres[]", genre);
+      data.genres.forEach((genreId: string) => {
+        formData.append("genres[]", genreId);
       });
 
       return axiosInstance.post(API_ENDPOINTS.MANGA.CREATE, formData, {
@@ -79,8 +87,8 @@ export const mangaService = {
       formData.append("coverImage", data.coverImage);
 
       if (data.genres) {
-        data.genres.forEach((genre: any) => {
-          formData.append("genres[]", genre);
+        data.genres.forEach((genreId: string) => {
+          formData.append("genres[]", genreId);
         });
       }
 
