@@ -8,6 +8,11 @@ interface ImagePreviewProps {
   onRemove?: () => void;
 }
 
+function isSafeBlobUrl(url: string | null): url is string {
+  if (!url) return false;
+  return url.startsWith('blob:');
+}
+
 export function ImagePreview({ file, alt, className, onRemove }: ImagePreviewProps) {
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -24,14 +29,20 @@ export function ImagePreview({ file, alt, className, onRemove }: ImagePreviewPro
     }
 
     const objectUrl = URL.createObjectURL(file);
-    setPreview(objectUrl);
-    
+    if (isSafeBlobUrl(objectUrl)) {
+      setPreview(objectUrl);
+    }
+
     return () => {
-      URL.revokeObjectURL(objectUrl);
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
     };
   }, [file]);
 
-  if (!preview) return null;
+  if (!preview || !isSafeBlobUrl(preview)) {
+    return null;
+  }
 
   return (
     <div className={className}>
