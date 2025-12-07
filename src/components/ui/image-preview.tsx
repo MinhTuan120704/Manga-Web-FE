@@ -9,34 +9,6 @@ interface ImagePreviewProps {
   onRemove?: () => void;
 }
 
-function isSafeBlobUrl(url: string | null, file?: File): url is string {
-  if (!url) return false;
-
-  // Strict blob URL validation
-  if (!url.startsWith("blob:") || url.length > 200) return false;
-
-  // Ensure URL only contains safe characters
-  const safeUrlPattern = /^blob:[a-zA-Z0-9:/\-._~]+$/;
-  if (!safeUrlPattern.test(url)) return false;
-
-  // Additional MIME type check
-  if (
-    file &&
-    ![
-      "image/png",
-      "image/jpeg",
-      "image/jpg",
-      "image/gif",
-      "image/webp",
-      "image/apng",
-      "image/bmp",
-      "image/svg+xml",
-    ].includes(file.type)
-  )
-    return false;
-  return true;
-}
-
 const FALLBACK_IMAGE = "/placeholder-image.png";
 
 export function ImagePreview({
@@ -47,11 +19,9 @@ export function ImagePreview({
 }: ImagePreviewProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [sanitizedSrc, setSanitizedSrc] = useState<string>(FALLBACK_IMAGE);
 
   useEffect(() => {
     if (!file || !(file instanceof File)) {
-      setSanitizedSrc(FALLBACK_IMAGE);
       setPreview(FALLBACK_IMAGE);
       setError("File không hợp lệ");
       return;
@@ -59,7 +29,6 @@ export function ImagePreview({
 
     if (!file.type.startsWith("image/")) {
       toast.error("File tải lên không phải là ảnh");
-      setSanitizedSrc(FALLBACK_IMAGE);
       setPreview(FALLBACK_IMAGE);
       setError("Không phải file ảnh");
       return;
@@ -69,36 +38,43 @@ export function ImagePreview({
     const MAX_SIZE = 10 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
       toast.error("Kích thước ảnh vượt quá 10MB");
-      setSanitizedSrc(FALLBACK_IMAGE);
       setPreview(FALLBACK_IMAGE);
       setError("File quá lớn");
       return;
     }
 
-    // Create blob URL with proper error handling
-    let objectUrl: string | null = null;
-    try {
-      objectUrl = URL.createObjectURL(file);
-      if (isSafeBlobUrl(objectUrl, file)) {
-        setSanitizedSrc(objectUrl);
-        setPreview(objectUrl);
+    // Use FileReader to convert file to Data URL 
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const result = e.target?.result;
+      if (typeof result === "string" && result.startsWith("data:image/")) {
+        setPreview(result);
         setError(null);
       } else {
-        toast.error("URL ảnh không an toàn");
-        setSanitizedSrc(FALLBACK_IMAGE);
+        toast.error("Không thể đọc file ảnh");
         setPreview(FALLBACK_IMAGE);
-        setError("URL không hợp lệ");
+        setError("Đọc file thất bại");
       }
-    } catch {
+    };
+
+    reader.onerror = () => {
       toast.error("Không thể tải ảnh lên");
-      setSanitizedSrc(FALLBACK_IMAGE);
       setPreview(FALLBACK_IMAGE);
       setError("Tải ảnh thất bại");
+    };
+
+    try {
+      reader.readAsDataURL(file);
+    } catch {
+      toast.error("Không thể đọc file");
+      setPreview(FALLBACK_IMAGE);
+      setError("Đọc file thất bại");
     }
 
     return () => {
-      if (objectUrl && isSafeBlobUrl(objectUrl, file)) {
-        URL.revokeObjectURL(objectUrl);
+      if (reader.readyState === FileReader.LOADING) {
+        reader.abort();
       }
     };
   }, [file]);
@@ -116,12 +92,11 @@ export function ImagePreview({
             <p className="text-xs text-muted-foreground">{error}</p>
           </div>
         </div>
-      ) : preview && isSafeBlobUrl(preview, file) ? (
+      ) : preview && preview.startsWith("data:image/") ? (
         <img
-          src={sanitizedSrc}
+          src={preview}
           alt={alt}
           className="w-full h-full object-cover"
-          crossOrigin="anonymous"
           referrerPolicy="no-referrer"
           onLoad={(e) => {
             // Validate loaded image
@@ -134,7 +109,6 @@ export function ImagePreview({
           onError={() => {
             toast.error("Không thể hiển thị ảnh");
             setError("Hiển thị ảnh thất bại");
-            setSanitizedSrc(FALLBACK_IMAGE);
             setPreview(FALLBACK_IMAGE);
           }}
         />
