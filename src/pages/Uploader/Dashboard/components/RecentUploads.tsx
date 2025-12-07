@@ -1,14 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Eye, Book } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, Eye, Book, Edit, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { mangaService } from "@/services/manga.service";
 import { useNavigate } from "react-router-dom";
 import type { Manga } from "@/types/manga";
 
 interface RecentUploadsProps {
   mangas: Manga[];
+  onDelete?: () => void;
 }
 
-export function RecentUploads({ mangas }: RecentUploadsProps) {
+export function RecentUploads({ mangas, onDelete }: RecentUploadsProps) {
   const navigate = useNavigate();
 
   // Sort by updatedAt và lấy 5 truyện mới nhất
@@ -45,6 +49,30 @@ export function RecentUploads({ mangas }: RecentUploadsProps) {
     return labels[status] || status;
   };
 
+  const handleDelete = async (e: React.MouseEvent, mangaId: string) => {
+    e.stopPropagation();
+    if (window.confirm("Bạn có chắc chắn muốn xóa truyện này không?")) {
+      try {
+        await mangaService.deleteManga(mangaId);
+        toast.success("Xóa truyện thành công");
+        if (onDelete) {
+          onDelete();
+        } else {
+          // Fallback reload if no callback provided
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error("Failed to delete manga:", error);
+        toast.error("Xóa truyện thất bại");
+      }
+    }
+  };
+
+  const handleEdit = (e: React.MouseEvent, mangaId: string) => {
+    e.stopPropagation();
+    navigate(`/uploader/manga/edit/${mangaId}`);
+  };
+
   if (recentMangas.length === 0) {
     return (
       <Card>
@@ -63,8 +91,11 @@ export function RecentUploads({ mangas }: RecentUploadsProps) {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Truyện mới cập nhật</CardTitle>
+        <Button variant="outline" size="sm" onClick={() => navigate("/uploader/mangas")}>
+          Xem tất cả
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -103,6 +134,22 @@ export function RecentUploads({ mangas }: RecentUploadsProps) {
                     <Eye className="h-3 w-3" />
                     <span>{(manga.viewCount || 0).toLocaleString()}</span>
                   </div>
+                </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <button
+                    onClick={(e) => handleEdit(e, manga._id)}
+                    className="p-2 hover:bg-secondary rounded-full transition-colors text-blue-500"
+                    title="Chỉnh sửa"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={(e) => handleDelete(e, manga._id)}
+                    className="p-2 hover:bg-secondary rounded-full transition-colors text-red-500"
+                    title="Xóa"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             </div>
