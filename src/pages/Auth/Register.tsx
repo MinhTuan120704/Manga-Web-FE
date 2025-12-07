@@ -249,7 +249,7 @@ export function Register() {
                     <div className="flex items-center gap-2">
                       <Upload className="h-5 w-5 text-primary" />
                       <div>
-                        <div className="font-semibold">Uploader</div>
+                        <div className="font-semibold">Người đăng tải</div>
                         <div className="text-xs text-muted-foreground">
                           Đăng tải và quản lý truyện tranh
                         </div>
