@@ -28,6 +28,7 @@ export const API_ENDPOINTS = {
   // ========== Chapter ==========
   CHAPTER: {
     DETAIL: (chapterId: string) => `/chapters/${chapterId}`,
+    CREATE: (mangaId: string) => `/chapters/${mangaId}`,
     UPDATE: (chapterId: string) => `/chapters/${chapterId}`,
     DELETE: (chapterId: string) => `/chapters/${chapterId}`,
     COUNT_BY_UPLOADER: "/chapters/count/uploader", // 🆕 Add this

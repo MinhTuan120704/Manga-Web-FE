@@ -1,6 +1,6 @@
 import type { RouteObject } from "react-router-dom";
 import { ProtectedRoute } from "./protectedRoute";
-import { Dashboard, CreateManga, MangaManagement, ChapterManagement } from "@/pages/Uploader";
+import { Dashboard, CreateManga, MangaManagement, ChapterManagement, CreateChapter } from "@/pages/Uploader";
 
 export const uploaderRoutes: RouteObject[] = [
   {
@@ -40,6 +40,14 @@ export const uploaderRoutes: RouteObject[] = [
     element: (
       <ProtectedRoute requiredRole="uploader">
         <ChapterManagement />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/uploader/manga/:id/create-chapter",
+    element: (
+      <ProtectedRoute requiredRole="uploader">
+        <CreateChapter />
       </ProtectedRoute>
     ),
   },

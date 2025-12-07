@@ -101,7 +101,7 @@ export function ChapterManagement() {
                 </div>
             ) : null}
 
-            <Button onClick={() => toast.info("Chức năng thêm chương đang được phát triển")}>
+            <Button onClick={() => navigate(`/uploader/manga/${id}/create-chapter`)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Thêm chương mới
             </Button>
