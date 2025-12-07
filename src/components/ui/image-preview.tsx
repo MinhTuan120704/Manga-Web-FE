@@ -8,9 +8,16 @@ interface ImagePreviewProps {
   onRemove?: () => void;
 }
 
-function isSafeBlobUrl(url: string | null): url is string {
+function isSafeBlobUrl(url: string | null, file?: File): url is string {
   if (!url) return false;
-  return url.startsWith("blob:");
+  if (!url.startsWith("blob:")) return false;
+  // Additional MIME type check
+  if (
+    file &&
+    !["image/png", "image/jpeg", "image/gif", "image/webp", "image/apng", "image/bmp", "image/svg+xml"].includes(file.type)
+  )
+    return false;
+  return true;
 }
 
 const FALLBACK_IMAGE = "/placeholder-image.png";
@@ -51,7 +58,7 @@ export function ImagePreview({
     let objectUrl: string | null = null;
     try {
       objectUrl = URL.createObjectURL(file);
-      if (isSafeBlobUrl(objectUrl)) {
+      if (isSafeBlobUrl(objectUrl, file)) {
         setPreview(objectUrl);
         setError(null);
       }
@@ -62,7 +69,7 @@ export function ImagePreview({
     }
 
     return () => {
-      if (objectUrl && isSafeBlobUrl(objectUrl)) {
+      if (objectUrl && isSafeBlobUrl(objectUrl, file)) {
         URL.revokeObjectURL(objectUrl);
       }
     };
@@ -82,18 +89,28 @@ export function ImagePreview({
           </div>
         </div>
       ) : (
-        <img
-          src={preview}
-          alt={alt}
-          className="w-full h-full object-cover"
-          crossOrigin="anonymous"
-          referrerPolicy="no-referrer"
-          onError={(e) => {
-            console.error("Image failed to load");
-            setError("Load failed");
-            e.currentTarget.src = FALLBACK_IMAGE;
-          }}
-        />
+        {preview && isSafeBlobUrl(preview, file) ? (
+          <img
+            src={preview}
+            alt={alt}
+            className="w-full h-full object-cover"
+            crossOrigin="anonymous"
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              console.error("Image failed to load");
+              setError("Load failed");
+              e.currentTarget.src = FALLBACK_IMAGE;
+            }}
+          />
+        ) : (
+          <img
+            src={FALLBACK_IMAGE}
+            alt="Invalid image"
+            className="w-full h-full object-cover"
+            crossOrigin="anonymous"
+            referrerPolicy="no-referrer"
+          />
+        )}
       )}
       {onRemove && (
         <button
