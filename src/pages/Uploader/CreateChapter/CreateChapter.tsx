@@ -12,41 +12,7 @@ import { ArrowLeft, Upload, X } from "lucide-react";
 import { useEffect } from "react";
 import type { Manga } from "@/types/manga";
 
-const ImagePreview = ({ file, alt, className, onRemove }: { 
-    file: File; 
-    alt: string; 
-    className?: string;
-    onRemove?: () => void;
-}) => {
-    const [preview, setPreview] = useState<string>("");
-
-    useEffect(() => {
-        const objectUrl = URL.createObjectURL(file);
-        setPreview(objectUrl);
-        return () => URL.revokeObjectURL(objectUrl);
-    }, [file]);
-
-    if (!preview) return null;
-
-    return (
-        <div className={className}>
-            <img 
-                src={preview} 
-                alt={alt} 
-                className="w-full h-full object-cover"
-            />
-            {onRemove && (
-                <button 
-                    type="button"
-                    onClick={onRemove}
-                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-0.5 transform translate-x-1/2 -translate-y-1/2"
-                >
-                    <X className="h-3 w-3" />
-                </button>
-            )}
-        </div>
-    );
-};
+import { ImagePreview } from "@/components/ui/image-preview";
 
 export function CreateChapter() {
   const { id } = useParams<{ id: string }>();
