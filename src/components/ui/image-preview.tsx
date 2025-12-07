@@ -47,9 +47,11 @@ export function ImagePreview({
 }: ImagePreviewProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sanitizedSrc, setSanitizedSrc] = useState<string>(FALLBACK_IMAGE);
 
   useEffect(() => {
     if (!file || !(file instanceof File)) {
+      setSanitizedSrc(FALLBACK_IMAGE);
       setPreview(FALLBACK_IMAGE);
       setError("File không hợp lệ");
       return;
@@ -57,6 +59,7 @@ export function ImagePreview({
 
     if (!file.type.startsWith("image/")) {
       toast.error("File tải lên không phải là ảnh");
+      setSanitizedSrc(FALLBACK_IMAGE);
       setPreview(FALLBACK_IMAGE);
       setError("Không phải file ảnh");
       return;
@@ -66,6 +69,7 @@ export function ImagePreview({
     const MAX_SIZE = 10 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
       toast.error("Kích thước ảnh vượt quá 10MB");
+      setSanitizedSrc(FALLBACK_IMAGE);
       setPreview(FALLBACK_IMAGE);
       setError("File quá lớn");
       return;
@@ -76,15 +80,18 @@ export function ImagePreview({
     try {
       objectUrl = URL.createObjectURL(file);
       if (isSafeBlobUrl(objectUrl, file)) {
+        setSanitizedSrc(objectUrl);
         setPreview(objectUrl);
         setError(null);
       } else {
         toast.error("URL ảnh không an toàn");
+        setSanitizedSrc(FALLBACK_IMAGE);
         setPreview(FALLBACK_IMAGE);
         setError("URL không hợp lệ");
       }
     } catch {
       toast.error("Không thể tải ảnh lên");
+      setSanitizedSrc(FALLBACK_IMAGE);
       setPreview(FALLBACK_IMAGE);
       setError("Tải ảnh thất bại");
     }
@@ -111,7 +118,7 @@ export function ImagePreview({
         </div>
       ) : preview && isSafeBlobUrl(preview, file) ? (
         <img
-          src={preview}
+          src={sanitizedSrc}
           alt={alt}
           className="w-full h-full object-cover"
           crossOrigin="anonymous"
@@ -127,6 +134,7 @@ export function ImagePreview({
           onError={() => {
             toast.error("Không thể hiển thị ảnh");
             setError("Hiển thị ảnh thất bại");
+            setSanitizedSrc(FALLBACK_IMAGE);
             setPreview(FALLBACK_IMAGE);
           }}
         />
