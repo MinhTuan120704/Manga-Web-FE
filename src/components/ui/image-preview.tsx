@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, ImageOff } from "lucide-react";
+import { toast } from "sonner";
 
 interface ImagePreviewProps {
   file: File;
@@ -10,13 +11,21 @@ interface ImagePreviewProps {
 
 function isSafeBlobUrl(url: string | null, file?: File): url is string {
   if (!url) return false;
-  if (!url.startsWith("blob:")) return false;
+
+  // Strict blob URL validation
+  if (!url.startsWith("blob:") || url.length > 200) return false;
+
+  // Ensure URL only contains safe characters
+  const safeUrlPattern = /^blob:[a-zA-Z0-9:/\-._~]+$/;
+  if (!safeUrlPattern.test(url)) return false;
+
   // Additional MIME type check
   if (
     file &&
     ![
       "image/png",
       "image/jpeg",
+      "image/jpg",
       "image/gif",
       "image/webp",
       "image/apng",
@@ -42,23 +51,23 @@ export function ImagePreview({
   useEffect(() => {
     if (!file || !(file instanceof File)) {
       setPreview(FALLBACK_IMAGE);
-      setError("Invalid file");
+      setError("File không hợp lệ");
       return;
     }
 
     if (!file.type.startsWith("image/")) {
-      console.warn("File is not an image:", file.type);
+      toast.error("File tải lên không phải là ảnh");
       setPreview(FALLBACK_IMAGE);
-      setError("Not an image file");
+      setError("Không phải file ảnh");
       return;
     }
 
     // Validate file size (max 10MB for security)
     const MAX_SIZE = 10 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
-      console.warn("File too large:", file.size);
+      toast.error("Kích thước ảnh vượt quá 10MB");
       setPreview(FALLBACK_IMAGE);
-      setError("File too large");
+      setError("File quá lớn");
       return;
     }
 
@@ -69,11 +78,15 @@ export function ImagePreview({
       if (isSafeBlobUrl(objectUrl, file)) {
         setPreview(objectUrl);
         setError(null);
+      } else {
+        toast.error("URL ảnh không an toàn");
+        setPreview(FALLBACK_IMAGE);
+        setError("URL không hợp lệ");
       }
-    } catch (error) {
-      console.error("Failed to create object URL:", error);
+    } catch {
+      toast.error("Không thể tải ảnh lên");
       setPreview(FALLBACK_IMAGE);
-      setError("Failed to load");
+      setError("Tải ảnh thất bại");
     }
 
     return () => {
@@ -103,18 +116,25 @@ export function ImagePreview({
           className="w-full h-full object-cover"
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
-          onError={(e) => {
-            console.error("Image failed to load");
-            setError("Load failed");
-            e.currentTarget.src = FALLBACK_IMAGE;
+          onLoad={(e) => {
+            // Validate loaded image
+            const img = e.currentTarget;
+            if (!img.complete || img.naturalWidth === 0) {
+              toast.error("Ảnh tải lên không hợp lệ");
+              setError("Ảnh không hợp lệ");
+            }
+          }}
+          onError={() => {
+            toast.error("Không thể hiển thị ảnh");
+            setError("Hiển thị ảnh thất bại");
+            setPreview(FALLBACK_IMAGE);
           }}
         />
       ) : (
         <img
           src={FALLBACK_IMAGE}
-          alt="Invalid image"
+          alt="Ảnh không hợp lệ"
           className="w-full h-full object-cover"
-          crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
       )}
