@@ -14,7 +14,15 @@ function isSafeBlobUrl(url: string | null, file?: File): url is string {
   // Additional MIME type check
   if (
     file &&
-    !["image/png", "image/jpeg", "image/gif", "image/webp", "image/apng", "image/bmp", "image/svg+xml"].includes(file.type)
+    ![
+      "image/png",
+      "image/jpeg",
+      "image/gif",
+      "image/webp",
+      "image/apng",
+      "image/bmp",
+      "image/svg+xml",
+    ].includes(file.type)
   )
     return false;
   return true;
@@ -88,29 +96,27 @@ export function ImagePreview({
             <p className="text-xs text-muted-foreground">{error}</p>
           </div>
         </div>
+      ) : preview && isSafeBlobUrl(preview, file) ? (
+        <img
+          src={preview}
+          alt={alt}
+          className="w-full h-full object-cover"
+          crossOrigin="anonymous"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            console.error("Image failed to load");
+            setError("Load failed");
+            e.currentTarget.src = FALLBACK_IMAGE;
+          }}
+        />
       ) : (
-        {preview && isSafeBlobUrl(preview, file) ? (
-          <img
-            src={preview}
-            alt={alt}
-            className="w-full h-full object-cover"
-            crossOrigin="anonymous"
-            referrerPolicy="no-referrer"
-            onError={(e) => {
-              console.error("Image failed to load");
-              setError("Load failed");
-              e.currentTarget.src = FALLBACK_IMAGE;
-            }}
-          />
-        ) : (
-          <img
-            src={FALLBACK_IMAGE}
-            alt="Invalid image"
-            className="w-full h-full object-cover"
-            crossOrigin="anonymous"
-            referrerPolicy="no-referrer"
-          />
-        )}
+        <img
+          src={FALLBACK_IMAGE}
+          alt="Invalid image"
+          className="w-full h-full object-cover"
+          crossOrigin="anonymous"
+          referrerPolicy="no-referrer"
+        />
       )}
       {onRemove && (
         <button
