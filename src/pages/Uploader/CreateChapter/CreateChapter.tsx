@@ -12,6 +12,42 @@ import { ArrowLeft, Upload, X } from "lucide-react";
 import { useEffect } from "react";
 import type { Manga } from "@/types/manga";
 
+const ImagePreview = ({ file, alt, className, onRemove }: { 
+    file: File; 
+    alt: string; 
+    className?: string;
+    onRemove?: () => void;
+}) => {
+    const [preview, setPreview] = useState<string>("");
+
+    useEffect(() => {
+        const objectUrl = URL.createObjectURL(file);
+        setPreview(objectUrl);
+        return () => URL.revokeObjectURL(objectUrl);
+    }, [file]);
+
+    if (!preview) return null;
+
+    return (
+        <div className={className}>
+            <img 
+                src={preview} 
+                alt={alt} 
+                className="w-full h-full object-cover"
+            />
+            {onRemove && (
+                <button 
+                    type="button"
+                    onClick={onRemove}
+                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-0.5 transform translate-x-1/2 -translate-y-1/2"
+                >
+                    <X className="h-3 w-3" />
+                </button>
+            )}
+        </div>
+    );
+};
+
 export function CreateChapter() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -141,18 +177,12 @@ export function CreateChapter() {
                     />
                     {thumbnail && (
                         <div className="relative w-16 h-16 border rounded overflow-hidden flex-shrink-0">
-                            <img 
-                                src={URL.createObjectURL(thumbnail)} 
+                            <ImagePreview 
+                                file={thumbnail} 
                                 alt="Thumbnail preview" 
-                                className="w-full h-full object-cover"
+                                className="w-full h-full"
+                                onRemove={() => setThumbnail(null)}
                             />
-                            <button 
-                                type="button"
-                                onClick={() => setThumbnail(null)}
-                                className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-0.5"
-                            >
-                                <X className="h-3 w-3" />
-                            </button>
                         </div>
                     )}
                 </div>
@@ -183,10 +213,10 @@ export function CreateChapter() {
                         {pages.map((file, index) => (
                             <div key={index} className="relative group border rounded-lg p-2 flex flex-col items-center gap-2">
                                 <div className="w-full h-32 bg-muted rounded overflow-hidden">
-                                     <img 
-                                        src={URL.createObjectURL(file)} 
+                                    <ImagePreview 
+                                        file={file} 
                                         alt={`Page ${index + 1}`} 
-                                        className="w-full h-full object-contain"
+                                        className="w-full h-full"
                                     />
                                 </div>
                                 <span className="text-xs truncate w-full text-center">{file.name}</span>

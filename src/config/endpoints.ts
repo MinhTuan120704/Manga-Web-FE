@@ -52,6 +52,7 @@ export const API_ENDPOINTS = {
     CREATE: "/comments",
     BY_MANGA: (mangaId: string) => `/comments/manga/${mangaId}`,
     BY_CHAPTER: (chapterId: string) => `/comments/chapter/${chapterId}`,
+    BY_UPLOADER: "/comments/uploader",
     UPDATE: (id: string) => `/comments/${id}`,
     DELETE: (id: string) => `/comments/${id}`,
   },

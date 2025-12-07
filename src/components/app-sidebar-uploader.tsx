@@ -14,12 +14,12 @@ import {
   LayoutDashboard,
   BookOpen,
   Plus,
-  Upload,
   FolderOpen,
   BarChart3,
   Settings,
   ArrowLeftRight,
   Home,
+  MessageSquare
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,12 @@ export function AppSidebarUploader() {
       url: "/uploader/mangas",
       description: "Quản lý truyện",
     },
+    {
+        title: "Quản lý bình luận",
+        icon: MessageSquare,
+        url: "/uploader/comments",
+        description: "Quản lý bình luận",
+    }
   ];
 
   const quickActions = [
@@ -50,12 +56,6 @@ export function AppSidebarUploader() {
       icon: Plus,
       url: "/uploader/manga/create",
       variant: "default" as const,
-    },
-    {
-      title: "Upload chapter",
-      icon: Upload,
-      url: "/uploader/mangas",
-      variant: "outline" as const,
     },
   ];
 

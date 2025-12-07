@@ -29,6 +29,13 @@ export const commentService = {
   },
 
   /**
+   * Lấy bình luận của truyện do uploader đăng
+   */
+  getCommentsByUploader: async (): Promise<Comment[]> => {
+    return axiosInstance.get(API_ENDPOINTS.COMMENT.BY_UPLOADER);
+  },
+
+  /**
    * Sửa bình luận
    */
   updateComment: async (
