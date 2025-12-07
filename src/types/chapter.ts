@@ -29,6 +29,7 @@ export interface CreateChapterRequest {
   chapterNumber: number;
   title: string;
   pages: File[];
+  thumbnail?: File;
 }
 
 export interface UpdateChapterRequest {

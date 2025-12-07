@@ -4,8 +4,8 @@ import type { User } from "./user";
 
 export interface Comment {
   _id: string;
-  manga?: string;
-  chapter?: string;
+  manga?: string | { _id: string; title: string };
+  chapter?: string | { _id: string; title: string; chapterNumber: number };
   user: string | User; // Changed from userId to user to match API response
   content: string;
   parentId?: string | null;

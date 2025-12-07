@@ -102,7 +102,7 @@ export function Dashboard() {
         </div>
 
         {/* Recent Uploads - Full width */}
-        <RecentUploads mangas={recentlyUpdated} />
+        <RecentUploads mangas={recentlyUpdated} onDelete={fetchDashboardData} />
 
         {/* Popular Mangas */}
         <PopularMangas mangas={popularMangas} />

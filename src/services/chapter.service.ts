@@ -32,7 +32,11 @@ export const chapterService = {
       formData.append("pages", page, `page_${paddedIndex}.jpg`);
     });
 
-    return axiosInstance.post(API_ENDPOINTS.MANGA.CHAPTERS(mangaId), formData, {
+    if (data.thumbnail) {
+      formData.append("thumbnail", data.thumbnail);
+    }
+
+    return axiosInstance.post(API_ENDPOINTS.CHAPTER.CREATE(mangaId), formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

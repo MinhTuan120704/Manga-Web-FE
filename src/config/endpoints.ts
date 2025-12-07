@@ -28,6 +28,7 @@ export const API_ENDPOINTS = {
   // ========== Chapter ==========
   CHAPTER: {
     DETAIL: (chapterId: string) => `/chapters/${chapterId}`,
+    CREATE: (mangaId: string) => `/chapters/${mangaId}`,
     UPDATE: (chapterId: string) => `/chapters/${chapterId}`,
     DELETE: (chapterId: string) => `/chapters/${chapterId}`,
     COUNT_BY_UPLOADER: "/chapters/count/uploader", // 🆕 Add this
@@ -51,6 +52,7 @@ export const API_ENDPOINTS = {
     CREATE: "/comments",
     BY_MANGA: (mangaId: string) => `/comments/manga/${mangaId}`,
     BY_CHAPTER: (chapterId: string) => `/comments/chapter/${chapterId}`,
+    BY_UPLOADER: "/comments/uploader",
     UPDATE: (id: string) => `/comments/${id}`,
     DELETE: (id: string) => `/comments/${id}`,
   },

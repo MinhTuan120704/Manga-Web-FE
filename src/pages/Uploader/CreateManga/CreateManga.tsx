@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -43,7 +43,7 @@ import {
   Eye,
 } from "lucide-react";
 import type { Genre } from "@/types/genre";
-import type { CreateMangaRequest } from "@/types/manga";
+import type { CreateMangaRequest, UpdateMangaRequest } from "@/types/manga";
 
 // Validation errors type
 interface ValidationErrors {
@@ -57,6 +57,8 @@ interface ValidationErrors {
 
 export function CreateManga() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = !!id;
   const [loading, setLoading] = useState(false);
   const [genres, setGenres] = useState<Genre[]>([]);
   const [loadingGenres, setLoadingGenres] = useState(true);
@@ -117,6 +119,50 @@ export function CreateManga() {
     };
     fetchGenres();
   }, []);
+
+  // Fetch manga details if in edit mode
+  useEffect(() => {
+    if (isEditMode && id) {
+      const fetchMangaDetails = async () => {
+        try {
+          setLoading(true);
+          const manga = await mangaService.getMangaById(id);
+          
+          setFormData({
+            title: manga.title,
+            description: manga.description || "",
+            author: manga.author || "",
+            artist: manga.artist || "",
+            status: manga.status as "ongoing" | "completed" | "hiatus",
+            coverImage: null, // Don't set file object, just preview
+          });
+          
+          setCoverPreview(manga.coverImage);
+          
+          // Set selected genres
+          if (manga.genres && Array.isArray(manga.genres)) {
+             // We need to map the genre objects from the manga to the Genre type
+             // Assuming manga.genres contains full genre objects or we need to find them from the genres list
+             // For now, let's assume manga.genres are populated objects.
+             // If they are just IDs, we might need to find them in the `genres` state, 
+             // but `genres` might not be loaded yet. 
+             // Ideally we should wait for genres to load, but for simplicity let's trust the data.
+             // However, the `genres` state is loaded in parallel. 
+             // Let's try to match with loaded genres if possible, or just use what we have if it matches the shape.
+             setSelectedGenres(manga.genres as unknown as Genre[]);
+          }
+
+        } catch (error) {
+          console.error("Error fetching manga details:", error);
+          toast.error("Không thể tải thông tin truyện");
+          navigate("/uploader");
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchMangaDetails();
+    }
+  }, [id, isEditMode, navigate]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -262,40 +308,52 @@ export function CreateManga() {
       const author = formData.author.trim() || "Đang cập nhật";
       const artist = formData.artist.trim() || author;
 
-      const requestData: CreateMangaRequest = {
-        title: formData.title.trim(),
-        description: description,
-        author: author,
-        artist: artist,
-        status: formData.status,
-        genres: selectedGenres.map((g) => g._id),
-        coverImage: formData.coverImage!,
-      };
+      if (isEditMode && id) {
+        // Handle Update
+        const updateData: UpdateMangaRequest = {
+          title: formData.title.trim(),
+          description: description,
+          author: author,
+          artist: artist,
+          status: formData.status,
+          genres: selectedGenres.map((g) => g._id),
+        };
 
-      console.log("Submitting manga:", {
-        ...requestData,
-        coverImage: requestData.coverImage || null,
-      });
+        if (formData.coverImage) {
+          updateData.coverImage = formData.coverImage;
+        }
 
-      const response = await mangaService.createManga(requestData);
-      console.log("✅ Response:", response);
+        await mangaService.updateManga(id, updateData);
+        toast.success("Cập nhật truyện thành công!");
+        navigate("/uploader");
+      } else {
+        // Handle Create
+        const requestData: CreateMangaRequest = {
+          title: formData.title.trim(),
+          description: description,
+          author: author,
+          artist: artist,
+          status: formData.status,
+          genres: selectedGenres.map((g) => g._id),
+          coverImage: formData.coverImage!,
+        };
 
-      console.log("Response:", response);
+        const response = await mangaService.createManga(requestData);
+        
+        const mangaId = response?._id || "";
+        const mangaTitle = formData.title.trim();
 
-      const mangaId = response?._id || "";
-      const mangaTitle = formData.title.trim();
+        setCreatedMangaId(mangaId);
+        setCreatedMangaTitle(mangaTitle);
+        setShowSuccessDialog(true);
 
-      setCreatedMangaId(mangaId);
-      setCreatedMangaTitle(mangaTitle);
-      setShowSuccessDialog(true);
-
-      toast.success("Tạo truyện mới thành công!");
-      navigate(`/uploader/manga/${response._id || ""}`);
+        toast.success("Tạo truyện mới thành công!");
+      }
     } catch (error: unknown) {
-      console.error("❌ Error creating manga:", error);
+      console.error("❌ Error saving manga:", error);
 
       // Parse error message từ response
-      let errorMessage = "Có lỗi xảy ra khi tạo truyện";
+      let errorMessage = "Có lỗi xảy ra";
 
       // Type guard cho axios error
       if (error && typeof error === "object" && "response" in error) {
@@ -391,10 +449,12 @@ export function CreateManga() {
           </div>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Tạo truyện mới
+              {isEditMode ? "Cập nhật truyện" : "Tạo truyện mới"}
             </h1>
             <p className="text-muted-foreground mt-1">
-              Thêm một bộ truyện mới vào kho của bạn
+              {isEditMode
+                ? "Chỉnh sửa thông tin truyện của bạn"
+                : "Thêm một bộ truyện mới vào kho của bạn"}
             </p>
           </div>
         </div>
@@ -755,7 +815,11 @@ export function CreateManga() {
               className="order-1 sm:order-2"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? "Đang tạo..." : "Tạo truyện"}
+              {loading
+                ? "Đang xử lý..."
+                : isEditMode
+                ? "Lưu thay đổi"
+                : "Tạo truyện"}
             </Button>
           </div>
         </div>
