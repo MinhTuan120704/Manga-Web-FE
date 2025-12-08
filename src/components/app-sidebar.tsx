@@ -4,18 +4,31 @@ import {
   Home,
   Heart,
   Search,
-  /*  Users, */
   BookOpen,
-  /*  Clock, */
   Library,
   Sparkles,
-  /* Mail,
-  Info, */
+  User,
+  Settings,
+  Shield,
+  BarChart3,
+  Users,
+  Clock,
+  FileText,
+  Upload,
+  LayoutDashboard,
+  FolderOpen,
+  Plus,
+  MessageSquare,
+  LogOut,
 } from "lucide-react";
-
+import { useState, useEffect } from "react";
+import { authService } from "@/services/auth.service";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { toast } from "sonner";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -27,80 +40,187 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 
-// Navigation data with routes
-const data = {
-  navMain: [
+// Base navigation - available to all users
+const baseNavigation = [
+  {
+    title: "Trang chủ",
+    url: "/",
+    icon: Home,
+    isTopLevel: true,
+  },
+  {
+    title: "Theo dõi",
+    url: "#",
+    icon: Heart,
+    items: [
+      {
+        title: "Truyện đang theo dõi",
+        url: "/user/profile?tab=favorites",
+        icon: Library,
+      },
+      {
+        title: "Lịch sử đọc",
+        url: "/user/profile?tab=history",
+        icon: BookOpen,
+      },
+    ],
+  },
+  {
+    title: "Truyện",
+    url: "#",
+    icon: Search,
+    items: [
+      {
+        title: "Tìm kiếm nâng cao",
+        url: "/search",
+        icon: Search,
+      },
+      {
+        title: "Tìm kiếm AI",
+        url: "/ai-recommendation",
+        icon: Sparkles,
+      },
+    ],
+  },
+];
+
+// User-specific navigation
+const userNavigation = {
+  title: "Cá nhân",
+  url: "#",
+  icon: User,
+  items: [
     {
-      title: "Trang chủ",
-      url: "/",
-      icon: Home,
-      isTopLevel: true,
+      title: "Trang cá nhân",
+      url: "/user/profile",
+      icon: User,
     },
     {
-      title: "Theo dõi",
-      url: "#",
-      icon: Heart,
-      items: [
-        /* {
-          title: "Cập nhật mới",
-          url: "#",
-          icon: Clock,
-        }, */
-        {
-          title: "Truyện đang theo dõi",
-          url: "/user/profile?tab=favorites",
-          icon: Library,
-        },
-        {
-          title: "Lịch sử đọc",
-          url: "/user/profile?tab=history",
-          icon: BookOpen,
-        },
-      ],
+      title: "Cài đặt",
+      url: "/user/settings",
+      icon: Settings,
+    },
+  ],
+};
+
+// Uploader-specific navigation
+const uploaderNavigation = {
+  title: "Uploader",
+  url: "#",
+  icon: Upload,
+  items: [
+    {
+      title: "Dashboard",
+      url: "/uploader",
+      icon: LayoutDashboard,
     },
     {
-      title: "Truyện",
-      url: "#",
-      icon: Search,
-      items: [
-        {
-          title: "Tìm kiếm nâng cao",
-          url: "/search",
-          icon: Search,
-        },
-        /* {
-          title: "Cập nhật gần đây",
-          url: "#",
-          icon: Clock,
-        }, */
-        {
-          title: "Tìm kiếm AI",
-          url: "/ai-recommendation",
-          icon: Sparkles,
-        },
-      ],
+      title: "Truyện của tôi",
+      url: "/uploader/mangas",
+      icon: FolderOpen,
     },
-    /* {
-      title: "Đội ngũ",
-      url: "#",
+    {
+      title: "Tạo truyện mới",
+      url: "/uploader/manga/create",
+      icon: Plus,
+    },
+    {
+      title: "Quản lý bình luận",
+      url: "/uploader/comments",
+      icon: MessageSquare,
+    },
+    {
+      title: "Thống kê",
+      url: "/uploader/analytics",
+      icon: BarChart3,
+    },
+  ],
+};
+
+// Admin-specific navigation
+const adminNavigation = {
+  title: "Quản trị",
+  url: "#",
+  icon: Shield,
+  items: [
+    {
+      title: "Tổng quan",
+      url: "/admin/overview",
+      icon: BarChart3,
+    },
+    {
+      title: "Quản lý Manga",
+      url: "/admin/manga",
+      icon: BookOpen,
+    },
+    {
+      title: "Người dùng",
+      url: "/admin/users",
       icon: Users,
-      items: [
-        {
-          title: "Về chúng tôi",
-          url: "#",
-          icon: Info,
-        },
-        {
-          title: "Liên hệ",
-          url: "#",
-          icon: Mail,
-        },
-      ],
-    }, */
+    },
+    {
+      title: "Dịch thuật",
+      url: "/admin/translations",
+      icon: Clock,
+    },
+    {
+      title: "Báo cáo",
+      url: "/admin/reports",
+      icon: FileText,
+    },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [currentUser, setCurrentUser] = useState(authService.getStoredUser());
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [navData, setNavData] = useState(baseNavigation);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const user = authService.getStoredUser();
+      setCurrentUser(user);
+
+      // Build navigation based on user role
+      const navigation = [...baseNavigation];
+
+      if (user) {
+        // Add user navigation for logged-in users
+        navigation.push(userNavigation);
+
+        // Add role-specific navigation
+        if (user.role === "admin") {
+          navigation.push(adminNavigation);
+        } else if (user.role === "uploader") {
+          navigation.push(uploaderNavigation);
+        }
+      }
+
+      setNavData(navigation);
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    window.addEventListener("storage", checkAuth);
+    return () => {
+      window.removeEventListener("storage", checkAuth);
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      toast.success("Đăng xuất thành công");
+      setCurrentUser(null);
+      setNavData(baseNavigation);
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
+    }
+  };
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -119,8 +239,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </Link>
       </SidebarHeader>
       <SidebarContent className="p-2">
-        {/* Map through navigation items */}
-        {data.navMain.map((item, index) => {
+        {navData.map((item, index) => {
           if (item.isTopLevel) {
             return (
               <React.Fragment key={item.title}>
@@ -128,7 +247,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <SidebarGroupContent>
                     <SidebarMenu>
                       <SidebarMenuItem>
-                        {/* Special Homepage Button */}
                         <SidebarMenuButton asChild>
                           <Link
                             to={item.url}
@@ -142,7 +260,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </SidebarMenu>
                   </SidebarGroupContent>
                 </SidebarGroup>
-                {/* Separator sau Homepage */}
                 <Separator className="my-2" />
               </React.Fragment>
             );
@@ -174,15 +291,47 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarGroupContent>
               </SidebarGroup>
 
-              {index < data.navMain.length - 1 &&
-                !data.navMain[index + 1]?.isTopLevel && (
+              {index < navData.length - 1 &&
+                !navData[index + 1]?.isTopLevel && (
                   <Separator className="my-2" />
                 )}
             </React.Fragment>
           );
         })}
       </SidebarContent>
+
+      {currentUser && (
+        <SidebarFooter className="p-2">
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => setShowLogoutConfirm(true)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Đăng xuất</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarFooter>
+      )}
+
       <SidebarRail />
+
+      <ConfirmationModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?"
+        confirmText="Đăng xuất"
+        cancelText="Hủy bỏ"
+        variant="danger"
+      />
     </Sidebar>
   );
 }

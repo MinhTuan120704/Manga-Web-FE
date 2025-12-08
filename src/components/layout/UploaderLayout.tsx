@@ -1,5 +1,9 @@
 import { AppSidebarUploader } from "@/components/app-sidebar-uploader";
-import { SidebarInset, SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarTrigger,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -18,10 +22,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Moon, Sun, User, LogOut, Settings, ArrowLeftRight } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  User,
+  LogOut,
+  Settings,
+  ArrowLeftRight,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { toast } from "sonner";
 
 interface UploaderLayoutProps {
   children: React.ReactNode;
@@ -31,9 +44,13 @@ interface UploaderLayoutProps {
   }>;
 }
 
-export function UploaderLayout({ children, breadcrumbs = [] }: UploaderLayoutProps) {
+export function UploaderLayout({
+  children,
+  breadcrumbs = [],
+}: UploaderLayoutProps) {
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [currentUser, setCurrentUser] = useState<{
     _id: string;
     username: string;
@@ -49,15 +66,17 @@ export function UploaderLayout({ children, breadcrumbs = [] }: UploaderLayoutPro
     };
     checkAuth();
 
-    window.addEventListener('auth-change', checkAuth);
+    window.addEventListener("auth-change", checkAuth);
     return () => {
-      window.removeEventListener('auth-change', checkAuth);
+      window.removeEventListener("auth-change", checkAuth);
     };
   }, []);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
 
     if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
       setDarkMode(true);
@@ -79,8 +98,14 @@ export function UploaderLayout({ children, breadcrumbs = [] }: UploaderLayoutPro
   };
 
   const handleLogout = () => {
-    authService.logout();
-    navigate("/login");
+    try {
+      authService.logout();
+      toast.success("Đăng xuất thành công");
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
+    }
   };
 
   const getInitials = (name: string) => {
@@ -111,7 +136,9 @@ export function UploaderLayout({ children, breadcrumbs = [] }: UploaderLayoutPro
                           <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                         )}
                       </BreadcrumbItem>
-                      {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
+                      {index < breadcrumbs.length - 1 && (
+                        <BreadcrumbSeparator />
+                      )}
                     </div>
                   ))}
                 </BreadcrumbList>
@@ -154,9 +181,9 @@ export function UploaderLayout({ children, breadcrumbs = [] }: UploaderLayoutPro
                       className="relative h-8 w-8 rounded-full"
                     >
                       <Avatar className="h-8 w-8">
-                        <AvatarImage 
-                          src={currentUser.avatarUrl} 
-                          alt={currentUser.username} 
+                        <AvatarImage
+                          src={currentUser.avatarUrl}
+                          alt={currentUser.username}
                         />
                         <AvatarFallback className="bg-primary text-primary-foreground">
                           {getInitials(currentUser.username)}
@@ -167,7 +194,9 @@ export function UploaderLayout({ children, breadcrumbs = [] }: UploaderLayoutPro
                   <DropdownMenuContent className="w-56" align="end" forceMount>
                     <div className="flex items-center justify-start gap-2 p-2">
                       <div className="flex flex-col space-y-1 leading-none">
-                        <p className="font-medium text-sm">{currentUser.username}</p>
+                        <p className="font-medium text-sm">
+                          {currentUser.username}
+                        </p>
                         {currentUser.email && (
                           <p className="text-xs text-muted-foreground">
                             {currentUser.email}
@@ -179,21 +208,23 @@ export function UploaderLayout({ children, breadcrumbs = [] }: UploaderLayoutPro
                       </div>
                     </div>
                     <DropdownMenuSeparator />
-                    
+
                     <DropdownMenuItem onClick={() => navigate("/profile")}>
                       <User className="mr-2 h-4 w-4" />
                       <span>Tài khoản</span>
                     </DropdownMenuItem>
-                    
-                    <DropdownMenuItem onClick={() => navigate("/uploader/settings")}>
+
+                    <DropdownMenuItem
+                      onClick={() => navigate("/uploader/settings")}
+                    >
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Cài đặt</span>
                     </DropdownMenuItem>
-                    
+
                     <DropdownMenuSeparator />
-                    
-                    <DropdownMenuItem 
-                      onClick={handleLogout}
+
+                    <DropdownMenuItem
+                      onClick={() => setShowLogoutConfirm(true)}
                       className="text-red-600 dark:text-red-400"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
@@ -204,12 +235,23 @@ export function UploaderLayout({ children, breadcrumbs = [] }: UploaderLayoutPro
               )}
             </div>
           </header>
-          
+
           <main className="flex-1 overflow-auto">
             <div className="p-4">{children}</div>
           </main>
         </SidebarInset>
       </div>
+
+      <ConfirmationModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?"
+        confirmText="Đăng xuất"
+        cancelText="Hủy bỏ"
+        variant="danger"
+      />
     </SidebarProvider>
   );
 }

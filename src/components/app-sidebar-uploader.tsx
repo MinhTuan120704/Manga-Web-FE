@@ -1,186 +1,260 @@
+import * as React from "react";
+import { Link } from "react-router-dom";
+import {
+  Home,
+  Search,
+  BookOpen,
+  Library,
+  Sparkles,
+  Upload,
+  LayoutDashboard,
+  FolderOpen,
+  Plus,
+  BarChart3,
+  Settings,
+  MessageSquare,
+  LogOut,
+  User,
+} from "lucide-react";
+import { useState } from "react";
+import { authService } from "@/services/auth.service";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { toast } from "sonner";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarHeader,
-  // SidebarFooter,
+  SidebarRail,
 } from "@/components/ui/sidebar";
-import {
-  LayoutDashboard,
-  BookOpen,
-  Plus,
-  FolderOpen,
-  BarChart3,
-  Settings,
-  // ArrowLeftRight,
-  // Home,
-  MessageSquare
-} from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-export function AppSidebarUploader() {
-  const navigate = useNavigate();
-  const location = useLocation();
+// Navigation data for Uploader role
+const data = {
+  navMain: [
+    {
+      title: "Trang chủ",
+      url: "/",
+      icon: Home,
+      isTopLevel: true,
+    },
+    {
+      title: "Người dùng",
+      url: "#",
+      icon: User,
+      items: [
+        {
+          title: "Truyện đang theo dõi",
+          url: "/user/profile?tab=favorites",
+          icon: Library,
+        },
+        {
+          title: "Lịch sử đọc",
+          url: "/user/profile?tab=history",
+          icon: BookOpen,
+        },
+        {
+          title: "Trang cá nhân",
+          url: "/user/profile",
+          icon: User,
+        },
+      ],
+    },
+    {
+      title: "Truyện",
+      url: "#",
+      icon: Search,
+      items: [
+        {
+          title: "Tìm kiếm nâng cao",
+          url: "/search",
+          icon: Search,
+        },
+        {
+          title: "Tìm kiếm AI",
+          url: "/ai-recommendation",
+          icon: Sparkles,
+        },
+      ],
+    },
+    {
+      title: "Uploader",
+      url: "#",
+      icon: Upload,
+      items: [
+        {
+          title: "Dashboard",
+          url: "/uploader",
+          icon: LayoutDashboard,
+        },
+        {
+          title: "Truyện của tôi",
+          url: "/uploader/mangas",
+          icon: FolderOpen,
+        },
+        {
+          title: "Tạo truyện mới",
+          url: "/uploader/manga/create",
+          icon: Plus,
+        },
+        {
+          title: "Quản lý bình luận",
+          url: "/uploader/comments",
+          icon: MessageSquare,
+        },
+        {
+          title: "Thống kê",
+          url: "/uploader/analytics",
+          icon: BarChart3,
+        },
+      ],
+    },
+  ],
+};
 
-  const menuItems = [
-    {
-      title: "Dashboard",
-      icon: LayoutDashboard,
-      url: "/uploader",
-      description: "Tổng quan",
-    },
-    {
-      title: "Truyện của tôi",
-      icon: FolderOpen,
-      url: "/uploader/mangas",
-      description: "Quản lý truyện",
-    },
-    {
-        title: "Quản lý bình luận",
-        icon: MessageSquare,
-        url: "/uploader/comments",
-        description: "Quản lý bình luận",
+export function AppSidebarUploader({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      toast.success("Đăng xuất thành công");
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
     }
-  ];
-
-  const quickActions = [
-    {
-      title: "Tạo truyện mới",
-      icon: Plus,
-      url: "/uploader/manga/create",
-      variant: "default" as const,
-    },
-  ];
-
-  const otherItems = [
-    {
-      title: "Thống kê",
-      icon: BarChart3,
-      url: "/uploader/analytics",
-    },
-    {
-      title: "Cài đặt",
-      icon: Settings,
-      url: "/uploader/settings",
-    },
-  ];
-
-  const isActive = (url: string) => location.pathname === url;
+  };
 
   return (
-    <Sidebar>
-      {/* Header */}
-      <SidebarHeader className="border-b p-4">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center">
-            <BookOpen className="h-6 w-6 text-primary-foreground" />
+    <Sidebar {...props}>
+      <SidebarHeader>
+        <Link to="/" className="block">
+          <div className="flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-accent transition-colors rounded-md">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <Upload className="h-4 w-4" />
+            </div>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">Uploader Panel</span>
+              <span className="truncate text-xs text-muted-foreground">
+                Quản lý nội dung
+              </span>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="font-bold text-lg truncate">Uploader Mode</h2>
-            <p className="text-xs text-muted-foreground">Quản lý nội dung</p>
-          </div>
-        </div>
+        </Link>
       </SidebarHeader>
 
-      <SidebarContent>
-        {/* Switch Mode Section */}
-        {/* <SidebarGroup>
-          <SidebarGroupContent>
-            <Button
-              variant="outline"
-              className="w-full justify-start gap-2"
-              onClick={() => navigate("/")}
-            >
-              <ArrowLeftRight className="h-4 w-4" />
-              <span>Chuyển sang Reader Mode</span>
-            </Button>
-          </SidebarGroupContent>
-        </SidebarGroup> */}
+      <SidebarContent className="p-2">
+        {data.navMain.map((item, index) => {
+          if (item.isTopLevel) {
+            return (
+              <React.Fragment key={item.title}>
+                <SidebarGroup>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <Link
+                            to={item.url}
+                            className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1 font-medium text-base text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+                          >
+                            <item.icon className="h-5 w-5" />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+                <Separator className="my-2" />
+              </React.Fragment>
+            );
+          }
 
-        <Separator />
+          return (
+            <React.Fragment key={item.title}>
+              <SidebarGroup>
+                <SidebarGroupLabel className="flex items-center gap-2 px-2 mb-1 text-xs font-medium text-sidebar-foreground/60">
+                  <item.icon className="h-4 w-4" />
+                  {item.title}
+                </SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {item.items?.map((subItem) => (
+                      <SidebarMenuItem key={subItem.title}>
+                        <SidebarMenuButton asChild>
+                          <Link
+                            to={subItem.url}
+                            className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+                          >
+                            <subItem.icon className="h-4 w-4" />
+                            <span className="text-sm">{subItem.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
 
-        {/* Main Menu */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu chính</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    onClick={() => navigate(item.url)}
-                    isActive={isActive(item.url)}
-                    tooltip={item.description}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <Separator />
-
-        {/* Quick Actions */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Thao tác nhanh</SidebarGroupLabel>
-          <SidebarGroupContent className="space-y-2">
-            {quickActions.map((action) => (
-              <Button
-                key={action.title}
-                variant={action.variant}
-                className="w-full justify-start gap-2"
-                onClick={() => navigate(action.url)}
-              >
-                <action.icon className="h-4 w-4" />
-                <span>{action.title}</span>
-              </Button>
-            ))}
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <Separator />
-
-        {/* Other Items */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Khác</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {otherItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    onClick={() => navigate(item.url)}
-                    isActive={isActive(item.url)}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+              {index < data.navMain.length - 1 &&
+                !data.navMain[index + 1]?.isTopLevel && (
+                  <Separator className="my-2" />
+                )}
+            </React.Fragment>
+          );
+        })}
       </SidebarContent>
 
-      {/* Footer */}
-      {/* <SidebarFooter className="border-t p-4">
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-2"
-          onClick={() => navigate("/")}
-        >
-          <Home className="h-4 w-4" />
-          <span>Về trang chủ</span>
-        </Button>
-      </SidebarFooter> */}
+      <SidebarFooter className="p-2">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/uploader/settings"
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1"
+                  >
+                    <Settings className="h-4 w-4" />
+                    <span>Cài đặt</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => setShowLogoutConfirm(true)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Đăng xuất</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarFooter>
+
+      <SidebarRail />
+
+      <ConfirmationModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?"
+        confirmText="Đăng xuất"
+        cancelText="Hủy bỏ"
+        variant="danger"
+      />
     </Sidebar>
   );
 }

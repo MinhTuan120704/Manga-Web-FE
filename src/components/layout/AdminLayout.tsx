@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import {
   SidebarProvider,
   SidebarInset,
@@ -23,8 +23,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Settings } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { toast } from "sonner";
 
 const AdminSidebar = lazy(() => import("@/components/app-sidebar-admin"));
 const LoadingSpinner = lazy(() => import("@/components/common/LoadingSpinner"));
@@ -42,25 +44,16 @@ export const AdminLayout = ({
   breadcrumbs = [],
 }: AdminLayoutProps) => {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // Determine active tab from current path
-  const getActiveTab = () => {
-    const path = location.pathname;
-    if (path.includes("/admin/manga")) return "manga";
-    if (path.includes("/admin/users")) return "users";
-    if (path.includes("/admin/translations")) return "translations";
-    if (path.includes("/admin/reports")) return "reports";
-    if (path.includes("/admin/settings")) return "settings";
-    return "overview";
-  };
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = async () => {
     try {
       await authService.logout();
+      toast.success("Đăng xuất thành công");
       navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
+      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
     }
   };
 
@@ -69,7 +62,7 @@ export const AdminLayout = ({
   return (
     <SidebarProvider>
       <Suspense fallback={<LoadingSpinner />}>
-        <AdminSidebar activeTab={getActiveTab()} />
+        <AdminSidebar />
       </Suspense>
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 sticky top-0 bg-background z-10">
@@ -139,7 +132,7 @@ export const AdminLayout = ({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={handleLogout}
+                onClick={() => setShowLogoutConfirm(true)}
                 className="text-destructive focus:text-destructive"
               >
                 <LogOut className="mr-2 h-4 w-4" />
@@ -151,6 +144,17 @@ export const AdminLayout = ({
 
         <main className="flex-1 overflow-auto">{children}</main>
       </SidebarInset>
+
+      <ConfirmationModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản quản trị không?"
+        confirmText="Đăng xuất"
+        cancelText="Hủy bỏ"
+        variant="danger"
+      />
     </SidebarProvider>
   );
 };
