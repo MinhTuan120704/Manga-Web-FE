@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   BarChart3,
   BookOpen,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { authService } from "@/services/auth.service";
 import {
   Sidebar,
   SidebarContent,
@@ -27,14 +29,13 @@ import {
 
 interface AdminSidebarProps extends React.ComponentProps<typeof Sidebar> {
   activeTab: string;
-  setActiveTab: (tab: string) => void;
 }
 
 export default function AdminSidebar({
   activeTab,
-  setActiveTab,
   ...props
 }: AdminSidebarProps) {
+  const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -62,12 +63,42 @@ export default function AdminSidebar({
     setDarkMode(!darkMode);
   };
 
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      navigate("/login");
+    }
+  };
+
   const menuItems = [
-    { id: "overview", label: "Overview", icon: BarChart3 },
-    { id: "manga", label: "Manage Manga", icon: BookOpen },
-    { id: "users", label: "Users", icon: Users },
-    { id: "translations", label: "Translations", icon: Clock },
-    { id: "reports", label: "Reports", icon: FileText },
+    {
+      id: "overview",
+      label: "Tổng quan",
+      icon: BarChart3,
+      path: "/admin/overview",
+    },
+    {
+      id: "manga",
+      label: "Quản lý Manga",
+      icon: BookOpen,
+      path: "/admin/manga",
+    },
+    {
+      id: "users",
+      label: "Người dùng",
+      icon: Users,
+      path: "/admin/users",
+    },
+    {
+      id: "translations",
+      label: "Dịch thuật",
+      icon: Clock,
+      path: "/admin/translations",
+    },
+    { id: "reports", label: "Báo cáo", icon: FileText, path: "/admin/reports" },
   ];
 
   return (
@@ -80,9 +111,9 @@ export default function AdminSidebar({
             </div>
             <div>
               <h1 className="font-bold text-lg text-sidebar-foreground">
-                MangaAdmin
+                Quản trị Manga
               </h1>
-              <p className="text-xs text-muted-foreground">Control Panel</p>
+              <p className="text-xs text-muted-foreground">Bảng điều khiển</p>
             </div>
           </div>
           <Button
@@ -110,7 +141,7 @@ export default function AdminSidebar({
                 return (
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
-                      onClick={() => setActiveTab(item.id)}
+                      onClick={() => navigate(item.path)}
                       isActive={isActive}
                       className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1"
                     >
@@ -130,15 +161,22 @@ export default function AdminSidebar({
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1">
+                <SidebarMenuButton
+                  onClick={() => navigate("/admin/settings")}
+                  isActive={activeTab === "settings"}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1"
+                >
                   <Settings size={20} />
-                  <span>Settings</span>
+                  <span>Cài đặt</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10">
+                <SidebarMenuButton
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10"
+                >
                   <LogOut size={20} />
-                  <span>Logout</span>
+                  <span>Đăng xuất</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

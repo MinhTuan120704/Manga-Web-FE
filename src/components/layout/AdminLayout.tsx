@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, LogOut, Settings, Home } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authService } from "@/services/auth.service";
 
 const AdminSidebar = lazy(() => import("@/components/app-sidebar-admin"));
@@ -31,8 +31,6 @@ const LoadingSpinner = lazy(() => import("@/components/common/LoadingSpinner"));
 
 interface AdminLayoutProps {
   children: React.ReactNode;
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
   breadcrumbs?: Array<{
     label: string;
     href?: string;
@@ -41,16 +39,26 @@ interface AdminLayoutProps {
 
 export const AdminLayout = ({
   children,
-  activeTab,
-  setActiveTab,
   breadcrumbs = [],
 }: AdminLayoutProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Determine active tab from current path
+  const getActiveTab = () => {
+    const path = location.pathname;
+    if (path.includes("/admin/manga")) return "manga";
+    if (path.includes("/admin/users")) return "users";
+    if (path.includes("/admin/translations")) return "translations";
+    if (path.includes("/admin/reports")) return "reports";
+    if (path.includes("/admin/settings")) return "settings";
+    return "overview";
+  };
 
   const handleLogout = async () => {
     try {
       await authService.logout();
-      navigate("/auth/login");
+      navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -61,7 +69,7 @@ export const AdminLayout = ({
   return (
     <SidebarProvider>
       <Suspense fallback={<LoadingSpinner />}>
-        <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <AdminSidebar activeTab={getActiveTab()} />
       </Suspense>
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 sticky top-0 bg-background z-10">
@@ -120,22 +128,14 @@ export const AdminLayout = ({
                     {user?.email || "admin@manga.com"}
                   </p>
                   <p className="text-xs text-muted-foreground capitalize">
-                    Role: {user?.role || "admin"}
+                    Vai trò: {user?.role || "admin"}
                   </p>
                 </div>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate("/")}>
-                <Home className="mr-2 h-4 w-4" />
-                <span>Home</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/user/profile")}>
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/admin/settings")}>
                 <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+                <span>Cài đặt</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -143,7 +143,7 @@ export const AdminLayout = ({
                 className="text-destructive focus:text-destructive"
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
+                <span>Đăng xuất</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

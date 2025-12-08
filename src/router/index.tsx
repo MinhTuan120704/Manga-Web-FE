@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
 import { uploaderRoutes } from "./uploaderRoutes";
+import { adminRoutes } from "./adminRoutes";
 import { PageLoader } from "@/components/common/PageLoader";
 // Lazy load all components
 const MangaDetail = lazy(() =>
@@ -36,12 +37,6 @@ const UserLayout = lazy(() =>
 
 const NotFound = lazy(() =>
   import("@/pages/NotFound/NotFound").then((module) => ({
-    default: module.default,
-  }))
-);
-
-const AdminPage = lazy(() =>
-  import("@/pages/Admin/Admin").then((module) => ({
     default: module.default,
   }))
 );
@@ -173,14 +168,9 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  {
-    path: "/admin",
-    element: (
-      <Suspense fallback={<PageLoader />}>
-        <AdminPage />
-      </Suspense>
-    ),
-  },
+
+  // ========== ADMIN ROUTES ==========
+  ...adminRoutes,
 
   // ========== UPLOADER ROUTES ==========
   ...uploaderRoutes,

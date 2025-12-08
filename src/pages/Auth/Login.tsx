@@ -36,10 +36,19 @@ export function Login() {
 
       if (response) {
         // Đăng nhập thành công
-        console.log("Login successful, navigating to home...");
+        console.log("Login successful, navigating...");
 
-        // Navigate về trang chủ và reload để cập nhật MainLayout
-        navigate("/", { replace: true });
+        // Lấy thông tin user để check role
+        const user = authService.getStoredUser();
+
+        // Redirect dựa vào role
+        if (user?.role === "admin") {
+          navigate("/admin/overview", { replace: true });
+        } else if (user?.role === "uploader") {
+          navigate("/uploader", { replace: true });
+        } else {
+          navigate("/", { replace: true });
+        }
 
         // Delay ngắn để đảm bảo navigation hoàn tất trước khi reload
         setTimeout(() => {

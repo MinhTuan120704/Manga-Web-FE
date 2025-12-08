@@ -29,6 +29,7 @@ import {
   BookOpen,
   LayoutDashboard,
   ArrowLeftRight,
+  Shield,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -192,6 +193,19 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
 
           {/* Right side controls */}
           <div className="ml-auto flex items-center gap-2">
+            {/* Switch to Admin Mode - Chỉ hiện nếu user là admin */}
+            {isLoggedIn && currentUser?.role === "admin" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/admin/overview")}
+                className="gap-2"
+              >
+                <Shield className="h-4 w-4" />
+                <span className="hidden sm:inline">Admin Mode</span>
+              </Button>
+            )}
+
             {/* Switch to Uploader Mode - Chỉ hiện nếu user là uploader */}
             {isLoggedIn && currentUser?.role === "uploader" && (
               <Button
@@ -264,6 +278,15 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
                     <User className="mr-2 h-4 w-4" />
                     <span>Tài khoản</span>
                   </DropdownMenuItem>
+
+                  {currentUser.role === "admin" && (
+                    <DropdownMenuItem
+                      onClick={() => navigate("/admin/overview")}
+                    >
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
+                    </DropdownMenuItem>
+                  )}
 
                   {currentUser.role === "uploader" && (
                     <>

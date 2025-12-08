@@ -29,7 +29,7 @@ const genreData = [
   { name: "Romance", value: 25, color: "var(--chart-2)" },
   { name: "Comedy", value: 18, color: "var(--chart-3)" },
   { name: "Drama", value: 15, color: "var(--chart-4)" },
-  { name: "Other", value: 10, color: "var(--chart-5)" },
+  { name: "Khác", value: 10, color: "var(--chart-5)" },
 ];
 
 export default function DashboardOverview() {
@@ -37,9 +37,11 @@ export default function DashboardOverview() {
     <div className="p-8 space-y-8">
       {/* Header */}
       <div>
-        <h2 className="text-3xl font-bold text-foreground mb-2">Dashboard</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-2">
+          Bảng điều khiển
+        </h2>
         <p className="text-muted-foreground">
-          Welcome back! Here's your platform overview.
+          Chào mừng trở lại! Đây là tổng quan nền tảng của bạn.
         </p>
       </div>
 
@@ -47,28 +49,28 @@ export default function DashboardOverview() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           icon={<BookOpen className="text-primary" size={24} />}
-          label="Total Manga"
+          label="Tổng số Manga"
           value="1,234"
           trend="+12%"
           trendUp
         />
         <StatCard
           icon={<Users className="text-primary" size={24} />}
-          label="Total Users"
+          label="Tổng người dùng"
           value="8,456"
           trend="+5%"
           trendUp
         />
         <StatCard
           icon={<TrendingUp className="text-primary" size={24} />}
-          label="Total Reads"
+          label="Tổng lượt đọc"
           value="245.2K"
           trend="+23%"
           trendUp
         />
         <StatCard
           icon={<Clock className="text-primary" size={24} />}
-          label="Pending Reviews"
+          label="Đang chờ xem xét"
           value="42"
           trend="-8%"
         />
@@ -79,7 +81,7 @@ export default function DashboardOverview() {
         {/* Line Chart */}
         <div className="lg:col-span-2 bg-card rounded-lg border border-border p-6">
           <h3 className="text-lg font-semibold text-card-foreground mb-4">
-            Activity Trends
+            Xu hướng hoạt động
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={lineChartData}>
@@ -113,7 +115,7 @@ export default function DashboardOverview() {
         {/* Pie Chart */}
         <div className="bg-card rounded-lg border border-border p-6 flex flex-col items-center justify-center">
           <h3 className="text-lg font-semibold text-card-foreground mb-4 w-full">
-            Total Genres
+            Tổng thể loại
           </h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
@@ -147,7 +149,7 @@ export default function DashboardOverview() {
       {/* Bar Chart */}
       <div className="bg-card rounded-lg border border-border p-6">
         <h3 className="text-lg font-semibold text-card-foreground mb-4">
-          Monthly Performance
+          Hiệu suất hàng tháng
         </h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={lineChartData}>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UploaderLayout } from "@/components/layout/UploaderLayout";
 import { mangaService } from "@/services/manga.service";
+import { EditMangaModal } from "./EditMangaModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,6 +43,8 @@ export function MangaManagement() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [editingManga, setEditingManga] = useState<Manga | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     fetchMangas();
@@ -82,6 +85,15 @@ export function MangaManagement() {
         toast.error("Xóa truyện thất bại");
       }
     }
+  };
+
+  const handleEdit = (manga: Manga) => {
+    setEditingManga(manga);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSuccess = () => {
+    fetchMangas();
   };
 
   const getStatusBadge = (status: string) => {
@@ -264,11 +276,7 @@ export function MangaManagement() {
                               <Eye className="mr-2 h-4 w-4" />
                               Xem chi tiết
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                navigate(`/uploader/manga/edit/${manga._id}`)
-                              }
-                            >
+                            <DropdownMenuItem onClick={() => handleEdit(manga)}>
                               <Edit className="mr-2 h-4 w-4" />
                               Chỉnh sửa
                             </DropdownMenuItem>
@@ -315,6 +323,13 @@ export function MangaManagement() {
           </div>
         )}
       </div>
+
+      <EditMangaModal
+        manga={editingManga}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSuccess={handleEditSuccess}
+      />
     </UploaderLayout>
   );
 }
