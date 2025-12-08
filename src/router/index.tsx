@@ -4,6 +4,8 @@ import { lazy, Suspense } from "react";
 import { uploaderRoutes } from "./uploaderRoutes";
 import { adminRoutes } from "./adminRoutes";
 import { PageLoader } from "@/components/common/PageLoader";
+import { RoleBasedLayout } from "@/components/layout";
+
 // Lazy load all components
 const MangaDetail = lazy(() =>
   import("@/pages/MangaDetail/MangaDetail").then((module) => ({
@@ -29,12 +31,6 @@ const AuthLayout = lazy(() =>
   }))
 );
 
-const UserLayout = lazy(() =>
-  import("@/components/layout").then((module) => ({
-    default: module.UserLayout,
-  }))
-);
-
 const NotFound = lazy(() =>
   import("@/pages/NotFound/NotFound").then((module) => ({
     default: module.default,
@@ -52,6 +48,7 @@ const UserProfile = lazy(() =>
     default: module.UserProfile,
   }))
 );
+
 const MangaReader = lazy(() =>
   import("@/pages/MangaReader/MangaReader").then((module) => ({
     default: module.MangaReader,
@@ -127,30 +124,34 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: "/user",
+    path: "/user/profile",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <UserLayout />
+        <RoleBasedLayout
+          breadcrumbs={[
+            { label: "Trang chủ", href: "/" },
+            { label: "Trang cá nhân" },
+          ]}
+        >
+          <UserProfile />
+        </RoleBasedLayout>
       </Suspense>
     ),
-    children: [
-      {
-        path: "profile",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <UserProfile />
-          </Suspense>
-        ),
-      },
-      {
-        path: "settings",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <UserSettings />
-          </Suspense>
-        ),
-      },
-    ],
+  },
+  {
+    path: "/user/settings",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <RoleBasedLayout
+          breadcrumbs={[
+            { label: "Trang chủ", href: "/" },
+            { label: "Cài đặt" },
+          ]}
+        >
+          <UserSettings />
+        </RoleBasedLayout>
+      </Suspense>
+    ),
   },
   {
     path: "/manga/:id",

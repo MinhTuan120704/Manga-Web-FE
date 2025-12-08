@@ -22,8 +22,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, LogOut, Settings, Home } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { LogOut, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
 import { ConfirmationModal } from "@/components/common/ConfirmationModal";
 import { toast } from "sonner";
@@ -44,19 +44,7 @@ export const AdminLayout = ({
   breadcrumbs = [],
 }: AdminLayoutProps) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-
-  // Determine active tab from current path
-  const getActiveTab = () => {
-    const path = location.pathname;
-    if (path.includes("/admin/manga")) return "manga";
-    if (path.includes("/admin/users")) return "users";
-    if (path.includes("/admin/translations")) return "translations";
-    if (path.includes("/admin/reports")) return "reports";
-    if (path.includes("/admin/settings")) return "settings";
-    return "overview";
-  };
 
   const handleLogout = async () => {
     try {
@@ -74,7 +62,7 @@ export const AdminLayout = ({
   return (
     <SidebarProvider>
       <Suspense fallback={<LoadingSpinner />}>
-        <AdminSidebar activeTab={getActiveTab()} />
+        <AdminSidebar />
       </Suspense>
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 sticky top-0 bg-background z-10">

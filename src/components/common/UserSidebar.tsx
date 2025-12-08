@@ -1,49 +1,117 @@
-import { Home, User, Settings, LogOut, X } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { authService } from "@/services/auth.service";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Badge } from "../ui/badge";
-import { ConfirmationModal } from "./ConfirmationModal";
+import * as React from "react";
+import { Link } from "react-router-dom";
+import {
+  Home,
+  Heart,
+  Search,
+  BookOpen,
+  Library,
+  Sparkles,
+  User,
+  Settings,
+  LogOut,
+  X,
+} from "lucide-react";
 import { useState } from "react";
+import { authService } from "@/services/auth.service";
+import { ConfirmationModal } from "./ConfirmationModal";
+import { toast } from "sonner";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+} from "../ui/sidebar";
+import { Separator } from "../ui/separator";
 
 interface UserSidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+// Navigation data for User/Reader role
+const data = {
+  navMain: [
+    {
+      title: "Trang chủ",
+      url: "/",
+      icon: Home,
+      isTopLevel: true,
+    },
+    {
+      title: "Theo dõi",
+      url: "#",
+      icon: Heart,
+      items: [
+        {
+          title: "Truyện đang theo dõi",
+          url: "/user/profile?tab=favorites",
+          icon: Library,
+        },
+        {
+          title: "Lịch sử đọc",
+          url: "/user/profile?tab=history",
+          icon: BookOpen,
+        },
+      ],
+    },
+    {
+      title: "Truyện",
+      url: "#",
+      icon: Search,
+      items: [
+        {
+          title: "Tìm kiếm nâng cao",
+          url: "/search",
+          icon: Search,
+        },
+        {
+          title: "Tìm kiếm AI",
+          url: "/ai-recommendation",
+          icon: Sparkles,
+        },
+      ],
+    },
+    {
+      title: "Cá nhân",
+      url: "#",
+      icon: User,
+      items: [
+        {
+          title: "Trang cá nhân",
+          url: "/user/profile",
+          icon: User,
+        },
+        {
+          title: "Cài đặt",
+          url: "/user/settings",
+          icon: Settings,
+        },
+      ],
+    },
+  ],
+};
+
 export const UserSidebar = ({ isOpen, onClose }: UserSidebarProps) => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const user = authService.getStoredUser();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = () => {
-    authService.logout();
-    navigate("/login");
+    try {
+      authService.logout();
+      toast.success("Đăng xuất thành công");
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
+    }
   };
-
-  const navItems = [
-    { icon: Home, label: "Trang chủ", path: "/" },
-    { icon: User, label: "Trang cá nhân", path: "/user/profile" },
-    { icon: Settings, label: "Cài đặt", path: "/user/settings" },
-  ];
-
-  const getRoleBadge = (role: string) => {
-    const badges = {
-      reader: {
-        text: "Người đọc truyện / đọc truyện",
-        variant: "default" as const,
-      },
-      uploader: {
-        text: "Người đăng truyện / đăng truyện",
-        variant: "default" as const,
-      },
-      admin: { text: "Quản trị viên", variant: "destructive" as const },
-    };
-    return badges[role as keyof typeof badges] || badges.reader;
-  };
-
-  const badge = getRoleBadge(user?.role || "reader");
 
   return (
     <>
@@ -71,70 +139,121 @@ export const UserSidebar = ({ isOpen, onClose }: UserSidebarProps) => {
         {/* Close button for mobile */}
         <button
           onClick={onClose}
-          className="lg:hidden absolute top-4 right-4 p-1 hover:bg-sidebar-accent rounded-lg transition-colors"
+          className="lg:hidden absolute top-4 right-4 p-1 hover:bg-sidebar-accent rounded-lg transition-colors z-10"
           aria-label="Close sidebar"
         >
           <X className="w-5 h-5 text-muted-foreground" />
         </button>
 
-        {/* User Info */}
-        <div className="p-4 border-b border-sidebar-border">
-          <div className="flex flex-col items-center gap-2">
-            <Avatar className="w-12 h-12">
-              <AvatarImage
-                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                  user?.username || "User"
-                )}&background=random&size=64`}
-              />
-              <AvatarFallback>
-                {user?.username?.charAt(0) || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="text-center w-full">
-              <h3 className="text-sidebar-foreground font-medium text-sm break-words px-2">
-                {user?.username || "John Doe"}
-              </h3>
-              <Badge
-                variant={badge.variant}
-                className="mt-1 text-[10px] px-2 py-0.5 break-words max-w-full inline-block"
-              >
-                {badge.text}
-              </Badge>
-            </div>
-          </div>
-        </div>
+        <Sidebar className="border-none w-full">
+          <SidebarHeader>
+            <Link
+              to="/"
+              className="block"
+              onClick={() => window.innerWidth < 1024 && onClose()}
+            >
+              <div className="flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-accent transition-colors rounded-md">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <BookOpen className="h-4 w-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">Manga Web</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    Manga Reader Platform
+                  </span>
+                </div>
+              </div>
+            </Link>
+          </SidebarHeader>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-2">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => window.innerWidth < 1024 && onClose()}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-                  isActive
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                <span className="text-sm">{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+          <SidebarContent className="p-2">
+            {data.navMain.map((item, index) => {
+              if (item.isTopLevel) {
+                return (
+                  <React.Fragment key={item.title}>
+                    <SidebarGroup>
+                      <SidebarGroupContent>
+                        <SidebarMenu>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild>
+                              <Link
+                                to={item.url}
+                                onClick={() =>
+                                  window.innerWidth < 1024 && onClose()
+                                }
+                                className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1 font-medium text-base text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+                              >
+                                <item.icon className="h-5 w-5" />
+                                <span>{item.title}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        </SidebarMenu>
+                      </SidebarGroupContent>
+                    </SidebarGroup>
+                    <Separator className="my-2" />
+                  </React.Fragment>
+                );
+              }
 
-        {/* Logout */}
-        <button
-          onClick={() => setShowLogoutConfirm(true)}
-          className="flex items-center gap-3 px-6 py-3 text-destructive hover:bg-sidebar-accent transition-colors border-t border-sidebar-border"
-        >
-          <LogOut className="w-5 h-5" />
-          <span className="text-sm">Đăng xuất</span>
-        </button>
+              return (
+                <React.Fragment key={item.title}>
+                  <SidebarGroup>
+                    <SidebarGroupLabel className="flex items-center gap-2 px-2 mb-1 text-xs font-medium text-sidebar-foreground/60">
+                      <item.icon className="h-4 w-4" />
+                      {item.title}
+                    </SidebarGroupLabel>
+                    <SidebarGroupContent>
+                      <SidebarMenu>
+                        {item.items?.map((subItem) => (
+                          <SidebarMenuItem key={subItem.title}>
+                            <SidebarMenuButton asChild>
+                              <Link
+                                to={subItem.url}
+                                onClick={() =>
+                                  window.innerWidth < 1024 && onClose()
+                                }
+                                className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+                              >
+                                <subItem.icon className="h-4 w-4" />
+                                <span className="text-sm">{subItem.title}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
+                      </SidebarMenu>
+                    </SidebarGroupContent>
+                  </SidebarGroup>
+
+                  {index < data.navMain.length - 1 &&
+                    !data.navMain[index + 1]?.isTopLevel && (
+                      <Separator className="my-2" />
+                    )}
+                </React.Fragment>
+              );
+            })}
+          </SidebarContent>
+
+          <SidebarFooter className="p-2">
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      onClick={() => setShowLogoutConfirm(true)}
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>Đăng xuất</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarFooter>
+
+          <SidebarRail />
+        </Sidebar>
       </aside>
 
       <ConfirmationModal
