@@ -1,6 +1,14 @@
 import type { RouteObject } from "react-router-dom";
 import { ProtectedRoute } from "./protectedRoute";
-import { Dashboard, CreateManga, MangaManagement, ChapterManagement, CreateChapter, EditChapter, CommentManagement, UploaderSettings, Analytics } from "@/pages/Uploader";
+import { Dashboard } from "@/pages/Uploader/Dashboard/Dashboard";
+import { CreateManga } from "@/pages/Uploader/CreateManga/CreateManga";
+import { MangaManagement } from "@/pages/Uploader/MangaManagement/MangaManagement";
+import { ChapterManagement } from "@/pages/Uploader/ChapterManagement/ChapterManagement";
+import { CreateChapter } from "@/pages/Uploader/CreateChapter/CreateChapter";
+import { EditChapter } from "@/pages/Uploader/EditChapter/EditChapter";
+import { CommentManagement } from "@/pages/Uploader/CommentManagement/CommentManagement";
+import { UploaderSettings } from "@/pages/Uploader/UploaderSettings/UploaderSettings";
+import { Analytics } from "@/pages/Uploader/Analytics/Analytics";
 
 export const uploaderRoutes: RouteObject[] = [
   {

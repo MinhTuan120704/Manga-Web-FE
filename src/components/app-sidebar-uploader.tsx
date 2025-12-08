@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
-  SidebarFooter,
+  // SidebarFooter,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -17,8 +17,8 @@ import {
   FolderOpen,
   BarChart3,
   Settings,
-  ArrowLeftRight,
-  Home,
+  // ArrowLeftRight,
+  // Home,
   MessageSquare
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -91,7 +91,7 @@ export function AppSidebarUploader() {
 
       <SidebarContent>
         {/* Switch Mode Section */}
-        <SidebarGroup>
+        {/* <SidebarGroup>
           <SidebarGroupContent>
             <Button
               variant="outline"
@@ -102,7 +102,7 @@ export function AppSidebarUploader() {
               <span>Chuyển sang Reader Mode</span>
             </Button>
           </SidebarGroupContent>
-        </SidebarGroup>
+        </SidebarGroup> */}
 
         <Separator />
 
@@ -171,7 +171,7 @@ export function AppSidebarUploader() {
       </SidebarContent>
 
       {/* Footer */}
-      <SidebarFooter className="border-t p-4">
+      {/* <SidebarFooter className="border-t p-4">
         <Button
           variant="ghost"
           className="w-full justify-start gap-2"
@@ -180,7 +180,7 @@ export function AppSidebarUploader() {
           <Home className="h-4 w-4" />
           <span>Về trang chủ</span>
         </Button>
-      </SidebarFooter>
+      </SidebarFooter> */}
     </Sidebar>
   );
 }
