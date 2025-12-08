@@ -59,10 +59,7 @@ export function ChapterManagement() {
   };
 
   const handleEditChapter = (chapter: Chapter) => {
-    console.log("Edit chapter:", chapter._id);
-    // Navigate to edit page (to be implemented)
-    // navigate(`/uploader/manga/${id}/chapter/${chapter._id}/edit`);
-    toast.info("Chức năng chỉnh sửa đang được phát triển");
+    navigate(`/uploader/manga/${id}/chapter/${chapter._id}/edit`);
   };
 
   return (
