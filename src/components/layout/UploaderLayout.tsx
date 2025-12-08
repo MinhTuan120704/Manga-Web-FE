@@ -22,6 +22,8 @@ import { Moon, Sun, User, LogOut, Settings, ArrowLeftRight } from "lucide-react"
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { toast } from "sonner";
 
 interface UploaderLayoutProps {
   children: React.ReactNode;
@@ -34,6 +36,7 @@ interface UploaderLayoutProps {
 export function UploaderLayout({ children, breadcrumbs = [] }: UploaderLayoutProps) {
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [currentUser, setCurrentUser] = useState<{
     _id: string;
     username: string;
@@ -79,8 +82,14 @@ export function UploaderLayout({ children, breadcrumbs = [] }: UploaderLayoutPro
   };
 
   const handleLogout = () => {
-    authService.logout();
-    navigate("/login");
+    try {
+      authService.logout();
+      toast.success("Đăng xuất thành công");
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
+    }
   };
 
   const getInitials = (name: string) => {
@@ -193,7 +202,7 @@ export function UploaderLayout({ children, breadcrumbs = [] }: UploaderLayoutPro
                     <DropdownMenuSeparator />
                     
                     <DropdownMenuItem 
-                      onClick={handleLogout}
+                      onClick={() => setShowLogoutConfirm(true)}
                       className="text-red-600 dark:text-red-400"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
@@ -210,6 +219,17 @@ export function UploaderLayout({ children, breadcrumbs = [] }: UploaderLayoutPro
           </main>
         </SidebarInset>
       </div>
+
+      <ConfirmationModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?"
+        confirmText="Đăng xuất"
+        cancelText="Hủy bỏ"
+        variant="danger"
+      />
     </SidebarProvider>
   );
 }

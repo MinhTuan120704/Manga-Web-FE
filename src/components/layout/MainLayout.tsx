@@ -34,6 +34,8 @@ import {
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { toast } from "sonner";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -48,6 +50,7 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
   const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [currentUser, setCurrentUser] = useState<{
     _id: string;
     username: string;
@@ -102,10 +105,16 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
   };
 
   const handleLogout = () => {
-    authService.logout();
-    setIsLoggedIn(false);
-    setCurrentUser(null);
-    navigate("/login");
+    try {
+      authService.logout();
+      setIsLoggedIn(false);
+      setCurrentUser(null);
+      toast.success("Đăng xuất thành công");
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
+    }
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -311,7 +320,7 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
                   <DropdownMenuSeparator />
 
                   <DropdownMenuItem
-                    onClick={handleLogout}
+                    onClick={() => setShowLogoutConfirm(true)}
                     className="text-red-600 dark:text-red-400"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
@@ -336,6 +345,17 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
           {/* <Footer /> */}
         </main>
       </SidebarInset>
+
+      <ConfirmationModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?"
+        confirmText="Đăng xuất"
+        cancelText="Hủy bỏ"
+        variant="danger"
+      />
     </div>
   );
 }

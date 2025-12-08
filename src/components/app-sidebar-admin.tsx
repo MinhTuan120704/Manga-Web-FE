@@ -14,6 +14,8 @@ import {
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { authService } from "@/services/auth.service";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { toast } from "sonner";
 import {
   Sidebar,
   SidebarContent,
@@ -37,6 +39,7 @@ export default function AdminSidebar({
 }: AdminSidebarProps) {
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
@@ -66,10 +69,11 @@ export default function AdminSidebar({
   const handleLogout = async () => {
     try {
       await authService.logout();
+      toast.success("Đăng xuất thành công");
       navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
-      navigate("/login");
+      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
     }
   };
 
@@ -172,7 +176,7 @@ export default function AdminSidebar({
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  onClick={handleLogout}
+                  onClick={() => setShowLogoutConfirm(true)}
                   className="flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10"
                 >
                   <LogOut size={20} />
@@ -185,6 +189,17 @@ export default function AdminSidebar({
       </SidebarFooter>
 
       <SidebarRail />
+
+      <ConfirmationModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản quản trị không?"
+        confirmText="Đăng xuất"
+        cancelText="Hủy bỏ"
+        variant="danger"
+      />
     </Sidebar>
   );
 }

@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import {
   SidebarProvider,
   SidebarInset,
@@ -25,6 +25,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, LogOut, Settings, Home } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authService } from "@/services/auth.service";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { toast } from "sonner";
 
 const AdminSidebar = lazy(() => import("@/components/app-sidebar-admin"));
 const LoadingSpinner = lazy(() => import("@/components/common/LoadingSpinner"));
@@ -43,6 +45,7 @@ export const AdminLayout = ({
 }: AdminLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // Determine active tab from current path
   const getActiveTab = () => {
@@ -58,9 +61,11 @@ export const AdminLayout = ({
   const handleLogout = async () => {
     try {
       await authService.logout();
+      toast.success("Đăng xuất thành công");
       navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
+      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
     }
   };
 
@@ -139,7 +144,7 @@ export const AdminLayout = ({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={handleLogout}
+                onClick={() => setShowLogoutConfirm(true)}
                 className="text-destructive focus:text-destructive"
               >
                 <LogOut className="mr-2 h-4 w-4" />
@@ -151,6 +156,17 @@ export const AdminLayout = ({
 
         <main className="flex-1 overflow-auto">{children}</main>
       </SidebarInset>
+
+      <ConfirmationModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản quản trị không?"
+        confirmText="Đăng xuất"
+        cancelText="Hủy bỏ"
+        variant="danger"
+      />
     </SidebarProvider>
   );
 };
