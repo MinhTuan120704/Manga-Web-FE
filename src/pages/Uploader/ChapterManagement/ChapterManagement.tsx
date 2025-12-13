@@ -11,6 +11,7 @@ import { ArrowLeft, Plus, BookOpen } from "lucide-react";
 import type { Manga } from "@/types/manga";
 import type { Chapter } from "@/types/chapter";
 import { ChapterList } from "./components/ChapterList";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
 
 export function ChapterManagement() {
   const { id } = useParams();
@@ -18,6 +19,8 @@ export function ChapterManagement() {
   const [manga, setManga] = useState<Manga | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [chapterToDelete, setChapterToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -45,16 +48,23 @@ export function ChapterManagement() {
     }
   };
 
-  const handleDeleteChapter = async (chapterId: string) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa chương này không?")) {
-      try {
-        await chapterService.deleteChapter(chapterId);
-        toast.success("Xóa chương thành công");
-        fetchData(); // Reload data
-      } catch (error) {
-        console.error("Failed to delete chapter:", error);
-        toast.error("Xóa chương thất bại");
-      }
+  const handleDeleteChapter = (chapterId: string) => {
+    setChapterToDelete(chapterId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteChapter = async () => {
+    if (!chapterToDelete) return;
+
+    try {
+      await chapterService.deleteChapter(chapterToDelete);
+      toast.success("Xóa chương thành công");
+      setShowDeleteModal(false);
+      setChapterToDelete(null);
+      fetchData(); // Reload data
+    } catch (error) {
+      console.error("Failed to delete chapter:", error);
+      toast.error("Xóa chương thất bại");
     }
   };
 
@@ -73,52 +83,72 @@ export function ChapterManagement() {
       <div className="space-y-6">
         {/* Header with Manga Info */}
         <div className="flex flex-col md:flex-row gap-6 items-start">
-            <Button variant="outline" size="icon" onClick={() => navigate("/uploader/mangas")}>
-                <ArrowLeft className="h-4 w-4" />
-            </Button>
-            
-            {loading ? (
-                <div className="space-y-2">
-                    <Skeleton className="h-8 w-64" />
-                    <Skeleton className="h-4 w-40" />
-                </div>
-            ) : manga ? (
-                <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                        <h1 className="text-2xl font-bold">{manga.title}</h1>
-                        <Badge>{manga.status}</Badge>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                            <BookOpen className="h-4 w-4" />
-                            {chapters.length} chương
-                        </span>
-                        <span>Tác giả: {manga.author}</span>
-                    </div>
-                </div>
-            ) : null}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => navigate("/uploader/mangas")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
 
-            <Button onClick={() => navigate(`/uploader/manga/${id}/create-chapter`)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Thêm chương mới
-            </Button>
+          {loading ? (
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-64" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+          ) : manga ? (
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-2xl font-bold">{manga.title}</h1>
+                <Badge>{manga.status}</Badge>
+              </div>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <BookOpen className="h-4 w-4" />
+                  {chapters.length} chương
+                </span>
+                <span>Tác giả: {manga.author}</span>
+              </div>
+            </div>
+          ) : null}
+
+          <Button
+            onClick={() => navigate(`/uploader/manga/${id}/create-chapter`)}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Thêm chương mới
+          </Button>
         </div>
 
         {/* Chapter List */}
         {loading ? (
-            <div className="space-y-4">
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-            </div>
+          <div className="space-y-4">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
         ) : (
-            <ChapterList 
-                chapters={chapters} 
-                onEdit={handleEditChapter}
-                onDelete={handleDeleteChapter}
-            />
+          <ChapterList
+            chapters={chapters}
+            onEdit={handleEditChapter}
+            onDelete={handleDeleteChapter}
+          />
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setChapterToDelete(null);
+        }}
+        onConfirm={confirmDeleteChapter}
+        title="Xác nhận xóa chương"
+        message="Bạn có chắc chắn muốn xóa chương này không? Hành động này không thể hoàn tác."
+        confirmText="Xóa chương"
+        cancelText="Hủy bỏ"
+        variant="danger"
+      />
     </UploaderLayout>
   );
 }
