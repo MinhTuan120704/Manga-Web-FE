@@ -32,7 +32,7 @@ export const AdvancedSearch = () => {
   // Search filters
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("-createdAt");
+  const [sortBy, setSortBy] = useState<string>("newest");
 
   // Search results
   const [mangas, setMangas] = useState<Manga[]>([]);
