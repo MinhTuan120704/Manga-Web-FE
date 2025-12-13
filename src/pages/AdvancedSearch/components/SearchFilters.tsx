@@ -89,14 +89,14 @@ export const SearchFilters = ({
                 <SelectValue placeholder="Chọn cách sắp xếp" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="-createdAt">Mới nhất</SelectItem>
-                <SelectItem value="createdAt">Cũ nhất</SelectItem>
-                <SelectItem value="-updatedAt">Cập nhật gần đây</SelectItem>
-                <SelectItem value="-viewCount">Xem nhiều nhất</SelectItem>
-                <SelectItem value="-averageRating">Đánh giá cao</SelectItem>
-                <SelectItem value="-followedCount">Theo dõi nhiều</SelectItem>
-                <SelectItem value="title">Tên A-Z</SelectItem>
-                <SelectItem value="-title">Tên Z-A</SelectItem>
+                <SelectItem value="newest">Mới nhất</SelectItem>
+                <SelectItem value="oldest">Cũ nhất</SelectItem>
+                <SelectItem value="updated">Cập nhật gần đây</SelectItem>
+                <SelectItem value="mostViewed">Xem nhiều nhất</SelectItem>
+                <SelectItem value="highestRating">Đánh giá cao</SelectItem>
+                <SelectItem value="mostFollowed">Theo dõi nhiều</SelectItem>
+                <SelectItem value="az">Tên A-Z</SelectItem>
+                <SelectItem value="za">Tên Z-A</SelectItem>
               </SelectContent>
             </Select>
           </div>

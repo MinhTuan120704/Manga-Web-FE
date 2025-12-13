@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { UploaderLayout } from "@/components/layout/UploaderLayout";
 import { mangaService } from "@/services/manga.service";
 import { EditMangaModal } from "./EditMangaModal";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,6 +46,8 @@ export function MangaManagement() {
   const [totalPages, setTotalPages] = useState(1);
   const [editingManga, setEditingManga] = useState<Manga | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [mangaToDelete, setMangaToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMangas();
@@ -74,16 +77,23 @@ export function MangaManagement() {
     }
   };
 
-  const handleDelete = async (mangaId: string) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa truyện này không?")) {
-      try {
-        await mangaService.deleteManga(mangaId);
-        toast.success("Xóa truyện thành công");
-        fetchMangas();
-      } catch (error) {
-        console.error("Failed to delete manga:", error);
-        toast.error("Xóa truyện thất bại");
-      }
+  const handleDelete = (mangaId: string) => {
+    setMangaToDelete(mangaId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteManga = async () => {
+    if (!mangaToDelete) return;
+
+    try {
+      await mangaService.deleteManga(mangaToDelete);
+      toast.success("Xóa truyện thành công");
+      setShowDeleteModal(false);
+      setMangaToDelete(null);
+      fetchMangas();
+    } catch (error) {
+      console.error("Failed to delete manga:", error);
+      toast.error("Xóa truyện thất bại");
     }
   };
 
@@ -329,6 +339,20 @@ export function MangaManagement() {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSuccess={handleEditSuccess}
+      />
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setMangaToDelete(null);
+        }}
+        onConfirm={confirmDeleteManga}
+        title="Xác nhận xóa truyện"
+        message="Bạn có chắc chắn muốn xóa truyện này không? Hành động này không thể hoàn tác."
+        confirmText="Xóa truyện"
+        cancelText="Hủy bỏ"
+        variant="danger"
       />
     </UploaderLayout>
   );

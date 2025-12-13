@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { toast } from "sonner";
 import { mangaService } from "@/services/manga.service";
 import { useNavigate } from "react-router-dom";
 import type { Manga } from "@/types/manga";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
 
 interface RecentUploadsProps {
   mangas: Manga[];
@@ -14,6 +16,8 @@ interface RecentUploadsProps {
 
 export function RecentUploads({ mangas, onDelete }: RecentUploadsProps) {
   const navigate = useNavigate();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [mangaToDelete, setMangaToDelete] = useState<string | null>(null);
 
   // Sort by updatedAt và lấy 5 truyện mới nhất
   const recentMangas = [...mangas]
@@ -49,22 +53,29 @@ export function RecentUploads({ mangas, onDelete }: RecentUploadsProps) {
     return labels[status] || status;
   };
 
-  const handleDelete = async (e: React.MouseEvent, mangaId: string) => {
+  const handleDelete = (e: React.MouseEvent, mangaId: string) => {
     e.stopPropagation();
-    if (window.confirm("Bạn có chắc chắn muốn xóa truyện này không?")) {
-      try {
-        await mangaService.deleteManga(mangaId);
-        toast.success("Xóa truyện thành công");
-        if (onDelete) {
-          onDelete();
-        } else {
-          // Fallback reload if no callback provided
-          window.location.reload();
-        }
-      } catch (error) {
-        console.error("Failed to delete manga:", error);
-        toast.error("Xóa truyện thất bại");
+    setMangaToDelete(mangaId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteManga = async () => {
+    if (!mangaToDelete) return;
+
+    try {
+      await mangaService.deleteManga(mangaToDelete);
+      toast.success("Xóa truyện thành công");
+      setShowDeleteModal(false);
+      setMangaToDelete(null);
+      if (onDelete) {
+        onDelete();
+      } else {
+        // Fallback reload if no callback provided
+        window.location.reload();
       }
+    } catch (error) {
+      console.error("Failed to delete manga:", error);
+      toast.error("Xóa truyện thất bại");
     }
   };
 
@@ -93,7 +104,11 @@ export function RecentUploads({ mangas, onDelete }: RecentUploadsProps) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Truyện mới cập nhật</CardTitle>
-        <Button variant="outline" size="sm" onClick={() => navigate("/uploader/mangas")}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate("/uploader/mangas")}
+        >
           Xem tất cả
         </Button>
       </CardHeader>
@@ -156,6 +171,20 @@ export function RecentUploads({ mangas, onDelete }: RecentUploadsProps) {
           ))}
         </div>
       </CardContent>
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setMangaToDelete(null);
+        }}
+        onConfirm={confirmDeleteManga}
+        title="Xác nhận xóa truyện"
+        message="Bạn có chắc chắn muốn xóa truyện này không? Hành động này không thể hoàn tác."
+        confirmText="Xóa truyện"
+        cancelText="Hủy bỏ"
+        variant="danger"
+      />
     </Card>
   );
 }
