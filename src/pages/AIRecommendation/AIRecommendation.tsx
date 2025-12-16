@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { aiService } from "@/services/ai.service";
-import type { AIRecommendation as AIRecommendationType } from "@/types/ai";
-import { DescriptionInput, RecommendationList, EmptyState } from "./components";
+import type { RecommendedManga } from "@/types/ai";
+import {
+  DescriptionInput,
+  RecommendationList,
+  EmptyState,
+  SuggestedGenres,
+  LoadingAnimation,
+} from "./components";
 import { toast } from "sonner";
 import { Alert } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Info } from "lucide-react";
+import { parseAIError } from "@/utils/errorHandler";
 
 export const AIRecommendation = () => {
   const breadcrumbs = [
@@ -13,11 +20,15 @@ export const AIRecommendation = () => {
     { label: "Tìm truyện với AI" },
   ];
 
-  const [recommendations, setRecommendations] = useState<
-    AIRecommendationType[]
-  >([]);
+  const [recommendations, setRecommendations] = useState<RecommendedManga[]>(
+    []
+  );
+  const [suggestedGenres, setSuggestedGenres] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{
+    message: string;
+    suggestion?: string;
+  } | null>(null);
 
   const handleSubmit = async (description: string) => {
     try {
@@ -26,23 +37,34 @@ export const AIRecommendation = () => {
 
       const response = await aiService.getMangaByDescription({ description });
 
-      if (response.recommendations && response.recommendations.length > 0) {
-        setRecommendations(response.recommendations);
+      if (response.recommendedMangas && response.recommendedMangas.length > 0) {
+        setRecommendations(response.recommendedMangas);
+        setSuggestedGenres(response.suggestedGenres || []);
+
         toast.success(
-          `Đã tìm thấy ${response.recommendations.length} đề xuất!`
+          `Đã tìm thấy ${response.recommendedMangas.length} đề xuất!`
         );
       } else {
         setRecommendations([]);
+        setSuggestedGenres([]);
         toast.info("Không tìm thấy đề xuất phù hợp. Thử mô tả khác nhé!");
       }
     } catch (err) {
       console.error("AI recommendation error:", err);
-      const errorMessage =
-        (err as Error)?.message ||
-        "Không thể tạo đề xuất. Vui lòng thử lại sau.";
-      setError(errorMessage);
-      toast.error(errorMessage);
+      const parsedError = parseAIError(err);
+      
+      setError({
+        message: parsedError.message,
+        suggestion: parsedError.suggestion,
+      });
+      
+      toast.error(parsedError.message, {
+        description: parsedError.suggestion,
+        duration: 5000,
+      });
+      
       setRecommendations([]);
+      setSuggestedGenres([]);
     } finally {
       setLoading(false);
     }
@@ -69,24 +91,31 @@ export const AIRecommendation = () => {
 
         {/* Error Alert */}
         {error && !loading && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <div className="ml-2">
-              <p className="font-medium">Đã xảy ra lỗi</p>
-              <p className="text-sm">{error}</p>
+          <Alert variant="destructive" className="border-l-4">
+            <AlertCircle className="h-5 w-5" />
+            <div className="ml-3 flex-1 space-y-2">
+              <div>
+                <p className="font-semibold text-base">{error.message}</p>
+              </div>
+              {error.suggestion && (
+                <div className="flex items-start gap-2 pt-1">
+                  <Info className="h-4 w-4 mt-0.5 shrink-0 opacity-80" />
+                  <p className="text-sm opacity-90">{error.suggestion}</p>
+                </div>
+              )}
             </div>
           </Alert>
+        )}
+
+        {/* Suggested Genres */}
+        {!loading && suggestedGenres.length > 0 && (
+          <SuggestedGenres genres={suggestedGenres} />
         )}
 
         {/* Results Section */}
         <div>
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-              <p className="text-muted-foreground animate-pulse">
-                AI đang phân tích yêu cầu của bạn...
-              </p>
-            </div>
+            <LoadingAnimation />
           ) : recommendations.length > 0 ? (
             <RecommendationList recommendations={recommendations} />
           ) : (
