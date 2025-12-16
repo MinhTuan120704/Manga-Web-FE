@@ -23,7 +23,7 @@ export const SuggestedGenres = ({ genres }: SuggestedGenresProps) => {
             <div className="flex flex-wrap gap-2">
               {genres.map((genre, index) => (
                 <Badge
-                  key={index}
+                  key={`${genre}-${index}`}
                   variant="default"
                   className="text-sm px-3 py-1"
                 >
