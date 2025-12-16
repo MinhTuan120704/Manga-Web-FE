@@ -77,9 +77,9 @@ export const LoadingAnimation = () => {
 
       {/* Progress dots */}
       <div className="flex gap-2">
-        {loadingMessages.map((_, index) => (
+        {loadingMessages.map((message, index) => (
           <div
-            key={index}
+            key={message.text}
             className={`h-2 w-2 rounded-full transition-all duration-300 ${
               index === messageIndex
                 ? "bg-primary w-8"
