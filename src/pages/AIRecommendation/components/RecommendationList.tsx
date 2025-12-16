@@ -1,9 +1,9 @@
 import { RecommendationCard } from "./RecommendationCard";
-import type { AIRecommendation } from "@/types/ai";
+import type { RecommendedManga } from "@/types/ai";
 import { Sparkles } from "lucide-react";
 
 interface RecommendationListProps {
-  recommendations: AIRecommendation[];
+  recommendations: RecommendedManga[];
 }
 
 export const RecommendationList = ({
