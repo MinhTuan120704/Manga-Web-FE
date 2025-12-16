@@ -13,7 +13,7 @@ export const SuggestedGenres = ({ genres }: SuggestedGenresProps) => {
 
   return (
     <Card className="border-primary/20 bg-primary/5">
-      <CardContent className="">
+      <CardContent>
         <div className="flex items-start gap-3">
           <Tag className="h-5 w-5 text-primary mt-0.5 shrink-0" />
           <div className="space-y-3 flex-1">
