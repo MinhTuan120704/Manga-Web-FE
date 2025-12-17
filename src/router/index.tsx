@@ -1,173 +1,79 @@
 import { createBrowserRouter } from "react-router-dom";
-import { lazy, Suspense } from "react";
 
 import { uploaderRoutes } from "./uploaderRoutes";
 import { adminRoutes } from "./adminRoutes";
-import { PageLoader } from "@/components/common/PageLoader";
 import { RoleBasedLayout } from "@/components/layout";
-
-// Lazy load all components
-const MangaDetail = lazy(() =>
-  import("@/pages/MangaDetail/MangaDetail").then((module) => ({
-    default: module.MangaDetail,
-  }))
-);
-
-const Login = lazy(() =>
-  import("@/pages/Auth").then((module) => ({
-    default: module.Login,
-  }))
-);
-
-const Register = lazy(() =>
-  import("@/pages/Auth").then((module) => ({
-    default: module.Register,
-  }))
-);
-
-const AuthLayout = lazy(() =>
-  import("@/components/layout/AuthLayout").then((module) => ({
-    default: module.AuthLayout,
-  }))
-);
-
-const NotFound = lazy(() =>
-  import("@/pages/NotFound/NotFound").then((module) => ({
-    default: module.default,
-  }))
-);
-
-const Homepage = lazy(() =>
-  import("@/pages/Home/Homepage").then((module) => ({
-    default: module.Homepage,
-  }))
-);
-
-const UserProfile = lazy(() =>
-  import("@/pages/UserProfile/UserProfile").then((module) => ({
-    default: module.UserProfile,
-  }))
-);
-
-const MangaReader = lazy(() =>
-  import("@/pages/MangaReader/MangaReader").then((module) => ({
-    default: module.MangaReader,
-  }))
-);
-
-const AdvancedSearch = lazy(() =>
-  import("@/pages/AdvancedSearch/AdvancedSearch").then((module) => ({
-    default: module.AdvancedSearch,
-  }))
-);
-
-const UserSettings = lazy(() =>
-  import("@/pages/UserProfile/components/UserSettings").then((module) => ({
-    default: module.UserSettings,
-  }))
-);
-
-const AIRecommendation = lazy(() =>
-  import("@/pages/AIRecommendation/AIRecommendation").then((module) => ({
-    default: module.AIRecommendation,
-  }))
-);
+import { MangaDetail } from "@/pages/MangaDetail/MangaDetail";
+import { Login, Register } from "@/pages/Auth";
+import { AuthLayout } from "@/components/layout/AuthLayout";
+import NotFound from "@/pages/NotFound/NotFound";
+import { Homepage } from "@/pages/Home/Homepage";
+import { UserProfile } from "@/pages/UserProfile/UserProfile";
+import { MangaReader } from "@/pages/MangaReader/MangaReader";
+import { AdvancedSearch } from "@/pages/AdvancedSearch/AdvancedSearch";
+import { UserSettings } from "@/pages/UserProfile/components/UserSettings";
+import { AIRecommendation } from "@/pages/AIRecommendation/AIRecommendation";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <Suspense fallback={<PageLoader />}>
-        <Homepage />
-      </Suspense>
-    ),
+    element: <Homepage />,
   },
 
   {
     path: "/search",
-    element: (
-      <Suspense fallback={<PageLoader />}>
-        <AdvancedSearch />
-      </Suspense>
-    ),
+    element: <AdvancedSearch />,
   },
   {
     path: "/ai-recommendation",
-    element: (
-      <Suspense fallback={<PageLoader />}>
-        <AIRecommendation />
-      </Suspense>
-    ),
+    element: <AIRecommendation />,
   },
   {
     path: "/login",
     element: (
-      <Suspense fallback={<PageLoader />}>
-        <AuthLayout disableScroll={true}>
-          <Suspense fallback={<PageLoader />}>
-            <Login />
-          </Suspense>
-        </AuthLayout>
-      </Suspense>
+      <AuthLayout disableScroll={true}>
+        <Login />
+      </AuthLayout>
     ),
   },
   {
     path: "/register",
     element: (
-      <Suspense fallback={<PageLoader />}>
-        <AuthLayout>
-          <Suspense fallback={<PageLoader />}>
-            <Register />
-          </Suspense>
-        </AuthLayout>
-      </Suspense>
+      <AuthLayout>
+        <Register />
+      </AuthLayout>
     ),
   },
   {
     path: "/user/profile",
     element: (
-      <Suspense fallback={<PageLoader />}>
-        <RoleBasedLayout
-          breadcrumbs={[
-            { label: "Trang chủ", href: "/" },
-            { label: "Trang cá nhân" },
-          ]}
-        >
-          <UserProfile />
-        </RoleBasedLayout>
-      </Suspense>
+      <RoleBasedLayout
+        breadcrumbs={[
+          { label: "Trang chủ", href: "/" },
+          { label: "Trang cá nhân" },
+        ]}
+      >
+        <UserProfile />
+      </RoleBasedLayout>
     ),
   },
   {
     path: "/user/settings",
     element: (
-      <Suspense fallback={<PageLoader />}>
-        <RoleBasedLayout
-          breadcrumbs={[
-            { label: "Trang chủ", href: "/" },
-            { label: "Cài đặt" },
-          ]}
-        >
-          <UserSettings />
-        </RoleBasedLayout>
-      </Suspense>
+      <RoleBasedLayout
+        breadcrumbs={[{ label: "Trang chủ", href: "/" }, { label: "Cài đặt" }]}
+      >
+        <UserSettings />
+      </RoleBasedLayout>
     ),
   },
   {
     path: "/manga/:id",
-    element: (
-      <Suspense fallback={<PageLoader />}>
-        <MangaDetail />
-      </Suspense>
-    ),
+    element: <MangaDetail />,
   },
   {
     path: "/reader/:chapterId",
-    element: (
-      <Suspense fallback={<PageLoader />}>
-        <MangaReader />
-      </Suspense>
-    ),
+    element: <MangaReader />,
   },
 
   // ========== ADMIN ROUTES ==========
@@ -178,10 +84,6 @@ export const router = createBrowserRouter([
 
   {
     path: "*",
-    element: (
-      <Suspense fallback={<PageLoader />}>
-        <NotFound />
-      </Suspense>
-    ),
+    element: <NotFound />,
   },
 ]);
