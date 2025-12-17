@@ -1,26 +1,12 @@
-import { lazy, Suspense } from "react";
 import type { RouteObject } from "react-router-dom";
-import { PageLoader } from "@/components/common/PageLoader";
 import { AdminLayout } from "@/components/layout";
 import { ProtectedRoute } from "./protectedRoute";
-
-// Lazy load admin components
-const DashboardOverview = lazy(
-  () => import("@/pages/Admin/components/DashboardOverview")
-);
-const MangaManagementComponent = lazy(
-  () => import("@/pages/Admin/components/MangaManagement")
-);
-const UserManagementComponent = lazy(
-  () => import("@/pages/Admin/components/UserManagement")
-);
-const TranslationQueue = lazy(
-  () => import("@/pages/Admin/components/TranslationQueue")
-);
-const ReportsComponent = lazy(() => import("@/pages/Admin/components/Reports"));
-const SettingsComponent = lazy(
-  () => import("@/pages/Admin/components/Settings")
-);
+import DashboardOverview from "@/pages/Admin/components/DashboardOverview";
+import MangaManagementComponent from "@/pages/Admin/components/MangaManagement";
+import UserManagementComponent from "@/pages/Admin/components/UserManagement";
+import TranslationQueue from "@/pages/Admin/components/TranslationQueue";
+import ReportsComponent from "@/pages/Admin/components/Reports";
+import SettingsComponent from "@/pages/Admin/components/Settings";
 
 // Admin routes configuration
 export const adminRoutes: RouteObject[] = [
@@ -28,16 +14,14 @@ export const adminRoutes: RouteObject[] = [
     path: "/admin/overview",
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Suspense fallback={<PageLoader />}>
-          <AdminLayout
-            breadcrumbs={[
-              { label: "Quản trị", href: "/admin" },
-              { label: "Tổng quan" },
-            ]}
-          >
-            <DashboardOverview />
-          </AdminLayout>
-        </Suspense>
+        <AdminLayout
+          breadcrumbs={[
+            { label: "Quản trị", href: "/admin" },
+            { label: "Tổng quan" },
+          ]}
+        >
+          <DashboardOverview />
+        </AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -45,16 +29,14 @@ export const adminRoutes: RouteObject[] = [
     path: "/admin/manga",
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Suspense fallback={<PageLoader />}>
-          <AdminLayout
-            breadcrumbs={[
-              { label: "Quản trị", href: "/admin" },
-              { label: "Quản lý Manga" },
-            ]}
-          >
-            <MangaManagementComponent />
-          </AdminLayout>
-        </Suspense>
+        <AdminLayout
+          breadcrumbs={[
+            { label: "Quản trị", href: "/admin" },
+            { label: "Quản lý Manga" },
+          ]}
+        >
+          <MangaManagementComponent />
+        </AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -62,16 +44,14 @@ export const adminRoutes: RouteObject[] = [
     path: "/admin/users",
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Suspense fallback={<PageLoader />}>
-          <AdminLayout
-            breadcrumbs={[
-              { label: "Quản trị", href: "/admin" },
-              { label: "Quản lý người dùng" },
-            ]}
-          >
-            <UserManagementComponent />
-          </AdminLayout>
-        </Suspense>
+        <AdminLayout
+          breadcrumbs={[
+            { label: "Quản trị", href: "/admin" },
+            { label: "Quản lý người dùng" },
+          ]}
+        >
+          <UserManagementComponent />
+        </AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -79,16 +59,14 @@ export const adminRoutes: RouteObject[] = [
     path: "/admin/translations",
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Suspense fallback={<PageLoader />}>
-          <AdminLayout
-            breadcrumbs={[
-              { label: "Quản trị", href: "/admin" },
-              { label: "Dịch thuật" },
-            ]}
-          >
-            <TranslationQueue />
-          </AdminLayout>
-        </Suspense>
+        <AdminLayout
+          breadcrumbs={[
+            { label: "Quản trị", href: "/admin" },
+            { label: "Dịch thuật" },
+          ]}
+        >
+          <TranslationQueue />
+        </AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -96,16 +74,14 @@ export const adminRoutes: RouteObject[] = [
     path: "/admin/reports",
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Suspense fallback={<PageLoader />}>
-          <AdminLayout
-            breadcrumbs={[
-              { label: "Quản trị", href: "/admin" },
-              { label: "Báo cáo" },
-            ]}
-          >
-            <ReportsComponent />
-          </AdminLayout>
-        </Suspense>
+        <AdminLayout
+          breadcrumbs={[
+            { label: "Quản trị", href: "/admin" },
+            { label: "Báo cáo" },
+          ]}
+        >
+          <ReportsComponent />
+        </AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -113,16 +89,14 @@ export const adminRoutes: RouteObject[] = [
     path: "/admin/settings",
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Suspense fallback={<PageLoader />}>
-          <AdminLayout
-            breadcrumbs={[
-              { label: "Quản trị", href: "/admin" },
-              { label: "Cài đặt" },
-            ]}
-          >
-            <SettingsComponent />
-          </AdminLayout>
-        </Suspense>
+        <AdminLayout
+          breadcrumbs={[
+            { label: "Quản trị", href: "/admin" },
+            { label: "Cài đặt" },
+          ]}
+        >
+          <SettingsComponent />
+        </AdminLayout>
       </ProtectedRoute>
     ),
   },
