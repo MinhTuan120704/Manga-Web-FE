@@ -37,3 +37,15 @@ export interface UserQueryParams {
   role?: "reader" | "uploader" | "admin";
   search?: string;
 }
+
+export interface AdminUpdateUserRequest {
+  userId: string;
+  username?: string;
+  email?: string;
+  role?: "reader" | "uploader" | "admin";
+  avatarUrl?: string;
+}
+
+export interface AdminDeleteUserRequest {
+  userId: string;
+}
