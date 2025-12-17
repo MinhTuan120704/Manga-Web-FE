@@ -28,12 +28,16 @@ export const UserInfoCard = ({ user }: UserInfoCardProps) => {
         <div className="flex flex-col items-center gap-3">
           <Avatar className="w-20 h-20 sm:w-24 sm:h-24">
             <AvatarImage
-              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                user?.username || "User"
-              )}&background=random&size=128`}
+              src={
+                user?.avatarUrl ||
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                  user?.username || "User"
+                )}&background=random&size=128`
+              }
+              alt={user?.username || "User"}
             />
             <AvatarFallback className="text-xl sm:text-2xl">
-              {user?.username?.charAt(0) || "U"}
+              {user?.username?.charAt(0).toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
           <div className="text-center w-full">

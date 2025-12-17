@@ -24,6 +24,7 @@ export const UpdateUserInfoModal = ({
     lastName: "",
     email: "",
     bio: "",
+    avatarUrl: "",
   });
   const [loading, setLoading] = useState(false);
   const [fetchingProfile, setFetchingProfile] = useState(false);
@@ -49,6 +50,7 @@ export const UpdateUserInfoModal = ({
             lastName: nameParts.slice(1).join(" ") || "",
             email: profile.email || "",
             bio: "", // Add bio field to User type if needed
+            avatarUrl: profile.avatarUrl || "",
           });
         }
       } catch (error) {
@@ -60,6 +62,7 @@ export const UpdateUserInfoModal = ({
           lastName: nameParts.slice(1).join(" ") || "",
           email: "",
           bio: "",
+          avatarUrl: "",
         });
       } finally {
         setFetchingProfile(false);
@@ -136,12 +139,16 @@ export const UpdateUserInfoModal = ({
                 <div className="flex justify-center mb-4">
                   <Avatar className="w-20 h-20 sm:w-24 sm:h-24">
                     <AvatarImage
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                        formData.firstName || "User"
-                      )}&background=random&size=128`}
+                      src={
+                        formData.avatarUrl ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                          formData.firstName || "User"
+                        )}&background=random&size=128`
+                      }
+                      alt={formData.firstName || "User"}
                     />
                     <AvatarFallback className="text-xl sm:text-2xl">
-                      {formData.firstName?.charAt(0) || "U"}
+                      {formData.firstName?.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
                 </div>
