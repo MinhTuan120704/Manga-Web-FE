@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UploaderLayout } from "@/components/layout/UploaderLayout";
 import { mangaService } from "@/services/manga.service";
+import { userService } from "@/services/user.service";
 import { EditMangaModal } from "./EditMangaModal";
 import { ConfirmationModal } from "@/components/common/ConfirmationModal";
 import {
@@ -43,7 +44,6 @@ export function MangaManagement() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [editingManga, setEditingManga] = useState<Manga | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -51,21 +51,22 @@ export function MangaManagement() {
 
   useEffect(() => {
     fetchMangas();
-  }, [page, search, statusFilter]);
+  }, []); // Chỉ fetch một lần khi mount, filter/search xử lý phía client
+
+  // Reset page về 1 khi search hoặc filter thay đổi
+  useEffect(() => {
+    setPage(1);
+  }, [search, statusFilter]);
 
   const fetchMangas = async () => {
     try {
       setLoading(true);
-      const response = await mangaService.getMangas({
-        page,
-        limit: 10,
-        search: search,
-        // status: statusFilter !== "all" ? statusFilter : undefined,
-      });
+      // Sử dụng API lấy truyện của uploader hiện tại
+      const response = await userService.getUploadedMangas();
 
-      if (response && response.mangas) {
-        setMangas(response.mangas);
-        setTotalPages(response.pagination.totalPages || 1);
+      if (response && Array.isArray(response)) {
+        setMangas(response);
+        // Pagination sẽ được tính toán phía client sau khi filter
       } else {
         setMangas([]);
       }
@@ -132,11 +133,22 @@ export function MangaManagement() {
     });
   };
 
-  // Client-side filtering if backend doesn't support it fully yet
+  // Client-side filtering để hỗ trợ tìm kiếm và lọc theo status
   const filteredMangas = mangas.filter((manga) => {
+    // Lọc theo status
     if (statusFilter !== "all" && manga.status !== statusFilter) return false;
+    // Lọc theo tên truyện (search)
+    if (search.trim() && !manga.title.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
+
+  // Tính toán pagination phía client
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(filteredMangas.length / itemsPerPage);
+  const paginatedMangas = filteredMangas.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
 
   return (
     <UploaderLayout
@@ -215,7 +227,7 @@ export function MangaManagement() {
                       </div>
                     </td>
                   </tr>
-                ) : filteredMangas.length === 0 ? (
+                ) : paginatedMangas.length === 0 ? (
                   <tr>
                     <td
                       colSpan={5}
@@ -225,7 +237,7 @@ export function MangaManagement() {
                     </td>
                   </tr>
                 ) : (
-                  filteredMangas.map((manga) => (
+                  paginatedMangas.map((manga) => (
                     <tr key={manga._id} className="hover:bg-muted/50">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">

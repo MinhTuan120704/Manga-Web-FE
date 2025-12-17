@@ -9,7 +9,6 @@ import {
   Upload,
   LayoutDashboard,
   FolderOpen,
-  Plus,
   BarChart3,
   Settings,
   MessageSquare,
@@ -97,11 +96,6 @@ const data = {
           title: "Truyện của tôi",
           url: "/uploader/mangas",
           icon: FolderOpen,
-        },
-        {
-          title: "Tạo truyện mới",
-          url: "/uploader/manga/create",
-          icon: Plus,
         },
         {
           title: "Quản lý bình luận",
