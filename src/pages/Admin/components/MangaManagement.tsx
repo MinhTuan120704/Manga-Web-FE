@@ -114,18 +114,16 @@ export default function MangaManagement() {
   const handleSaveManga = async () => {
     try {
       setIsSaving(true);
-      // TODO: Replace with actual API call when backend endpoint is ready
-      // await mangaService.updateManga(selectedManga._id, {
-      //   title: selectedManga.title,
-      //   author: selectedManga.author,
-      //   artist: selectedManga.artist,
-      //   status: selectedManga.status,
-      //   description: selectedManga.description,
-      //   releaseDate: selectedManga.releaseDate,
-      // });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await mangaService.updateManga(selectedManga._id, {
+        title: selectedManga.title,
+        author: selectedManga.author,
+        artist: selectedManga.artist,
+        status: selectedManga.status,
+        description: selectedManga.description,
+        genres: Array.isArray(selectedManga.genres)
+          ? selectedManga.genres.map((g) => (typeof g === "string" ? g : g._id))
+          : [],
+      });
 
       toast.success("Cập nhật manga thành công", {
         description: `Đã cập nhật thông tin của ${selectedManga.title}`,
@@ -149,11 +147,7 @@ export default function MangaManagement() {
 
     try {
       setIsDeleting(true);
-      // TODO: Replace with actual API call when backend endpoint is ready
-      // await mangaService.deleteManga(mangaToDelete._id);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await mangaService.deleteManga(mangaToDelete._id);
 
       toast.success("Xóa manga thành công", {
         description: `Đã xóa ${mangaToDelete.title}`,
