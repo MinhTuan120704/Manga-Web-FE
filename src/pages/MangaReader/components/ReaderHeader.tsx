@@ -1,4 +1,4 @@
-import { ArrowLeft, Settings, List } from "lucide-react";
+import { ArrowLeft, Settings, List, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Manga } from "@/types/manga";
@@ -13,6 +13,7 @@ interface ReaderHeaderProps {
   onReturnToManga: () => void;
   onToggleSettings: () => void;
   onToggleNavigation: () => void;
+  onToggleHeader: () => void;
   showNavigation?: boolean;
   settings: ReaderSettings;
 }
@@ -25,6 +26,7 @@ export function ReaderHeader({
   onReturnToManga,
   onToggleSettings,
   onToggleNavigation,
+  onToggleHeader,
   showNavigation = true,
   settings,
 }: ReaderHeaderProps) {
@@ -84,6 +86,15 @@ export function ReaderHeader({
               title="Cài đặt (S)"
             >
               <Settings className="h-5 w-5" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onToggleHeader}
+              title="Ẩn header (H)"
+            >
+              <ChevronUp className="h-5 w-5" />
             </Button>
           </div>
         </div>

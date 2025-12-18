@@ -132,8 +132,10 @@ export function RecentUpdates({
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <Badge 
-                      variant={manga.status === "ongoing" ? "default" : "secondary"}
+                    <Badge
+                      variant={
+                        manga.status === "ongoing" ? "default" : "secondary"
+                      }
                       className="text-xs"
                     >
                       {getStatusInVietnamese(manga.status)}
