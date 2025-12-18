@@ -289,7 +289,7 @@ export default function MangaManagement() {
           <table className="w-full">
             <thead className="bg-accent border-b border-border">
               <tr>
-                <th className="px-6 py-4 text-card-foreground w-auto"></th>
+                <th className="px-6 py-4 text-card-foreground w-1/12"></th>
                 <th className="px-6 py-4 text-center text-sm font-semibold text-card-foreground w-1/4">
                   Tên
                 </th>
@@ -299,7 +299,7 @@ export default function MangaManagement() {
                 <th className="px-6 py-4 text-center text-sm font-semibold text-card-foreground w-fit">
                   Chương
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold text-card-foreground w-fit">
+                <th className="px-6 py-4 text-center text-sm font-semibold text-card-foreground w-1/6">
                   Trạng thái
                 </th>
                 <th className="px-6 py-4 text-center text-sm font-semibold text-card-foreground w-fit">
@@ -564,7 +564,11 @@ export default function MangaManagement() {
                         onValueChange={(value) =>
                           setSelectedManga({
                             ...selectedManga,
-                            status: value as "ongoing" | "completed" | "hiatus" | "cancelled",
+                            status: value as
+                              | "ongoing"
+                              | "completed"
+                              | "hiatus"
+                              | "cancelled",
                           })
                         }
                       >
@@ -581,7 +585,6 @@ export default function MangaManagement() {
                         </SelectContent>
                       </Select>
                     </div>
-
                   </div>
 
                   {/* Mô tả */}
@@ -721,7 +724,8 @@ export default function MangaManagement() {
                         Người tải lên:
                       </span>
                       <p className="text-foreground font-medium">
-                        {typeof selectedManga.uploaderId === "object" && selectedManga.uploaderId
+                        {typeof selectedManga.uploaderId === "object" &&
+                        selectedManga.uploaderId
                           ? selectedManga.uploaderId.username
                           : "N/A"}
                       </p>
