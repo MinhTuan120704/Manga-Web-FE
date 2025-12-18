@@ -161,6 +161,8 @@ export function Homepage() {
               title="Mới phát hành"
               subtitle="Truyện mới vừa được thêm"
               showViewAll
+              viewAllPath="/view-all"
+              viewAllParams={{ sortBy: "newest" }}
             />
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-4">
               {loadingNew

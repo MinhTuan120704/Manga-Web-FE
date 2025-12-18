@@ -15,11 +15,11 @@ import type { User as UserType } from "@/types/user";
 import type { Chapter } from "@/types/chapter";
 
 interface ChapterListProps {
-  chapters: Chapter[];
+  chapters?: Chapter[];
   onChapterClick: (chapterId: string) => void;
 }
 
-export const ChapterList = ({ chapters, onChapterClick }: ChapterListProps) => {
+export const ChapterList = ({ chapters = [], onChapterClick }: ChapterListProps) => {
   const [chapterSearch, setChapterSearch] = useState("");
   const [chapterSort, setChapterSort] = useState<"asc" | "desc">("desc");
 

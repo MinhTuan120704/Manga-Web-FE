@@ -132,7 +132,10 @@ export const MangaDetail = () => {
     navigate(`/reader/${chapterId}`);
   };
 
-  const getGenreNames = (genres: Genre[] | string[]): Genre[] => {
+  const getGenreNames = (genres?: Genre[] | string[]): Genre[] => {
+    if (!genres || !Array.isArray(genres)) {
+      return [];
+    }
     return genres.map((genre) =>
       typeof genre === "string" ? { _id: genre, name: genre } : genre
     ) as Genre[];
@@ -151,7 +154,7 @@ export const MangaDetail = () => {
     );
   }
 
-  const genres = getGenreNames(manga.genres);
+  const genres = getGenreNames(manga?.genres);
 
   return (
     <MainLayout>
@@ -159,19 +162,19 @@ export const MangaDetail = () => {
         {/* Manga Info Section */}
         <div className="mb-8">
           <MangaInfo
-            coverImage={manga.coverImage}
-            title={manga.title}
-            status={manga.status}
-            author={manga.author}
+            coverImage={manga.coverImage || ""}
+            title={manga.title || ""}
+            status={manga.status || "ongoing"}
+            author={manga.author || "Không rõ"}
             artist={manga.artist}
-            createdAt={manga.createdAt}
+            createdAt={manga.createdAt || new Date().toISOString()}
             description={manga.description}
             onReport={handleReport}
             genres={genres}
             averageRating={manga.averageRating}
             viewCount={manga.viewCount}
             followedCount={manga.followedCount}
-            chaptersCount={chapters.length}
+            chaptersCount={chapters?.length || 0}
             isFollowing={isFollowing}
             onStartReading={handleStartReading}
             onFollowToggle={handleFollowToggle}
@@ -188,23 +191,25 @@ export const MangaDetail = () => {
         </div>
 
         {/* Rating Section */}
-        <div className="mb-8">
-          <RatingSection
-            mangaId={id!}
-            initialAverageRating={manga.averageRating}
-            initialTotalRatings={0}
-          />
-        </div>
+        {id && (
+          <div className="mb-8">
+            <RatingSection
+              mangaId={id}
+              initialAverageRating={manga.averageRating}
+              initialTotalRatings={0}
+            />
+          </div>
+        )}
 
         {/* Comments Section */}
-        <CommentSection mangaId={id} />
+        {id && <CommentSection mangaId={id} />}
       </div>
 
       <ShareModal
         isOpen={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
-        title={manga.title}
-        description={manga.description}
+        title={manga.title || ""}
+        description={manga.description || ""}
         url={window.location.href}
       />
 
@@ -213,7 +218,7 @@ export const MangaDetail = () => {
           isOpen={reportModalOpen}
           onClose={() => setReportModalOpen(false)}
           mangaId={id}
-          mangaTitle={manga.title}
+          mangaTitle={manga.title || ""}
         />
       )}
     </MainLayout>

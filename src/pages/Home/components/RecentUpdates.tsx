@@ -50,9 +50,11 @@ export function RecentUpdates({
     return (
       <div className="mb-8">
         <SectionHeader
-          title="Recent Updates"
-          subtitle="Latest manga chapter releases"
+          title="Cập nhật gần đây"
+          subtitle="Chapter truyện mới nhất"
           showViewAll
+          viewAllPath="/view-all"
+          viewAllParams={{ sortBy: "-updatedAt" }}
         />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 9 }).map((_, index) => (
@@ -80,6 +82,8 @@ export function RecentUpdates({
         title="Cập nhật gần đây"
         subtitle="Chapter truyện mới nhất"
         showViewAll
+        viewAllPath="/view-all"
+        viewAllParams={{ sortBy: "updated" }}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -13,6 +13,7 @@ import { MangaReader } from "@/pages/MangaReader/MangaReader";
 import { AdvancedSearch } from "@/pages/AdvancedSearch/AdvancedSearch";
 import { UserSettings } from "@/pages/UserProfile/components/UserSettings";
 import { AIRecommendation } from "@/pages/AIRecommendation/AIRecommendation";
+import { ViewAll } from "@/pages/ViewAll";
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
   {
     path: "/search",
     element: <AdvancedSearch />,
+  },
+  {
+    path: "/view-all",
+    element: <ViewAll />,
   },
   {
     path: "/ai-recommendation",
