@@ -20,6 +20,8 @@ export function PopularMangaGrid({
         title="Truyện phổ biến"
         subtitle="Truyện được xem nhiều nhất tuần này"
         showViewAll
+        viewAllPath="/view-all"
+        viewAllParams={{ sortBy: "mostViewed" }}
       />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">

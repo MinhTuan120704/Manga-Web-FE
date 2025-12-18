@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface SectionHeaderProps {
   title: string;
   subtitle?: string;
   showViewAll?: boolean;
   onViewAll?: () => void;
+  viewAllPath?: string;
+  viewAllParams?: Record<string, string>;
 }
 
 export function SectionHeader({
@@ -13,7 +16,20 @@ export function SectionHeader({
   subtitle,
   showViewAll = false,
   onViewAll,
+  viewAllPath,
+  viewAllParams,
 }: SectionHeaderProps) {
+  const navigate = useNavigate();
+
+  const handleViewAll = () => {
+    if (onViewAll) {
+      onViewAll();
+    } else if (viewAllPath) {
+      const searchParams = new URLSearchParams(viewAllParams);
+      navigate(`${viewAllPath}?${searchParams.toString()}`);
+    }
+  };
+
   return (
     <div className="flex items-center justify-between mb-6">
       <div>
@@ -23,10 +39,10 @@ export function SectionHeader({
       {showViewAll && (
         <Button
           variant="ghost"
-          onClick={onViewAll}
+          onClick={handleViewAll}
           className="flex items-center gap-1"
         >
-          View All
+          Xem tất cả
           <ChevronRight className="h-4 w-4" />
         </Button>
       )}
