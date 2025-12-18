@@ -15,7 +15,7 @@ export function Footer() {
               <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
                 <BookOpen className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="font-bold text-lg">Manga Web</span>
+              <span className="font-bold text-lg">Mangaria</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Nền tảng đọc truyện tranh trực tuyến hàng đầu với hàng nghìn đầu truyện đa dạng thể loại.
@@ -107,11 +107,11 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>© {currentYear} Manga Web. All rights reserved.</p>
+          <p>© {currentYear} Mangaria. All rights reserved.</p>
           <div className="flex items-center gap-1">
             <span>Made with</span>
             <Heart className="h-4 w-4 text-red-500 fill-current" />
-            <span>by Manga Web Team</span>
+            <span>by Mangaria Team</span>
           </div>
         </div>
       </div>

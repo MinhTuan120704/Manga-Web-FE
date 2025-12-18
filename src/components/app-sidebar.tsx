@@ -230,7 +230,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <BookOpen className="h-4 w-4" />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">Manga Web</span>
+              <span className="truncate font-semibold">Mangaria</span>
               <span className="truncate text-xs text-muted-foreground">
                 Manga Reader Platform
               </span>

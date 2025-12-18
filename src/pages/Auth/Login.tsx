@@ -82,7 +82,7 @@ export function Login() {
           <BookOpen className="h-5 w-5 text-primary-foreground" />
         </div>
         <span className="font-semibold text-lg hidden sm:inline">
-          Manga Web
+          Mangaria
         </span>
       </Link>
 
