@@ -253,7 +253,7 @@ export function ReaderContent({
       <Button
         variant="ghost"
         size="icon"
-        onClick={onPreviousPage}
+        onClick={settings.readingDirection === "rtl" ? onNextPage : onPreviousPage}
         className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-black/20 hover:bg-black/40 text-white dark:bg-white/20 dark:hover:bg-white/40 dark:text-white"
         disabled={currentPage === 1}
       >
@@ -324,7 +324,7 @@ export function ReaderContent({
       <Button
         variant="ghost"
         size="icon"
-        onClick={onNextPage}
+        onClick={settings.readingDirection === "rtl" ? onPreviousPage : onNextPage}
         className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-black/20 hover:bg-black/40 text-white dark:bg-white/20 dark:hover:bg-white/40 dark:text-white"
       >
         <ChevronRight className="h-8 w-8" />

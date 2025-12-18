@@ -24,7 +24,7 @@ export function MangaCard({
 
   // Helper function để lấy tên genre
   const getGenreNames = (genres: Genre[] | string[]): string[] => {
-    return genres.map((genre) =>
+    return genres?.map((genre) =>
       typeof genre === "string" ? genre : genre.name
     );
   };
@@ -114,7 +114,7 @@ export function MangaCard({
           {manga.description}
         </p>
         <div className="flex flex-wrap gap-1 mb-1 mt-auto">
-          {genreNames.slice(0, 2).map((genre, index) => (
+          {genreNames?.slice(0, 2).map((genre, index) => (
             <Badge key={index} variant="outline" className="text-xs">
               {genre}
             </Badge>
