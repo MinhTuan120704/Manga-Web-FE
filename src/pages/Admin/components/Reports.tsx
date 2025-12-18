@@ -1,15 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Trash2,
   AlertCircle,
-  CheckCircle,
-  Clock,
   Search,
   Filter,
   ChevronLeft,
   ChevronRight,
   Edit2,
   X,
+  RefreshCw,
 } from "lucide-react";
 import {
   Card,
@@ -22,75 +21,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { PageLoader } from "@/components/common/PageLoader";
+import { reportService } from "@/services/report.service";
+import { mangaService } from "@/services/manga.service";
+import { userService } from "@/services/user.service";
+import type { Report } from "@/types/comment";
+import type { User } from "@/types/user";
+import type { Manga } from "@/types/manga";
 import { toast } from "sonner";
 
-const reportsList = [
-  {
-    id: 1,
-    reportedBy: "user_123",
-    contentType: "Manga",
-    contentTitle: "Jujutsu Kaisen",
-    reason: "Inappropriate content",
-    description: "Contains explicit material",
-    status: "Pending",
-    date: "2024-11-12",
-    priority: "High",
-  },
-  {
-    id: 2,
-    reportedBy: "user_456",
-    contentType: "Comment",
-    contentTitle: "Chapter 200 Discussion",
-    reason: "Spam/Harassment",
-    description: "Repeated spam comments",
-    status: "Resolved",
-    date: "2024-11-10",
-    priority: "Medium",
-  },
-  {
-    id: 3,
-    reportedBy: "user_789",
-    contentType: "User",
-    contentTitle: "translator_pro",
-    reason: "Suspicious activity",
-    description: "Multiple account violations",
-    status: "In Review",
-    date: "2024-11-11",
-    priority: "High",
-  },
-  {
-    id: 4,
-    reportedBy: "user_012",
-    contentType: "Translation",
-    contentTitle: "Chainsaw Man Ch. 50",
-    reason: "Poor quality",
-    description: "Machine translation detected",
-    status: "Pending",
-    date: "2024-11-09",
-    priority: "Low",
-  },
-  {
-    id: 5,
-    reportedBy: "user_345",
-    contentType: "Manga",
-    contentTitle: "Attack on Titan",
-    reason: "Duplicate upload",
-    description: "Already exists in database",
-    status: "Resolved",
-    date: "2024-11-08",
-    priority: "Low",
-  },
-];
-
-const getStatusIcon = (status: string) => {
+/* const getStatusIcon = (status: string) => {
   switch (status) {
     case "Resolved":
       return <CheckCircle className="text-green-600" size={18} />;
@@ -101,9 +42,9 @@ const getStatusIcon = (status: string) => {
     default:
       return <AlertCircle size={18} />;
   }
-};
+}; */
 
-const getStatusColor = (status: string) => {
+/* const getStatusColor = (status: string) => {
   switch (status) {
     case "Resolved":
       return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
@@ -127,55 +68,76 @@ const getStatusInVietnamese = (status: string): string => {
     default:
       return status;
   }
-};
-
-const getPriorityColor = (priority: string) => {
-  switch (priority) {
-    case "High":
-      return "text-red-600 dark:text-red-400";
-    case "Medium":
-      return "text-yellow-600 dark:text-yellow-400";
-    case "Low":
-      return "text-blue-600 dark:text-blue-400";
-    default:
-      return "text-gray-600";
-  }
-};
-
-const getPriorityInVietnamese = (priority: string): string => {
-  switch (priority) {
-    case "High":
-      return "Cao";
-    case "Medium":
-      return "Trung bình";
-    case "Low":
-      return "Thấp";
-    default:
-      return priority;
-  }
-};
+}; */
 
 export default function Reports() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterTime, setFilterTime] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [selectedManga, setSelectedManga] = useState<Manga | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [processingNotes, setProcessingNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [loadingManga, setLoadingManga] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(false);
 
-  const filteredReports = reportsList.filter((report) => {
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  const fetchReports = async () => {
+    try {
+      setLoading(true);
+      const response = await reportService.getAllReports();
+      setReports(response || []);
+    } catch (error) {
+      console.error("Failed to fetch reports:", error);
+      toast.error("Không thể tải danh sách báo cáo");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isWithinTimeRange = (dateString: string, range: string): boolean => {
+    const reportDate = new Date(dateString);
+    const now = new Date();
+    const diffTime = now.getTime() - reportDate.getTime();
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+    switch (range) {
+      case "today":
+        return diffDays < 1;
+      case "week":
+        return diffDays < 7;
+      case "month":
+        return diffDays < 30;
+      case "all":
+      default:
+        return true;
+    }
+  };
+
+  const filteredReports = reports.filter((report) => {
+    const userName =
+      typeof report.userId === "object" && report.userId
+        ? report.userId.username
+        : "";
+    const mangaTitle = typeof report.mangaId === "object" ? "Manga Title" : "";
+
     const matchesSearch =
-      report.contentTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      report.reportedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      report.reason.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      filterStatus === "All" || report.status === filterStatus;
-    return matchesSearch && matchesStatus;
+      userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.reason.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      mangaTitle.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesTime = isWithinTimeRange(report.createdAt, filterTime);
+
+    return matchesSearch && matchesTime;
   });
 
   // Pagination logic
@@ -191,75 +153,119 @@ export default function Reports() {
   };
 
   const handleFilterChange = (value: string) => {
-    setFilterStatus(value);
+    setFilterTime(value);
     setCurrentPage(1);
   };
 
+  // Calculate time-based stats
   const stats = {
-    pending: reportsList.filter((r) => r.status === "Pending").length,
-    inReview: reportsList.filter((r) => r.status === "In Review").length,
-    resolved: reportsList.filter((r) => r.status === "Resolved").length,
-    total: reportsList.length,
-  };
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      // TODO: Call API to update report
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-
-      console.log("Saving report:", selectedReport);
-      console.log("Processing notes:", processingNotes);
-
-      toast.success("Cập nhật báo cáo thành công", {
-        description: `Báo cáo #${selectedReport.id} đã được cập nhật`,
-      });
-
-      setIsModalOpen(false);
-      setShowConfirmModal(false);
-      setProcessingNotes("");
-    } catch (error) {
-      toast.error("Cập nhật thất bại", {
-        description: "Đã có lỗi xảy ra khi cập nhật báo cáo",
-      });
-    } finally {
-      setIsSaving(false);
-    }
+    today: reports.filter((r) => isWithinTimeRange(r.createdAt, "today"))
+      .length,
+    week: reports.filter((r) => isWithinTimeRange(r.createdAt, "week")).length,
+    month: reports.filter((r) => isWithinTimeRange(r.createdAt, "month"))
+      .length,
+    total: reports.length,
   };
 
   const handleDelete = async () => {
+    if (!selectedReport) return;
+
     setIsSaving(true);
     try {
-      // TODO: Call API to delete report
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-
-      console.log("Deleting report:", selectedReport);
+      await reportService.deleteReport(selectedReport._id);
 
       toast.success("Xóa báo cáo thành công", {
-        description: `Báo cáo #${selectedReport.id} đã được xóa`,
+        description: `Báo cáo đã được xóa`,
       });
 
       setIsModalOpen(false);
       setShowDeleteConfirm(false);
+      fetchReports();
     } catch (error) {
       toast.error("Xóa thất bại", {
         description: "Đã có lỗi xảy ra khi xóa báo cáo",
       });
+      console.log(error);
     } finally {
       setIsSaving(false);
     }
   };
 
+ /*  const getUserName = (userId: string | User): string => {
+    if (typeof userId === "object" && userId) {
+      return userId.username;
+    }
+    return "Unknown User";
+  };
+ */
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("vi-VN");
+  };
+
+  const fetchMangaDetails = async (mangaId: string) => {
+    try {
+      setLoadingManga(true);
+      const manga = await mangaService.getMangaById(mangaId);
+      setSelectedManga(manga);
+    } catch (error) {
+      console.error("Failed to fetch manga details:", error);
+      toast.error("Không thể tải thông tin manga");
+      setSelectedManga(null);
+    } finally {
+      setLoadingManga(false);
+    }
+  };
+
+  const fetchUserDetails = async (userId: string) => {
+    try {
+      setLoadingUser(true);
+      const user = await userService.adminGetUser(userId);
+      setSelectedUser(user);
+    } catch (error) {
+      console.error("Failed to fetch user details:", error);
+      setSelectedUser(null);
+    } finally {
+      setLoadingUser(false);
+    }
+  };
+
+  const handleOpenModal = (report: Report) => {
+    setSelectedReport(report);
+    setIsModalOpen(true);
+    if (typeof report.mangaId === "string") {
+      fetchMangaDetails(report.mangaId);
+    }
+    if (typeof report.userId === "string") {
+      fetchUserDetails(report.userId);
+    }
+  };
+
+ /*  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedReport(null);
+    setSelectedManga(null);
+    setSelectedUser(null);
+  }; */
+
+  if (loading) {
+    return <PageLoader />;
+  }
+
   return (
     <div className="p-8 space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="text-3xl font-bold text-foreground mb-2">
-          Báo cáo & Kiểm duyệt
-        </h2>
-        <p className="text-muted-foreground">
-          Xem xét và quản lý báo cáo người dùng, spam và vi phạm nội dung
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-foreground mb-2">
+            Báo cáo & Kiểm duyệt
+          </h2>
+          <p className="text-muted-foreground">
+            Xem xét và quản lý báo cáo người dùng, spam và vi phạm nội dung
+          </p>
+        </div>
+        <Button onClick={fetchReports} variant="outline" size="icon">
+          <RefreshCw className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Stats */}
@@ -269,21 +275,21 @@ export default function Reports() {
           <p className="text-2xl font-bold text-foreground">{stats.total}</p>
         </div>
         <div className="bg-card border border-border rounded-lg p-4">
-          <p className="text-sm text-muted-foreground mb-1">Đang chờ</p>
-          <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-            {stats.pending}
+          <p className="text-sm text-muted-foreground mb-1">Hôm nay</p>
+          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            {stats.today}
           </p>
         </div>
         <div className="bg-card border border-border rounded-lg p-4">
-          <p className="text-sm text-muted-foreground mb-1">Đang xem xét</p>
+          <p className="text-sm text-muted-foreground mb-1">7 ngày qua</p>
           <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-            {stats.inReview}
+            {stats.week}
           </p>
         </div>
         <div className="bg-card border border-border rounded-lg p-4">
-          <p className="text-sm text-muted-foreground mb-1">Đã giải quyết</p>
+          <p className="text-sm text-muted-foreground mb-1">30 ngày qua</p>
           <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-            {stats.resolved}
+            {stats.month}
           </p>
         </div>
       </div>
@@ -305,18 +311,18 @@ export default function Reports() {
           />
         </div>
 
-        {/* Status Filter */}
+        {/* Time Filter */}
         <div className="flex items-center gap-2">
           <Filter size={20} className="text-muted-foreground" />
           <select
-            value={filterStatus}
+            value={filterTime}
             onChange={(e) => handleFilterChange(e.target.value)}
             className="px-4 py-2 rounded-lg border border-border bg-card text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           >
-            <option>Tất cả</option>
-            <option>Đang chờ</option>
-            <option>Đang xem xét</option>
-            <option>Đã giải quyết</option>
+            <option value="all">Tất cả thời gian</option>
+            <option value="today">Hôm nay</option>
+            <option value="week">7 ngày qua</option>
+            <option value="month">30 ngày qua</option>
           </select>
         </div>
       </div>
@@ -333,19 +339,10 @@ export default function Reports() {
                 Tiêu đề nội dung
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-card-foreground">
-                Báo cáo bởi
-              </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-card-foreground">
                 Lý do
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-card-foreground">
-                Ưu tiên
-              </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-card-foreground">
-                Trạng thái
-              </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-card-foreground">
-                Ngày
+                Ngày báo cáo
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-card-foreground">
                 Hành động
@@ -355,55 +352,35 @@ export default function Reports() {
           <tbody>
             {paginatedReports.map((report, index) => (
               <tr
-                key={report.id}
+                key={report._id}
                 className={`border-b border-border hover:bg-accent/50 transition ${
                   index % 2 === 0 ? "bg-card" : "bg-muted"
                 }`}
               >
                 <td className="px-6 py-4">
                   <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                    {report.contentType}
+                    Manga
                   </span>
                 </td>
                 <td className="px-6 py-4 text-card-foreground font-medium">
-                  {report.contentTitle}
-                </td>
-                <td className="px-6 py-4 text-card-foreground">
-                  {report.reportedBy}
-                </td>
-                <td className="px-6 py-4 text-card-foreground text-sm">
-                  {report.reason}
+                  {typeof report.mangaId === "string"
+                    ? report.mangaId
+                    : "Manga"}
                 </td>
                 <td
-                  className={`px-6 py-4 font-semibold ${getPriorityColor(
-                    report.priority
-                  )}`}
+                  className="px-6 py-4 text-card-foreground text-sm max-w-xs truncate"
+                  title={report.reason}
                 >
-                  {getPriorityInVietnamese(report.priority)}
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    {getStatusIcon(report.status)}
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                        report.status
-                      )}`}
-                    >
-                      {getStatusInVietnamese(report.status)}
-                    </span>
-                  </div>
+                  {report.reason}
                 </td>
                 <td className="px-6 py-4 text-card-foreground text-sm">
-                  {report.date}
+                  {formatDate(report.createdAt)}
                 </td>
                 <td className="px-6 py-4 flex gap-2">
                   <button
-                    onClick={() => {
-                      setSelectedReport(report);
-                      setIsModalOpen(true);
-                    }}
+                    onClick={() => handleOpenModal(report)}
                     className="p-2 rounded-lg hover:bg-accent transition text-card-foreground"
-                    title="Chỉnh sửa"
+                    title="Xem chi tiết"
                   >
                     <Edit2 size={18} />
                   </button>
@@ -508,7 +485,7 @@ export default function Reports() {
                   Chi tiết báo cáo
                 </h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Xem và xử lý báo cáo vi phạm
+                  Xem thông tin báo cáo vi phạm
                 </p>
               </div>
               <Button
@@ -523,204 +500,144 @@ export default function Reports() {
             {/* Modal Body */}
             <div className="p-6 space-y-6">
               {/* Thông tin báo cáo */}
+              {/* Thông tin Manga */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Thông tin Manga bị báo cáo</CardTitle>
+                  <CardDescription>
+                    Chi tiết về manga được báo cáo vi phạm
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {loadingManga ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    </div>
+                  ) : selectedManga ? (
+                    <div className="space-y-4">
+                      <div className="flex gap-4">
+                        <img
+                          src={selectedManga.coverImage}
+                          alt={selectedManga.title}
+                          className="w-24 h-32 object-cover rounded-lg border border-border"
+                          onError={(e) => {
+                            e.currentTarget.src = '/placeholder-manga.png';
+                          }}
+                        />
+                        <div className="flex-1 space-y-2">
+                          <div>
+                            <Label>Tiêu đề</Label>
+                            <p className="text-foreground font-semibold text-lg">
+                              {selectedManga.title}
+                            </p>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label>Tác giả</Label>
+                              <p className="text-foreground">{selectedManga.author}</p>
+                            </div>
+                            <div>
+                              <Label>Trạng thái</Label>
+                              <p className="text-foreground capitalize">{selectedManga.status}</p>
+                            </div>
+                          </div>
+                          <div>
+                            <Label>Lượt xem</Label>
+                            <p className="text-foreground">{selectedManga.viewCount?.toLocaleString() || 0}</p>
+                          </div>
+                        </div>
+                      </div>
+                      {selectedManga.description && (
+                        <div>
+                          <Label>Mô tả</Label>
+                          <p className="text-muted-foreground text-sm line-clamp-3">
+                            {selectedManga.description}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground text-center py-4">
+                      Không thể tải thông tin manga
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader>
                   <CardTitle>Thông tin báo cáo</CardTitle>
                   <CardDescription>
-                    Chi tiết về nội dung được báo cáo
+                    Chi tiết về người báo cáo và lý do
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Loại nội dung */}
-                    <div className="space-y-2">
-                      <Label htmlFor="report-content-type">Loại nội dung</Label>
-                      <Input
-                        id="report-content-type"
-                        value={selectedReport.contentType}
-                        disabled
-                        className="bg-muted"
-                      />
-                    </div>
 
-                    {/* Tiêu đề nội dung */}
-                    <div className="space-y-2">
-                      <Label htmlFor="report-content-title">
-                        Tiêu đề nội dung
-                      </Label>
-                      <Input
-                        id="report-content-title"
-                        value={selectedReport.contentTitle}
-                        disabled
-                        className="bg-muted"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Người báo cáo */}
-                    <div className="space-y-2">
-                      <Label htmlFor="report-by">Người báo cáo</Label>
-                      <Input
-                        id="report-by"
-                        value={selectedReport.reportedBy}
-                        disabled
-                        className="bg-muted"
-                      />
-                    </div>
-
-                    {/* Ngày báo cáo */}
-                    <div className="space-y-2">
-                      <Label htmlFor="report-date">Ngày báo cáo</Label>
-                      <Input
-                        id="report-date"
-                        value={selectedReport.date}
-                        disabled
-                        className="bg-muted"
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="report-date">Ngày báo cáo</Label>
+                    <Input
+                      id="report-date"
+                      value={formatDate(selectedReport.createdAt)}
+                      disabled
+                      className="bg-muted"
+                    />
                   </div>
 
                   {/* Lý do */}
                   <div className="space-y-2">
                     <Label htmlFor="report-reason">Lý do báo cáo</Label>
-                    <Input
+                    <Textarea
                       id="report-reason"
                       value={selectedReport.reason}
                       disabled
                       className="bg-muted"
-                    />
-                  </div>
-
-                  {/* Mô tả */}
-                  <div className="space-y-2">
-                    <Label htmlFor="report-description">Mô tả chi tiết</Label>
-                    <Textarea
-                      id="report-description"
-                      value={selectedReport.description}
-                      disabled
-                      className="bg-muted"
-                      rows={3}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Xử lý báo cáo */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Xử lý báo cáo</CardTitle>
-                  <CardDescription>
-                    Cập nhật trạng thái và ưu tiên xử lý
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Trạng thái */}
-                    <div className="space-y-2">
-                      <Label htmlFor="report-status">Trạng thái</Label>
-                      <Select
-                        value={selectedReport.status}
-                        onValueChange={(value) =>
-                          setSelectedReport({
-                            ...selectedReport,
-                            status: value,
-                          })
-                        }
-                      >
-                        <SelectTrigger id="report-status">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Pending">Đang chờ</SelectItem>
-                          <SelectItem value="In Review">
-                            Đang xem xét
-                          </SelectItem>
-                          <SelectItem value="Resolved">
-                            Đã giải quyết
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Ưu tiên */}
-                    <div className="space-y-2">
-                      <Label htmlFor="report-priority">Mức độ ưu tiên</Label>
-                      <Select
-                        value={selectedReport.priority}
-                        onValueChange={(value) =>
-                          setSelectedReport({
-                            ...selectedReport,
-                            priority: value,
-                          })
-                        }
-                      >
-                        <SelectTrigger id="report-priority">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Low">Thấp</SelectItem>
-                          <SelectItem value="Medium">Trung bình</SelectItem>
-                          <SelectItem value="High">Cao</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {/* Ghi chú xử lý */}
-                  <div className="space-y-2">
-                    <Label htmlFor="report-notes">
-                      Ghi chú xử lý (tùy chọn)
-                    </Label>
-                    <Textarea
-                      id="report-notes"
-                      value={processingNotes}
-                      onChange={(e) => setProcessingNotes(e.target.value)}
-                      placeholder="Nhập ghi chú về cách xử lý báo cáo này..."
                       rows={4}
                     />
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Thông tin trạng thái */}
+              {/* Thông tin người báo cáo */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Thông tin trạng thái</CardTitle>
+                  <CardTitle>Thông tin người báo cáo</CardTitle>
                   <CardDescription>
-                    Trạng thái hiện tại của báo cáo
+                    Chi tiết về người dùng đã gửi báo cáo
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-accent/50 rounded-lg p-4">
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Trạng thái hiện tại
-                      </p>
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(selectedReport.status)}
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                            selectedReport.status
-                          )}`}
-                        >
-                          {getStatusInVietnamese(selectedReport.status)}
-                        </span>
+                  {loadingUser ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    </div>
+                  ) : selectedUser ? (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Tên người dùng</Label>
+                          <p className="text-foreground font-medium">{selectedUser.username}</p>
+                        </div>
+                        <div>
+                          <Label>Email</Label>
+                          <p className="text-foreground">{selectedUser.email}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Vai trò</Label>
+                          <p className="text-foreground capitalize">{selectedUser.role}</p>
+                        </div>
+                        <div>
+                          <Label>ID người dùng</Label>
+                          <p className="text-foreground font-mono text-xs">{selectedUser._id}</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="bg-accent/50 rounded-lg p-4">
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Mức độ ưu tiên
-                      </p>
-                      <p
-                        className={`text-lg font-bold ${getPriorityColor(
-                          selectedReport.priority
-                        )}`}
-                      >
-                        {getPriorityInVietnamese(selectedReport.priority)}
-                      </p>
-                    </div>
-                  </div>
+                  ) : (
+                    <p className="text-muted-foreground text-center py-4">
+                      Không thể tải thông tin người dùng
+                    </p>
+                  )}
                 </CardContent>
               </Card>
 
@@ -737,13 +654,15 @@ export default function Reports() {
                     <div>
                       <span className="text-muted-foreground">ID báo cáo:</span>
                       <p className="text-foreground font-mono text-xs">
-                        #{selectedReport.id}
+                        {selectedReport._id}
                       </p>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Ngày tạo:</span>
+                      <span className="text-muted-foreground">
+                        Ngày cập nhật:
+                      </span>
                       <p className="text-foreground font-medium">
-                        {selectedReport.date}
+                        {formatDate(selectedReport.updatedAt)}
                       </p>
                     </div>
                     <div>
@@ -752,16 +671,8 @@ export default function Reports() {
                       </span>
                       <p className="text-foreground font-medium">
                         <span className="px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
-                          {selectedReport.contentType}
+                          Manga
                         </span>
-                      </p>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">
-                        Người báo cáo:
-                      </span>
-                      <p className="text-foreground font-medium">
-                        {selectedReport.reportedBy}
                       </p>
                     </div>
                   </div>
@@ -771,39 +682,13 @@ export default function Reports() {
 
             {/* Modal Footer */}
             <div className="sticky bottom-0 bg-background border-t border-border px-6 py-4 flex justify-end gap-3">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setIsModalOpen(false);
-                  setProcessingNotes("");
-                }}
-              >
+              <Button variant="outline" onClick={() => setIsModalOpen(false)}>
                 Đóng
-              </Button>
-              <Button onClick={() => setShowConfirmModal(true)}>
-                Lưu thay đổi
               </Button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Confirmation Modal for Save */}
-      <ConfirmationModal
-        isOpen={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
-        onConfirm={handleSave}
-        title="Xác nhận lưu thay đổi"
-        message={`Bạn có chắc chắn muốn cập nhật báo cáo #${
-          selectedReport?.id
-        }? Trạng thái sẽ được thay đổi thành "${getStatusInVietnamese(
-          selectedReport?.status || ""
-        )}".`}
-        confirmText="Lưu thay đổi"
-        cancelText="Hủy"
-        variant="info"
-        loading={isSaving}
-      />
 
       {/* Confirmation Modal for Delete */}
       <ConfirmationModal
@@ -811,7 +696,7 @@ export default function Reports() {
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDelete}
         title="Xác nhận xóa báo cáo"
-        message={`Bạn có chắc chắn muốn xóa báo cáo #${selectedReport?.id}? Hành động này không thể hoàn tác.`}
+        message={`Bạn có chắc chắn muốn xóa báo cáo này? Hành động này không thể hoàn tác.`}
         confirmText="Xóa báo cáo"
         cancelText="Hủy"
         variant="danger"

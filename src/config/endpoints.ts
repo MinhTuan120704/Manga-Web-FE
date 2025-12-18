@@ -84,6 +84,7 @@ export const API_ENDPOINTS = {
     LIST: "/reports",
     BY_MANGA: (mangaId: string) => `/reports/manga/${mangaId}`,
     DETAIL: (reportId: string) => `/reports/${reportId}`,
+    DELETE: (reportId: string) => `/reports/${reportId}`,
   },
 
   // ========== Statistics ==========

@@ -3,4 +3,5 @@ export { default as MangaManagement } from "./components/MangaManagement";
 export { default as UserManagement } from "./components/UserManagement";
 export { default as TranslationQueue } from "./components/TranslationQueue";
 export { default as Reports } from "./components/Reports";
+export { default as Statistics } from "./components/Statistics";
 export { default as Settings } from "./components/Settings";
