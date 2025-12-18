@@ -107,6 +107,17 @@ export function FeaturedCarousel({
     );
   };
 
+  // Helper function để chuyển đổi status sang tiếng Việt
+  const getStatusInVietnamese = (status: string): string => {
+    const statusMap: { [key: string]: string } = {
+      ongoing: "Đang tiến hành",
+      completed: "Hoàn thành",
+      hiatus: "Tạm ngưng",
+      cancelled: "Đã hủy",
+    };
+    return statusMap[status.toLowerCase()] || status;
+  };
+
   if (loading) {
     return (
       <Card className="relative overflow-hidden h-96 bg-muted">
@@ -171,7 +182,7 @@ export function FeaturedCarousel({
                           <Badge variant="default" className="bg-primary">
                             Nổi bật
                           </Badge>
-                          <Badge variant="secondary">{manga.status}</Badge>
+                          <Badge variant="secondary">{getStatusInVietnamese(manga.status)}</Badge>
                           {manga.averageRating !== undefined && (
                             <div className="flex items-center gap-1">
                               <Star className="h-4 w-4 text-yellow-400 fill-current" />
