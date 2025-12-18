@@ -1,4 +1,4 @@
-import { AuthFooter } from "@/pages/Auth";
+/* import { AuthFooter } from "@/pages/Auth"; */
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -8,7 +8,7 @@ interface AuthLayoutProps {
 export function AuthLayout({ children, disableScroll = false }: AuthLayoutProps) {
   return (
     <div 
-      className={`min-h-screen w-full flex flex-col bg-gradient-to-br from-background to-muted/50 ${
+      className={`min-h-screen w-full flex flex-col ${
         disableScroll ? 'overflow-hidden' : 'overflow-auto'
       }`}
     >
@@ -20,7 +20,7 @@ export function AuthLayout({ children, disableScroll = false }: AuthLayoutProps)
       </div>
       
       {/* Footer */}
-      <AuthFooter />
+      {/* <AuthFooter /> */}
     </div>
   );
 }
