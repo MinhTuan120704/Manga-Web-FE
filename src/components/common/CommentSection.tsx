@@ -41,7 +41,9 @@ export function CommentSection({
       }
 
       if (response) {
-        setComments(response);
+        // Filter out comments with null/undefined users
+        const validComments = response.filter(comment => comment.user != null);
+        setComments(validComments);
       }
     } catch (error) {
       console.error("Failed to fetch comments:", error);

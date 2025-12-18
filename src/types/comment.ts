@@ -50,10 +50,10 @@ export interface UserRatingResponse {
 
 export interface Report {
   _id: string;
-  manga: string;
-  user: string | User;
+  mangaId: string;
+  userId: string | User;
   reason: string;
-  status?: string;
+ /*  status?: string; */
   createdAt: string;
   updatedAt: string;
 }
@@ -63,7 +63,8 @@ export interface CreateReportRequest {
 }
 
 export interface ReportListResponse {
-  reports: Report[];
+  status: string;
+  data: Report[];
 }
 
 // ========== Statistics Types ==========
@@ -71,6 +72,9 @@ export interface ReportListResponse {
 export interface BasicStatistics {
   users: {
     total: number;
+    uploaders: number;
+    readers: number;
+    admins: number;
   };
   mangas: {
     total: number;

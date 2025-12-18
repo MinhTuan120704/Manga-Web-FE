@@ -1,8 +1,7 @@
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -14,25 +13,86 @@ import {
 } from "recharts";
 import StatCard from "./Statcard";
 import { TrendingUp, Users, BookOpen, Clock } from "lucide-react";
+import { statisticsService } from "@/services/statistics.service";
+import { genreService } from "@/services/genre.service";
+import { mangaService } from "@/services/manga.service";
+import { PageLoader } from "@/components/common/PageLoader";
+import type { DetailedStatistics } from "@/types/comment";
+import type { Genre } from "@/types/genre";
+import type { Manga } from "@/types/manga";
+import { toast } from "sonner";
 
-const lineChartData = [
-  { month: "Jan", reads: 4000, uploads: 2400 },
-  { month: "Feb", reads: 3000, uploads: 1398 },
-  { month: "Mar", reads: 2000, uploads: 9800 },
-  { month: "Apr", reads: 2780, uploads: 3908 },
-  { month: "May", reads: 1890, uploads: 4800 },
-  { month: "Jun", reads: 2390, uploads: 3800 },
-];
-
-const genreData = [
-  { name: "Action", value: 32, color: "var(--chart-1)" },
-  { name: "Romance", value: 25, color: "var(--chart-2)" },
-  { name: "Comedy", value: 18, color: "var(--chart-3)" },
-  { name: "Drama", value: 15, color: "var(--chart-4)" },
-  { name: "Khác", value: 10, color: "var(--chart-5)" },
+const CHART_COLORS = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
 ];
 
 export default function DashboardOverview() {
+  const [loading, setLoading] = useState(true);
+  const [statistics, setStatistics] = useState<DetailedStatistics | null>(null);
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [recentMangas, setRecentMangas] = useState<Manga[]>([]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const [statsData, genresData, mangasData] = await Promise.all([
+        statisticsService.getDetailedStatistics(),
+        genreService.getGenres(),
+        mangaService.searchMangas({ sortBy: "mostViewed", limit: 10 }),
+      ]);
+
+      setStatistics(statsData);
+      setGenres(genresData);
+      setRecentMangas(mangasData.mangas || []);
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+      toast.error("Không thể tải dữ liệu dashboard");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading || !statistics) {
+    return <PageLoader />;
+  }
+
+  // Prepare genre chart data - top 5 genres by manga count
+  const genreChartData = genres
+    .sort((a, b) => (b.mangaCount || 0) - (a.mangaCount || 0))
+    .slice(0, 5)
+    .map((genre, index) => ({
+      name: genre.name,
+      value: genre.mangaCount || 0,
+      color: CHART_COLORS[index % CHART_COLORS.length],
+    }));
+
+  // Prepare manga status data for bar chart
+  const mangaStatusData = [
+    { status: "Đang tiến hành", count: statistics.mangas.ongoing },
+    { status: "Hoàn thành", count: statistics.mangas.completed },
+    { status: "Tạm dừng", count: statistics.mangas.hiatus },
+  ];
+
+  // Calculate total reads from recent mangas
+  const totalReads = recentMangas.reduce(
+    (sum, manga) => sum + (manga.viewCount || 0),
+    0
+  );
+
+  // Format number for display
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
+  };
   return (
     <div className="p-8 space-y-8">
       {/* Header */}
@@ -50,43 +110,51 @@ export default function DashboardOverview() {
         <StatCard
           icon={<BookOpen className="text-primary" size={24} />}
           label="Tổng số Manga"
-          value="1,234"
-          trend="+12%"
+          value={statistics.mangas.total.toString()}
+          trend="+0%"
           trendUp
         />
         <StatCard
           icon={<Users className="text-primary" size={24} />}
           label="Tổng người dùng"
-          value="8,456"
-          trend="+5%"
+          value={statistics.users.total.toString()}
+          trend="+0%"
           trendUp
         />
         <StatCard
           icon={<TrendingUp className="text-primary" size={24} />}
           label="Tổng lượt đọc"
-          value="245.2K"
-          trend="+23%"
+          value={formatNumber(totalReads)}
+          trend="+0%"
           trendUp
         />
         <StatCard
           icon={<Clock className="text-primary" size={24} />}
-          label="Đang chờ xem xét"
-          value="42"
-          trend="-8%"
+          label="Báo cáo chờ xử lý"
+          value={statistics.reports.pending.toString()}
+          trend="+0%"
+          trendUp
         />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Line Chart */}
+        {/* User Statistics Chart */}
         <div className="lg:col-span-2 bg-card rounded-lg border border-border p-6">
           <h3 className="text-lg font-semibold text-card-foreground mb-4">
-            Xu hướng hoạt động
+            Thống kê người dùng theo vai trò
           </h3>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={lineChartData}>
+            <BarChart
+              data={[
+                { role: "Tổng", count: statistics.users.total },
+                { role: "Uploader", count: statistics.users.uploaders },
+                { role: "Độc giả", count: statistics.users.readers },
+                { role: "Admin", count: statistics.users.admins },
+              ]}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis stroke="var(--muted-foreground)" />
+              <XAxis dataKey="role" stroke="var(--muted-foreground)" />
               <YAxis stroke="var(--muted-foreground)" />
               <Tooltip
                 contentStyle={{
@@ -94,41 +162,33 @@ export default function DashboardOverview() {
                   border: "1px solid var(--border)",
                 }}
               />
-              <Line
-                type="monotone"
-                dataKey="reads"
-                stroke="var(--chart-1)"
-                strokeWidth={2}
-                dot={false}
+              <Bar
+                dataKey="count"
+                fill="var(--primary)"
+                radius={[8, 8, 0, 0]}
               />
-              <Line
-                type="monotone"
-                dataKey="uploads"
-                stroke="var(--chart-2)"
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
+            </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Pie Chart */}
         <div className="bg-card rounded-lg border border-border p-6 flex flex-col items-center justify-center">
           <h3 className="text-lg font-semibold text-card-foreground mb-4 w-full">
-            Tổng thể loại
+            Top 5 thể loại
           </h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
-                data={genreData}
+                data={genreChartData}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
                 outerRadius={90}
                 paddingAngle={2}
                 dataKey="value"
+                label={({ name, value }) => `${name}: ${value}`}
               >
-                {genreData.map((entry, index) => (
+                {genreChartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
@@ -138,7 +198,7 @@ export default function DashboardOverview() {
                   border: "1px solid var(--border)",
                 }}
                 itemStyle={{
-                  color: "var(--foreground",
+                  color: "var(--foreground)",
                 }}
               />
             </PieChart>
@@ -146,15 +206,15 @@ export default function DashboardOverview() {
         </div>
       </div>
 
-      {/* Bar Chart */}
+      {/* Manga Status Bar Chart */}
       <div className="bg-card rounded-lg border border-border p-6">
         <h3 className="text-lg font-semibold text-card-foreground mb-4">
-          Hiệu suất hàng tháng
+          Trạng thái truyện
         </h3>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={lineChartData}>
+          <BarChart data={mangaStatusData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis stroke="var(--muted-foreground)" />
+            <XAxis dataKey="status" stroke="var(--muted-foreground)" />
             <YAxis stroke="var(--muted-foreground)" />
             <Tooltip
               contentStyle={{
@@ -162,14 +222,36 @@ export default function DashboardOverview() {
                 border: "1px solid var(--border)",
               }}
             />
-            <Bar dataKey="reads" fill="var(--primary)" radius={[8, 8, 0, 0]} />
-            <Bar
-              dataKey="uploads"
-              fill="var(--chart-4)"
-              radius={[8, 8, 0, 0]}
-            />
+            <Bar dataKey="count" fill="var(--primary)" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Reports Status */}
+      <div className="bg-card rounded-lg border border-border p-6">
+        <h3 className="text-lg font-semibold text-card-foreground mb-4">
+          Tình trạng báo cáo
+        </h3>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center p-4 bg-accent rounded-lg">
+            <p className="text-2xl font-bold text-foreground">
+              {statistics.reports.total}
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">Tổng báo cáo</p>
+          </div>
+          <div className="text-center p-4 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
+            <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+              {statistics.reports.pending}
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">Đang chờ</p>
+          </div>
+          <div className="text-center p-4 bg-green-100 dark:bg-green-900/20 rounded-lg">
+            <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+              {statistics.reports.resolved}
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">Đã giải quyết</p>
+          </div>
+        </div>
       </div>
     </div>
   );

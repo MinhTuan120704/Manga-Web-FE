@@ -20,7 +20,7 @@ export const reportService = {
   /**
    * Lấy tất cả reports (Admin only)
    */
-  getAllReports: async (): Promise<ReportListResponse> => {
+  getAllReports: async (): Promise<Report[]> => {
     return axiosInstance.get(API_ENDPOINTS.REPORT.LIST);
   },
 
@@ -36,5 +36,12 @@ export const reportService = {
    */
   getReportById: async (reportId: string): Promise<Report> => {
     return axiosInstance.get(API_ENDPOINTS.REPORT.DETAIL(reportId));
+  },
+
+  /**
+   * Xóa một report (Admin only)
+   */
+  deleteReport: async (reportId: string): Promise<{ message: string }> => {
+    return axiosInstance.delete(API_ENDPOINTS.REPORT.DELETE(reportId));
   },
 };

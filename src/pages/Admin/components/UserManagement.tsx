@@ -55,11 +55,11 @@ export default function UserManagement() {
   });
 
   const [loadingUsers, setLoadingUsers] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<typeof userList.users[0] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<any>(null);
+  const [userToDelete, setUserToDelete] = useState<typeof userList.users[0] | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -101,17 +101,17 @@ export default function UserManagement() {
   }, [filterRole]);
 
   const handleSaveUser = async () => {
+    if (!selectedUser) return;
+
     try {
       setIsSaving(true);
-      // TODO: Replace with actual API call when backend endpoint is ready
-      // await userService.updateUser(selectedUser._id, {
-      //   username: selectedUser.username,
-      //   email: selectedUser.email,
-      //   role: selectedUser.role,
-      // });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await userService.adminUpdateUser({
+        userId: selectedUser._id,
+        username: selectedUser.username,
+        email: selectedUser.email,
+        role: selectedUser.role,
+        avatarUrl: selectedUser.avatarUrl,
+      });
 
       toast.success("Cập nhật người dùng thành công", {
         description: `Đã cập nhật thông tin của ${selectedUser.username}`,
@@ -136,11 +136,7 @@ export default function UserManagement() {
 
     try {
       setIsDeleting(true);
-      // TODO: Replace with actual API call when backend endpoint is ready
-      // await userService.deleteUser(userToDelete._id);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await userService.adminDeleteUser(userToDelete._id);
 
       toast.success("Xóa người dùng thành công", {
         description: `Đã xóa tài khoản ${userToDelete.username}`,
@@ -562,7 +558,7 @@ export default function UserManagement() {
                       onValueChange={(value) =>
                         setSelectedUser({
                           ...selectedUser,
-                          role: value,
+                          role: value as "reader" | "uploader" | "admin",
                         })
                       }
                     >
@@ -640,29 +636,21 @@ export default function UserManagement() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div className="bg-accent/50 rounded-lg p-4 text-center">
                       <p className="text-sm text-muted-foreground mb-1">
                         Manga theo dõi
                       </p>
                       <p className="text-2xl font-bold text-foreground">
-                        {selectedUser.followedMangaCount || 0}
+                        {selectedUser.followedMangas?.length || 0}
                       </p>
                     </div>
                     <div className="bg-accent/50 rounded-lg p-4 text-center">
                       <p className="text-sm text-muted-foreground mb-1">
-                        Đánh giá
+                        Lịch sử đọc
                       </p>
                       <p className="text-2xl font-bold text-foreground">
-                        {selectedUser.ratingCount || 0}
-                      </p>
-                    </div>
-                    <div className="bg-accent/50 rounded-lg p-4 text-center">
-                      <p className="text-sm text-muted-foreground mb-1">
-                        Bình luận
-                      </p>
-                      <p className="text-2xl font-bold text-foreground">
-                        {selectedUser.commentCount || 0}
+                        {selectedUser.readingHistory?.length || 0}
                       </p>
                     </div>
                     <div className="bg-accent/50 rounded-lg p-4 text-center">
@@ -670,7 +658,7 @@ export default function UserManagement() {
                         Manga tải lên
                       </p>
                       <p className="text-2xl font-bold text-foreground">
-                        {selectedUser.uploadedMangaCount || 0}
+                        {selectedUser.uploadedMangas?.length || 0}
                       </p>
                     </div>
                   </div>

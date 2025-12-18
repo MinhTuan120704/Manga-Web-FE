@@ -14,6 +14,7 @@ import {
 } from "./components";
 import { CommentSection } from "@/components/common/CommentSection";
 import { ShareModal } from "@/components/common/ShareModal";
+import { ReportModal } from "@/components/common/ReportModal";
 import { toast } from "sonner";
 import type { Chapter } from "@/types/chapter";
 import type { Genre } from "@/types/genre";
@@ -28,6 +29,7 @@ export const MangaDetail = () => {
   const [error, setError] = useState<string | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -111,6 +113,15 @@ export const MangaDetail = () => {
     setShareModalOpen(true);
   };
 
+  const handleReport = () => {
+    if (!authService.isAuthenticated()) {
+      toast.error("Vui lòng đăng nhập để báo cáo truyện");
+      navigate("/login");
+      return;
+    }
+    setReportModalOpen(true);
+  };
+
   const handleStartReading = () => {
     if (chapters.length > 0) {
       navigate(`/reader/${chapters[0]._id}`);
@@ -155,6 +166,7 @@ export const MangaDetail = () => {
             artist={manga.artist}
             createdAt={manga.createdAt}
             description={manga.description}
+            onReport={handleReport}
             genres={genres}
             averageRating={manga.averageRating}
             viewCount={manga.viewCount}
@@ -195,6 +207,15 @@ export const MangaDetail = () => {
         description={manga.description}
         url={window.location.href}
       />
+
+      {id && (
+        <ReportModal
+          isOpen={reportModalOpen}
+          onClose={() => setReportModalOpen(false)}
+          mangaId={id}
+          mangaTitle={manga.title}
+        />
+      )}
     </MainLayout>
   );
 };

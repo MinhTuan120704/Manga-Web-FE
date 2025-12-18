@@ -209,7 +209,7 @@ export function UploaderLayout({
                     </div>
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    <DropdownMenuItem onClick={() => navigate("user/profile")}>
                       <User className="mr-2 h-4 w-4" />
                       <span>Tài khoản</span>
                     </DropdownMenuItem>

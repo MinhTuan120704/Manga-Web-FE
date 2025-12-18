@@ -5,6 +5,7 @@ import type {
   UpdateProfileRequest,
   FollowMangaRequest,
   UserQueryParams,
+  AdminUpdateUserRequest,
 } from "@/types/user";
 import type { Manga } from "@/types/manga";
 import type { UserListResponse } from "@/types/api";
@@ -78,5 +79,30 @@ export const userService = {
 
   getUsers: async (params?: UserQueryParams): Promise<UserListResponse> => {
     return axiosInstance.get(API_ENDPOINTS.USER.GET_USERS, { params });
+  },
+
+  /**
+   * Admin: Lấy thông tin chi tiết một người dùng
+   */
+  adminGetUser: async (userId: string): Promise<User> => {
+    return axiosInstance.get(API_ENDPOINTS.USER.ADMIN_GET_USER, {
+      params: { userId },
+    });
+  },
+
+  /**
+   * Admin: Cập nhật thông tin người dùng
+   */
+  adminUpdateUser: async (data: AdminUpdateUserRequest): Promise<User> => {
+    return axiosInstance.put(API_ENDPOINTS.USER.ADMIN_UPDATE_USER, data);
+  },
+
+  /**
+   * Admin: Xóa người dùng
+   */
+  adminDeleteUser: async (userId: string): Promise<void> => {
+    return axiosInstance.delete(API_ENDPOINTS.USER.ADMIN_DELETE_USER, {
+      data: { userId },
+    });
   },
 };

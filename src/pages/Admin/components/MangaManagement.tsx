@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { mangaService } from "@/services/manga.service";
 import type { MangaListResponse } from "@/types/api";
+import type { Genre } from "@/types/genre";
+import type { Manga } from "@/types/manga";
 import {
   Card,
   CardContent,
@@ -67,11 +69,11 @@ export default function MangaManagement() {
   });
 
   const [loadingManga, setLoadingManga] = useState(false);
-  const [selectedManga, setSelectedManga] = useState<any>(null);
+  const [selectedManga, setSelectedManga] = useState<Manga | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [mangaToDelete, setMangaToDelete] = useState<any>(null);
+  const [mangaToDelete, setMangaToDelete] = useState<Manga | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -112,20 +114,22 @@ export default function MangaManagement() {
   }, [filterStatus]);
 
   const handleSaveManga = async () => {
+    if (!selectedManga) return;
+
     try {
       setIsSaving(true);
-      // TODO: Replace with actual API call when backend endpoint is ready
-      // await mangaService.updateManga(selectedManga._id, {
-      //   title: selectedManga.title,
-      //   author: selectedManga.author,
-      //   artist: selectedManga.artist,
-      //   status: selectedManga.status,
-      //   description: selectedManga.description,
-      //   releaseDate: selectedManga.releaseDate,
-      // });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await mangaService.updateManga(selectedManga._id, {
+        title: selectedManga.title,
+        author: selectedManga.author,
+        artist: selectedManga.artist,
+        status: selectedManga.status,
+        description: selectedManga.description,
+        genres: Array.isArray(selectedManga.genres)
+          ? selectedManga.genres.map((g: string | Genre) =>
+              typeof g === "string" ? g : g._id
+            )
+          : [],
+      });
 
       toast.success("Cập nhật manga thành công", {
         description: `Đã cập nhật thông tin của ${selectedManga.title}`,
@@ -149,11 +153,7 @@ export default function MangaManagement() {
 
     try {
       setIsDeleting(true);
-      // TODO: Replace with actual API call when backend endpoint is ready
-      // await mangaService.deleteManga(mangaToDelete._id);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await mangaService.deleteManga(mangaToDelete._id);
 
       toast.success("Xóa manga thành công", {
         description: `Đã xóa ${mangaToDelete.title}`,
@@ -564,7 +564,7 @@ export default function MangaManagement() {
                         onValueChange={(value) =>
                           setSelectedManga({
                             ...selectedManga,
-                            status: value,
+                            status: value as "ongoing" | "completed" | "hiatus" | "cancelled",
                           })
                         }
                       >
@@ -582,27 +582,6 @@ export default function MangaManagement() {
                       </Select>
                     </div>
 
-                    {/* Ngày phát hành */}
-                    <div className="space-y-2">
-                      <Label htmlFor="manga-release">Ngày phát hành</Label>
-                      <Input
-                        id="manga-release"
-                        type="date"
-                        value={
-                          selectedManga.releaseDate
-                            ? new Date(selectedManga.releaseDate)
-                                .toISOString()
-                                .split("T")[0]
-                            : ""
-                        }
-                        onChange={(e) =>
-                          setSelectedManga({
-                            ...selectedManga,
-                            releaseDate: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
                   </div>
 
                   {/* Mô tả */}
@@ -663,12 +642,12 @@ export default function MangaManagement() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    {selectedManga.genres?.map((genre: any) => (
+                    {selectedManga.genres?.map((genre: string | Genre) => (
                       <div
-                        key={genre._id}
+                        key={typeof genre === "string" ? genre : genre._id}
                         className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
                       >
-                        {genre.name}
+                        {typeof genre === "string" ? genre : genre.name}
                       </div>
                     ))}
                     {(!selectedManga.genres ||
@@ -742,7 +721,9 @@ export default function MangaManagement() {
                         Người tải lên:
                       </span>
                       <p className="text-foreground font-medium">
-                        {selectedManga.uploader?.username || "N/A"}
+                        {typeof selectedManga.uploaderId === "object" && selectedManga.uploaderId
+                          ? selectedManga.uploaderId.username
+                          : "N/A"}
                       </p>
                     </div>
                     <div>

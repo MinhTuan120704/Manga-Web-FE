@@ -116,6 +116,11 @@ const data = {
           url: "/admin/reports",
           icon: FileText,
         },
+        {
+          title: "Thống kê",
+          url: "/admin/statistics",
+          icon: BarChart3,
+        },
       ],
     },
   ],

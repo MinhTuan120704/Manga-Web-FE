@@ -6,6 +6,7 @@ import MangaManagementComponent from "@/pages/Admin/components/MangaManagement";
 import UserManagementComponent from "@/pages/Admin/components/UserManagement";
 import TranslationQueue from "@/pages/Admin/components/TranslationQueue";
 import ReportsComponent from "@/pages/Admin/components/Reports";
+import StatisticsComponent from "@/pages/Admin/components/Statistics";
 import SettingsComponent from "@/pages/Admin/components/Settings";
 
 // Admin routes configuration
@@ -81,6 +82,21 @@ export const adminRoutes: RouteObject[] = [
           ]}
         >
           <ReportsComponent />
+        </AdminLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/statistics",
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <AdminLayout
+          breadcrumbs={[
+            { label: "Quản trị", href: "/admin" },
+            { label: "Thống kê" },
+          ]}
+        >
+          <StatisticsComponent />
         </AdminLayout>
       </ProtectedRoute>
     ),

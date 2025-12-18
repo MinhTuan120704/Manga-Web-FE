@@ -51,16 +51,18 @@ export function CommentItem({
   };
 
   const getUsername = (user: string | User): string => {
-    if (typeof user === "string") return "Anonymous";
-    return user.username || "Anonymous";
+    if (typeof user === "string") return "Người dùng";
+    if (!user) return "Người dùng";
+    return user.username || "Người dùng";
   };
 
-  const getUserId = (user: string | User): string => {
+  const getUserId = (user: string | User): string | null => {
     if (typeof user === "string") return user;
+    if (!user) return null;
     return user._id;
   };
 
-  const isOwner = currentUserId && getUserId(comment.user) === currentUserId;
+  const isOwner = currentUserId && comment.user && getUserId(comment.user) === currentUserId;
 
   const handleEditClick = () => {
     setIsEditing(true);

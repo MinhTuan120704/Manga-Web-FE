@@ -45,6 +45,10 @@ export const API_ENDPOINTS = {
     UPLOADED_MANGAS: "/users/uploaded-mangas",
     FOLLOWED_MANGAS: "/users/followed-mangas",
     GET_USERS: "/users",
+    // Admin only
+    ADMIN_GET_USER: "/users/admin/user",
+    ADMIN_UPDATE_USER: "/users/admin/update",
+    ADMIN_DELETE_USER: "/users/admin/delete",
   },
 
   // ========== Comment ==========
@@ -80,6 +84,7 @@ export const API_ENDPOINTS = {
     LIST: "/reports",
     BY_MANGA: (mangaId: string) => `/reports/manga/${mangaId}`,
     DETAIL: (reportId: string) => `/reports/${reportId}`,
+    DELETE: (reportId: string) => `/reports/${reportId}`,
   },
 
   // ========== Statistics ==========

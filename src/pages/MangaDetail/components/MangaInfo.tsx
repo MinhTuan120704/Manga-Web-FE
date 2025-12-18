@@ -9,6 +9,7 @@ import {
   Calendar,
   ChevronDown,
   ChevronUp,
+  Flag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +47,7 @@ interface MangaInfoProps {
   onStartReading: () => void;
   onFollowToggle: () => void;
   onShare: () => void;
+  onReport?: () => void;
 }
 
 const statusColors = {
@@ -72,6 +74,7 @@ export const MangaInfo = ({
   onStartReading,
   onFollowToggle,
   onShare,
+  onReport,
 }: MangaInfoProps) => {
   const [showFullDescription, setShowFullDescription] = useState(false);
 
@@ -125,6 +128,16 @@ export const MangaInfo = ({
               <Share2 className="mr-2 h-4 w-4" />
               Chia sẻ
             </Button>
+          {onReport && (
+            <Button
+              variant="outline"
+              className="w-full text-destructive hover:text-destructive"
+              onClick={onReport}
+            >
+              <Flag className="mr-2 h-4 w-4" />
+              Báo cáo vi phạm
+            </Button>
+          )}
           </div>
         </div>
       </div>
