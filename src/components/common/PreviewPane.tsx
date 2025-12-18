@@ -97,6 +97,17 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
     );
   };
 
+  // Helper function để chuyển đổi status sang tiếng Việt
+  const getStatusInVietnamese = (status: string): string => {
+    const statusMap: { [key: string]: string } = {
+      ongoing: "Đang tiến hành",
+      completed: "Hoàn thành",
+      hiatus: "Tạm ngưng",
+      cancelled: "Đã hủy",
+    };
+    return statusMap[status.toLowerCase()] || status;
+  };
+
   // Helper function để format date
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -209,13 +220,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                 }
                 className="text-xs"
               >
-                {currentManga.status === "ongoing"
-                  ? "Đang tiến hành"
-                  : currentManga.status === "completed"
-                  ? "Hoàn thành"
-                  : currentManga.status === "hiatus"
-                  ? "Tạm ngưng"
-                  : "Đã hủy"}
+                {getStatusInVietnamese(currentManga.status)}
               </Badge>
             </div>
 

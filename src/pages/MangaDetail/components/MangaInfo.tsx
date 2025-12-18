@@ -57,6 +57,17 @@ const statusColors = {
   cancelled: "bg-red-500",
 };
 
+// Helper function để chuyển đổi status sang tiếng Việt
+const getStatusInVietnamese = (status: string): string => {
+  const statusMap: { [key: string]: string } = {
+    ongoing: "Đang tiến hành",
+    completed: "Hoàn thành",
+    hiatus: "Tạm ngưng",
+    cancelled: "Đã hủy",
+  };
+  return statusMap[status.toLowerCase()] || status;
+};
+
 export const MangaInfo = ({
   coverImage,
   title,
@@ -149,7 +160,7 @@ export const MangaInfo = ({
           <div className="flex items-start gap-3 mb-2">
             <h1 className="text-3xl font-bold flex-1">{title}</h1>
             <Badge className={statusColors[status]}>
-              {status.charAt(0).toUpperCase() + status.slice(1)}
+              {getStatusInVietnamese(status)}
             </Badge>
           </div>
 

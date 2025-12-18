@@ -6,7 +6,7 @@ import { userService } from "@/services/user.service";
 import { authService } from "@/services/auth.service";
 import type { Chapter } from "@/types/chapter";
 import type { Manga } from "@/types/manga";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   ReaderHeader,
@@ -430,20 +430,16 @@ export function MangaReader() {
         show={showDirectionOverlay}
       />
 
-      {/* Toggle Header Button */}
-      {!showSettings && (
+      {/* Toggle Header Button - Only show when header is hidden */}
+      {!showSettings && !showHeader && (
         <Button
-          variant="default"
+          variant="ghost"
           size="icon"
-          onClick={() => setShowHeader((prev) => !prev)}
-          className="fixed top-4 right-4 z-100 h-10 w-10 rounded-full shadow-lg hover:scale-110 transition-transform"
-          title={showHeader ? "Hide header (H)" : "Show header (H)"}
+          onClick={() => setShowHeader(true)}
+          className="fixed top-4 right-4 z-100 bg-accent"
+          title="Hiện header (H)"
         >
-          {showHeader ? (
-            <ChevronUp className="h-5 w-5" />
-          ) : (
-            <ChevronDown className="h-5 w-5 " />
-          )}
+          <ChevronDown className="h-5 w-5" />
         </Button>
       )}
 
@@ -457,6 +453,7 @@ export function MangaReader() {
           onReturnToManga={handleReturnToManga}
           onToggleSettings={() => setShowSettings((prev) => !prev)}
           onToggleNavigation={() => setShowNavigation((prev) => !prev)}
+          onToggleHeader={() => setShowHeader(false)}
           showNavigation={showNavigation}
           settings={settings}
         />

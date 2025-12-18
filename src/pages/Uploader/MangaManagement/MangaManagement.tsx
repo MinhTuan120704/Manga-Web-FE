@@ -121,6 +121,7 @@ export function MangaManagement() {
       ongoing: "Đang tiến hành",
       completed: "Hoàn thành",
       hiatus: "Tạm ngưng",
+      cancelled: "Đã hủy",
     };
     return labels[status] || status;
   };

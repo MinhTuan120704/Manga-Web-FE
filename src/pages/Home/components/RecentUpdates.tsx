@@ -46,6 +46,17 @@ export function RecentUpdates({
     return `${diffInWeeks} tuần trước`;
   };
 
+  // Helper function để chuyển đổi status sang tiếng Việt
+  const getStatusInVietnamese = (status: string): string => {
+    const statusMap: { [key: string]: string } = {
+      ongoing: "Đang tiến hành",
+      completed: "Hoàn thành",
+      hiatus: "Tạm ngưng",
+      cancelled: "Đã hủy",
+    };
+    return statusMap[status.toLowerCase()] || status;
+  };
+
   if (loading) {
     return (
       <div className="mb-8">
@@ -121,9 +132,14 @@ export function RecentUpdates({
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      {manga.status}
-                    </span>
+                    <Badge
+                      variant={
+                        manga.status === "ongoing" ? "default" : "secondary"
+                      }
+                      className="text-xs"
+                    >
+                      {getStatusInVietnamese(manga.status)}
+                    </Badge>
                     <div className="flex items-center gap-2">
                       {onPreview && (
                         <Button
