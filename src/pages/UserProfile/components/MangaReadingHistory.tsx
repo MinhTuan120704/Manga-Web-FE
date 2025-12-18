@@ -16,7 +16,7 @@ export const MangaReadingHistory = ({
 
   useEffect(() => {
     const fetchReadingHistory = async () => {
-      if (readingHistory.length === 0) {
+      if (readingHistory?.length === 0) {
         setLoading(false);
         return;
       }
@@ -61,7 +61,7 @@ export const MangaReadingHistory = ({
       <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">
         Lịch sử đọc truyện
       </h2>
-      {mangas.length === 0 ? (
+      {!mangas ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-base sm:text-lg">
             Chưa có lịch sử đọc truyện
@@ -69,9 +69,9 @@ export const MangaReadingHistory = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-          {mangas.map((manga) => (
-            <MangaCard key={manga._id} manga={manga} />
-          ))}
+          {mangas?.map(
+            (manga) => manga?._id && <MangaCard key={manga._id} manga={manga} />
+          )}
         </div>
       )}
     </div>

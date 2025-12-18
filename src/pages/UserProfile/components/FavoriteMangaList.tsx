@@ -15,7 +15,7 @@ export const FavoriteMangaList = ({
 
   useEffect(() => {
     const fetchFollowedMangas = async () => {
-      if (followedMangaIds.length === 0) {
+      if (followedMangaIds?.length === 0) {
         setLoading(false);
         return;
       }
@@ -53,7 +53,7 @@ export const FavoriteMangaList = ({
       <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">
         Truyện yêu thích
       </h2>
-      {mangas.length === 0 ? (
+      {!mangas ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-base sm:text-lg">
             Chưa có truyện nào được theo dõi
@@ -61,9 +61,9 @@ export const FavoriteMangaList = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-          {mangas.map((manga) => (
-            <MangaCard key={manga._id} manga={manga} />
-          ))}
+          {mangas.map(
+            (manga) => manga?._id && <MangaCard key={manga._id} manga={manga} />
+          )}
         </div>
       )}
     </div>
