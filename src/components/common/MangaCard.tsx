@@ -36,16 +36,25 @@ export function MangaCard({
     const diffInMs = now.getTime() - date.getTime();
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
 
-    if (diffInHours < 1) return "Just now";
-    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 1) return "Vừa xong";
+    if (diffInHours < 24) return `${diffInHours} giờ trước`;
 
     const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ago`;
+    if (diffInDays < 7) return `${diffInDays} ngày trước`;
 
     const diffInWeeks = Math.floor(diffInDays / 7);
-    return `${diffInWeeks}w ago`;
+    return `${diffInWeeks} tuần trước`;
   };
-
+  // Helper function để chuyển đổi status sang tiếng Việt
+  const getStatusInVietnamese = (status: string): string => {
+    const statusMap: { [key: string]: string } = {
+      ongoing: "Đang tiến hành",
+      completed: "Hoàn thành",
+      hiatus: "Tạm ngưng",
+      cancelled: "Đã hủy",
+    };
+    return statusMap[status.toLowerCase()] || status;
+  };
   const genreNames = getGenreNames(manga.genres);
 
   // Remove fixed widths, let card fill the grid column
@@ -76,7 +85,7 @@ export function MangaCard({
         />
         <div className="absolute top-2 right-2">
           <Badge variant={manga.status === "ongoing" ? "default" : "secondary"}>
-            {manga.status}
+            {getStatusInVietnamese(manga.status)}
           </Badge>
         </div>
         {showStats && manga.averageRating !== undefined && (
@@ -100,7 +109,7 @@ export function MangaCard({
               className="bg-primary shadow-black-900 "
             >
               <Eye className="h-4 w-4 mr-2" />
-              Preview
+              Xem trước
             </Button>
           </div>
         )}
@@ -126,7 +135,7 @@ export function MangaCard({
         <CardFooter className="px-3 pt-0 flex justify-between items-center text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <BookOpen className="h-3 w-3" />
-            <span>{manga.viewCount || 0} views</span>
+            <span>{manga.viewCount || 0} Lượt xem</span>
           </div>
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
