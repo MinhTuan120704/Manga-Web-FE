@@ -9,13 +9,16 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Play, Plus, Star, Eye } from "lucide-react";
+import { Play, Heart, Star, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
+import { authService } from "@/services/auth.service";
+import { userService } from "@/services/user.service";
+import { toast } from "sonner";
 import type { Manga } from "@/types/manga";
 import type { Genre } from "@/types/genre";
 import Autoplay from "embla-carousel-autoplay";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 interface FeaturedCarouselProps {
   featuredManga: Manga[];
@@ -35,6 +38,57 @@ export function FeaturedCarousel({
     Autoplay({ delay: AUTOPLAY_DELAY, stopOnInteraction: false })
   );
   const [isPaused, setIsPaused] = useState(false);
+  const [followedMangas, setFollowedMangas] = useState<string[]>([]);
+  const [followLoading, setFollowLoading] = useState<string | null>(null);
+
+  useEffect(() => {
+    checkFollowedMangas();
+  }, []);
+
+  const checkFollowedMangas = async () => {
+    if (!authService.isAuthenticated()) {
+      setFollowedMangas([]);
+      return;
+    }
+
+    try {
+      const profile = await userService.getMyProfile();
+      if (profile?.followedMangas) {
+        setFollowedMangas(profile.followedMangas);
+      }
+    } catch (error) {
+      console.error("Failed to check followed mangas:", error);
+    }
+  };
+
+  const handleFollowToggle = async (mangaId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (!authService.isAuthenticated()) {
+      toast.error("Vui lòng đăng nhập để theo dõi truyện");
+      return;
+    }
+
+    try {
+      setFollowLoading(mangaId);
+      const isFollowing = followedMangas.includes(mangaId);
+
+      if (isFollowing) {
+        await userService.unfollowManga(mangaId);
+        setFollowedMangas((prev) => prev.filter((id) => id !== mangaId));
+        toast.success("Đã hủy theo dõi truyện");
+      } else {
+        await userService.followManga({ mangaId });
+        setFollowedMangas((prev) => [...prev, mangaId]);
+        toast.success("Đã thêm vào thư viện");
+      }
+    } catch (error) {
+      console.error("Failed to toggle follow:", error);
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
+    } finally {
+      setFollowLoading(null);
+    }
+  };
 
   const handleMouseEnter = () => {
     setIsPaused(true);
@@ -153,9 +207,26 @@ export function FeaturedCarousel({
                             <Play className="h-4 w-4 mr-2" />
                             Đọc ngay
                           </Button>
-                          <Button size="lg" variant="outline">
-                            <Plus className="h-4 w-4 mr-2" />
-                            Thêm vào thư viện
+                          <Button
+                            size="lg"
+                            variant={
+                              followedMangas.includes(manga._id)
+                                ? "secondary"
+                                : "outline"
+                            }
+                            onClick={(e) => handleFollowToggle(manga._id, e)}
+                            disabled={followLoading === manga._id}
+                          >
+                            <Heart
+                              className={`h-4 w-4 mr-2 ${
+                                followedMangas.includes(manga._id)
+                                  ? "fill-current"
+                                  : ""
+                              }`}
+                            />
+                            {followedMangas.includes(manga._id)
+                              ? "Đã theo dõi"
+                              : "Thêm vào thư viện"}
                           </Button>
                           {onPreview && (
                             <Button

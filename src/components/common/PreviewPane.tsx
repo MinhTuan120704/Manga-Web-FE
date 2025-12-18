@@ -1,9 +1,12 @@
 import React from "react";
-import { X, Star, Calendar, User, Tag, Eye } from "lucide-react";
+import { X, Star, Calendar, User, Tag, Eye, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
+import { authService } from "@/services/auth.service";
+import { userService } from "@/services/user.service";
+import { toast } from "sonner";
 import type { Manga } from "@/types/manga";
 import type { Genre } from "@/types/genre";
 
@@ -22,21 +25,68 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
   const [visible, setVisible] = React.useState(false);
   const [currentManga, setCurrentManga] = React.useState<Manga | null>(null);
   const [fadeIn, setFadeIn] = React.useState(false);
+  const [isFollowing, setIsFollowing] = React.useState(false);
+  const [isFollowLoading, setIsFollowLoading] = React.useState(false);
 
   React.useEffect(() => {
     if (show && manga) {
       setCurrentManga(manga);
       setVisible(true);
       setTimeout(() => setFadeIn(true), 100);
+      checkIfFollowing(manga._id);
     } else if (!show) {
       setFadeIn(false);
       const timer = setTimeout(() => {
         setVisible(false);
         setCurrentManga(null);
+        setIsFollowing(false);
       }, 300);
       return () => clearTimeout(timer);
     }
   }, [show, manga]);
+
+  const checkIfFollowing = async (mangaId: string) => {
+    if (!authService.isAuthenticated()) {
+      setIsFollowing(false);
+      return;
+    }
+
+    try {
+      const profile = await userService.getMyProfile();
+      if (profile?.followedMangas) {
+        setIsFollowing(profile.followedMangas.includes(mangaId));
+      }
+    } catch (error) {
+      console.error("Failed to check follow status:", error);
+    }
+  };
+
+  const handleFollowToggle = async () => {
+    if (!authService.isAuthenticated()) {
+      toast.error("Vui lòng đăng nhập để theo dõi truyện");
+      return;
+    }
+
+    if (!currentManga) return;
+
+    try {
+      setIsFollowLoading(true);
+      if (isFollowing) {
+        await userService.unfollowManga(currentManga._id);
+        setIsFollowing(false);
+        toast.success("Đã hủy theo dõi truyện");
+      } else {
+        await userService.followManga({ mangaId: currentManga._id });
+        setIsFollowing(true);
+        toast.success("Đã thêm vào thư viện");
+      }
+    } catch (error) {
+      console.error("Failed to toggle follow:", error);
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
+    } finally {
+      setIsFollowLoading(false);
+    }
+  };
 
   if (!currentManga || !visible) return null;
 
@@ -204,8 +254,17 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
               >
                 Đọc ngay
               </Button>
-              <Button variant="outline" className="w-full" size="lg">
-                Thêm vào thư viện
+              <Button
+                variant={isFollowing ? "secondary" : "outline"}
+                className="w-full"
+                size="lg"
+                onClick={handleFollowToggle}
+                disabled={isFollowLoading}
+              >
+                <Heart
+                  className={`h-4 w-4 mr-2 ${isFollowing ? "fill-current" : ""}`}
+                />
+                {isFollowing ? "Đã theo dõi" : "Thêm vào thư viện"}
               </Button>
             </div>
           </div>
