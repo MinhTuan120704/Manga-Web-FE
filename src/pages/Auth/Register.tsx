@@ -261,7 +261,7 @@ export function Register() {
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-4 pb-6">
+          <CardFooter className="flex flex-col space-y-4 py-6">
             <Button
               type="submit"
               className="w-full h-11 text-base"
