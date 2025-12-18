@@ -558,7 +558,7 @@ export default function UserManagement() {
                       onValueChange={(value) =>
                         setSelectedUser({
                           ...selectedUser,
-                          role: value,
+                          role: value as "reader" | "uploader" | "admin",
                         })
                       }
                     >
