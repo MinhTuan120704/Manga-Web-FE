@@ -7,6 +7,7 @@ import type { Manga, MangaSearchParams } from "@/types/manga";
 import type { Genre } from "@/types/genre";
 import { SearchFilters } from "./components/SearchFilters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollToTop } from "@/components/common/ScrollToTop";
 
 // Lazy load heavy components
 const SearchResults = lazy(() =>
@@ -89,7 +90,9 @@ export const AdvancedSearch = () => {
 
         // Add status filter if not "all"
         if (selectedStatus !== "all") {
-          params.status = selectedStatus as "ongoing" | "completed" /* | "hiatus" | "cancelled" */;
+          params.status = selectedStatus as
+            | "ongoing"
+            | "completed" /* | "hiatus" | "cancelled" */;
         }
 
         const response = await mangaService.searchMangas(params);
@@ -131,59 +134,62 @@ export const AdvancedSearch = () => {
   };
 
   return (
-    <MainLayout breadcrumbs={breadcrumbs}>
-      <div className="space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-            Tìm kiếm nâng cao
-          </h1>
-          <p className="text-muted-foreground text-sm sm:text-base">
-            {searchQuery
-              ? `Kết quả tìm kiếm cho: "${searchQuery}"`
-              : "Tìm truyện theo thể loại, trạng thái và nhiều tiêu chí khác"}
-          </p>
-        </div>
+    <>
+      <MainLayout breadcrumbs={breadcrumbs}>
+        <div className="space-y-6">
+          {/* Header */}
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
+              Tìm kiếm nâng cao
+            </h1>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              {searchQuery
+                ? `Kết quả tìm kiếm cho: "${searchQuery}"`
+                : "Tìm truyện theo thể loại, trạng thái và nhiều tiêu chí khác"}
+            </p>
+          </div>
 
-        {/* Search Filters */}
-        <SearchFilters
-          genres={genres}
-          loadingGenres={loadingGenres}
-          selectedGenres={selectedGenres}
-          selectedStatus={selectedStatus}
-          sortBy={sortBy}
-          onGenresChange={handleGenresChange}
-          onStatusChange={handleStatusChange}
-          onSortChange={handleSortChange}
-        />
-
-        {/* Search Results */}
-        <Suspense
-          fallback={
-            <div className="space-y-4">
-              <Skeleton className="h-8 w-48" />
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <div key={i} className="space-y-2">
-                    <Skeleton className="h-48 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
-                    <Skeleton className="h-3 w-1/2" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          }
-        >
-          <SearchResults
-            mangas={mangas}
-            loading={loading}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalResults={totalResults}
-            onPageChange={handlePageChange}
+          {/* Search Filters */}
+          <SearchFilters
+            genres={genres}
+            loadingGenres={loadingGenres}
+            selectedGenres={selectedGenres}
+            selectedStatus={selectedStatus}
+            sortBy={sortBy}
+            onGenresChange={handleGenresChange}
+            onStatusChange={handleStatusChange}
+            onSortChange={handleSortChange}
           />
-        </Suspense>
-      </div>
-    </MainLayout>
+
+          {/* Search Results */}
+          <Suspense
+            fallback={
+              <div className="space-y-4">
+                <Skeleton className="h-8 w-48" />
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-48 w-full" />
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-3 w-1/2" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            }
+          >
+            <SearchResults
+              mangas={mangas}
+              loading={loading}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalResults={totalResults}
+              onPageChange={handlePageChange}
+            />
+          </Suspense>
+        </div>
+      </MainLayout>
+      <ScrollToTop />
+    </>
   );
 };

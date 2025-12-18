@@ -15,6 +15,7 @@ import {
 import { CommentSection } from "@/components/common/CommentSection";
 import { ShareModal } from "@/components/common/ShareModal";
 import { ReportModal } from "@/components/common/ReportModal";
+import { ScrollToTop } from "@/components/common/ScrollToTop";
 import { toast } from "sonner";
 import type { Chapter } from "@/types/chapter";
 import type { Genre } from "@/types/genre";
@@ -221,6 +222,7 @@ export const MangaDetail = () => {
           mangaTitle={manga.title || ""}
         />
       )}
+      <ScrollToTop />
     </MainLayout>
   );
 };

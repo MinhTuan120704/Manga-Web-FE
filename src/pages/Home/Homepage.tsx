@@ -5,6 +5,7 @@ import { PopularMangaGrid } from "@/pages/Home/components/PopularMangaGrid";
 import { MangaCard } from "@/components/common/MangaCard";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { PreviewPane } from "@/components/common/PreviewPane";
+import { ScrollToTop } from "@/components/common/ScrollToTop";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
 import { mangaService } from "@/services/manga.service";
@@ -193,6 +194,7 @@ export function Homepage() {
         manga={selectedManga}
         onClose={handleClosePreview}
       />
+      <ScrollToTop />
     </>
   );
 }

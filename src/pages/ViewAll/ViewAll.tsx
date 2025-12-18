@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/empty";
 import type { Manga } from "@/types/manga";
 import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+import { ScrollToTop } from "@/components/common/ScrollToTop";
 
 export const ViewAll = () => {
   const [searchParams] = useSearchParams();
@@ -344,6 +345,7 @@ export const ViewAll = () => {
         manga={selectedManga}
         onClose={handleClosePreview}
       />
+      <ScrollToTop />
     </>
   );
 };
