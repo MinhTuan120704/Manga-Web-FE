@@ -33,8 +33,8 @@ interface MangaInfoProps {
   createdAt: string;
 
   // Description & Genres
-  description: string;
-  genres: Genre[];
+  description?: string;
+  genres?: Genre[];
 
   // Stats
   averageRating?: number;
@@ -196,34 +196,37 @@ export const MangaInfo = ({
         </div>
 
         {/* Genres */}
-        <div>
-          <h3 className="text-sm font-semibold mb-2">Thể loại</h3>
-          <div className="flex flex-wrap gap-2">
-            {genres.map((genre) => (
-              <Badge
-                key={genre._id}
-                variant="secondary"
-                className="cursor-pointer hover:bg-secondary/80"
-              >
-                {genre.name}
-              </Badge>
-            ))}
+        {genres && genres.length > 0 && (
+          <div>
+            <h3 className="text-sm font-semibold mb-2">Thể loại</h3>
+            <div className="flex flex-wrap gap-2">
+              {genres.map((genre) => (
+                <Badge
+                  key={genre._id}
+                  variant="secondary"
+                  className="cursor-pointer hover:bg-secondary/80"
+                >
+                  {genre.name}
+                </Badge>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Description */}
-        <div>
-          <h3 className="text-sm font-semibold mb-2">Mô tả</h3>
-          <Card>
-            <CardContent className="pt-6">
-              <p
-                className={`text-sm leading-relaxed ${
-                  !showFullDescription && "line-clamp-4"
-                }`}
-              >
-                {description}
-              </p>
-              {description.length > 200 && (
+        {description && (
+          <div>
+            <h3 className="text-sm font-semibold mb-2">Mô tả</h3>
+            <Card>
+              <CardContent className="pt-6">
+                <p
+                  className={`text-sm leading-relaxed ${
+                    !showFullDescription && "line-clamp-4"
+                  }`}
+                >
+                  {description}
+                </p>
+              {description && description.length > 200 && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -243,7 +246,8 @@ export const MangaInfo = ({
               )}
             </CardContent>
           </Card>
-        </div>
+          </div>
+        )}
 
         {/* Statistics Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

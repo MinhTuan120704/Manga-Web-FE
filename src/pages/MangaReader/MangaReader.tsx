@@ -302,7 +302,7 @@ export function MangaReader() {
     if (manga) {
       navigate(`/manga/${manga._id}`);
     } else {
-      navigate("/");
+      navigate(-1);
     }
   };
 
