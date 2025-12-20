@@ -145,9 +145,11 @@ export default function AdminSidebar({ ...props }: AdminSidebarProps) {
       <SidebarHeader>
         <Link to="/" className="block">
           <div className="flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-accent transition-colors rounded-md">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Shield className="h-4 w-4" />
-            </div>
+            <img
+              src="/mangaria_logo.svg"
+              alt="Mangaria Logo"
+              className="h-8 w-8 object-contain"
+            />
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">Admin Panel</span>
               <span className="truncate text-xs text-muted-foreground">

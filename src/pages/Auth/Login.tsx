@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { authService } from "@/services/auth.service";
-import { BookOpen, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import type { LoginRequest } from "@/types/auth";
 
 export function Login() {
@@ -78,20 +78,22 @@ export function Login() {
         to="/"
         className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent transition-colors"
       >
-        <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
-          <BookOpen className="h-5 w-5 text-primary-foreground" />
-        </div>
-        <span className="font-semibold text-lg hidden sm:inline">
-          Mangaria
-        </span>
+        <img
+          src="/mangaria_logo.svg"
+          alt="Mangaria Logo"
+          className="h-8 w-8 object-contain"
+        />
+        <span className="font-semibold text-lg hidden sm:inline">Mangaria</span>
       </Link>
 
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-3 text-center">
           <div className="flex justify-center mb-2">
-            <div className="h-16 w-16 bg-primary rounded-2xl flex items-center justify-center">
-              <BookOpen className="h-10 w-10 text-primary-foreground" />
-            </div>
+            <img
+              src="/mangaria_logo.svg"
+              alt="Mangaria Logo"
+              className="h-16 w-16 object-contain"
+            />
           </div>
           <CardTitle className="text-3xl font-bold">Đăng nhập</CardTitle>
           <CardDescription className="text-base">
