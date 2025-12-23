@@ -72,4 +72,30 @@ export const authService = {
   }): Promise<void> => {
     return axiosInstance.put(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, data);
   },
+
+  /**
+   * Gửi yêu cầu quên mật khẩu (gửi OTP qua email)
+   */
+  forgotPassword: async (email: string): Promise<{ status: string; message: string }> => {
+    return axiosInstance.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
+  },
+
+  /**
+   * Xác minh mã OTP
+   */
+  verifyOTP: async (email: string, otp: string): Promise<{ status: string; message: string }> => {
+    return axiosInstance.post(API_ENDPOINTS.AUTH.VERIFY_OTP, { email, otp });
+  },
+
+  /**
+   * Đặt lại mật khẩu mới
+   */
+  resetPassword: async (data: {
+    email: string;
+    otp: string;
+    newPassword: string;
+    confirmPassword: string;
+  }): Promise<{ status: string; message: string }> => {
+    return axiosInstance.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, data);
+  },
 };

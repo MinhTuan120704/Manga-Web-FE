@@ -4,7 +4,7 @@ import { uploaderRoutes } from "./uploaderRoutes";
 import { adminRoutes } from "./adminRoutes";
 import { RoleBasedLayout } from "@/components/layout";
 import { MangaDetail } from "@/pages/MangaDetail/MangaDetail";
-import { Login, Register } from "@/pages/Auth";
+import { Login, Register, ForgotPassword } from "@/pages/Auth";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import NotFound from "@/pages/NotFound/NotFound";
 import { Homepage } from "@/pages/Home/Homepage";
@@ -46,6 +46,14 @@ export const router = createBrowserRouter([
     element: (
       <AuthLayout>
         <Register />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: "/forgot-password",
+    element: (
+      <AuthLayout>
+        <ForgotPassword />
       </AuthLayout>
     ),
   },

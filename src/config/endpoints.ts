@@ -10,6 +10,9 @@ export const API_ENDPOINTS = {
     USER: "/auth/user",
     ME: "/auth/me",
     CHANGE_PASSWORD: "/auth/change-password",
+    FORGOT_PASSWORD: "/auth/forgot-password",
+    VERIFY_OTP: "/auth/verify-otp",
+    RESET_PASSWORD: "/auth/reset-password",
   },
 
   // ========== Manga ==========
