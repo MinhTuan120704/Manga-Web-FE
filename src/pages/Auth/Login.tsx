@@ -157,6 +157,14 @@ export function Login() {
                   )}
                 </Button>
               </div>
+              <div className="text-right">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-primary hover:underline"
+                >
+                  Quên mật khẩu?
+                </Link>
+              </div>
             </div>
           </CardContent>
 
