@@ -184,6 +184,7 @@ export const AdvancedSearch = () => {
               currentPage={currentPage}
               totalPages={totalPages}
               totalResults={totalResults}
+              searchQuery={searchQuery}
               onPageChange={handlePageChange}
             />
           </Suspense>

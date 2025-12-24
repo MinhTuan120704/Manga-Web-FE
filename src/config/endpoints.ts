@@ -101,4 +101,9 @@ export const API_ENDPOINTS = {
     GET_MANGA: "/ai/get-manga",
     GENERATE_MANGA: "/ai/generate-manga",
   },
+
+  // ========== Search Log ==========
+  SEARCH_LOG: {
+    CLICK: "/search-logs/click",
+  },
 } as const;
