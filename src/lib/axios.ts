@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getSessionId } from "./session";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -10,9 +11,12 @@ export const axiosInstance = axios.create({
   },
 });
 
-// Request interceptor - thêm token vào header
+// Request interceptor - thêm token và session ID vào header
 axiosInstance.interceptors.request.use(
   (config) => {
+    // Add session ID for analytics tracking
+    config.headers["x-session-id"] = getSessionId();
+
     const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

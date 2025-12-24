@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MangaCard } from "@/components/common/MangaCard";
 import { PreviewPane } from "@/components/common/PreviewPane";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import {
   EmptyTitle,
   EmptyDescription,
 } from "@/components/ui/empty";
+import { searchLogService } from "@/services/searchLog.service";
 import type { Manga } from "@/types/manga";
 import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 
@@ -19,6 +21,7 @@ interface SearchResultsProps {
   currentPage: number;
   totalPages: number;
   totalResults: number;
+  searchQuery?: string;
   onPageChange: (page: number) => void;
 }
 
@@ -28,10 +31,25 @@ export const SearchResults = ({
   currentPage,
   totalPages,
   totalResults,
+  searchQuery,
   onPageChange,
 }: SearchResultsProps) => {
+  const navigate = useNavigate();
   const [showPreview, setShowPreview] = useState(false);
   const [selectedManga, setSelectedManga] = useState<Manga | null>(null);
+
+  // Handle manga click - log for ML training and navigate
+  const handleMangaClick = (manga: Manga, index: number) => {
+    // Log click for search ranking ML model (only if from search)
+    if (searchQuery && searchQuery.trim()) {
+      searchLogService.logClick({
+        query: searchQuery.trim(),
+        mangaId: manga._id,
+        position: index + 1, // 1-indexed position
+      });
+    }
+    navigate(`/manga/${manga._id}`);
+  };
 
   const handlePreview = (manga: Manga) => {
     setSelectedManga(manga);
@@ -112,13 +130,18 @@ export const SearchResults = ({
 
         {/* Results Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {mangas.map((manga) => (
-            <MangaCard
+          {mangas.map((manga, index) => (
+            <div
               key={manga._id}
-              manga={manga}
-              size="sm"
-              onPreview={handlePreview}
-            />
+              onClick={() => handleMangaClick(manga, index)}
+              className="cursor-pointer"
+            >
+              <MangaCard
+                manga={manga}
+                size="sm"
+                onPreview={handlePreview}
+              />
+            </div>
           ))}
         </div>
 
