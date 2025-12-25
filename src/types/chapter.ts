@@ -35,7 +35,9 @@ export interface CreateChapterRequest {
 export interface UpdateChapterRequest {
   chapterNumber?: number;
   title?: string;
-  pages?: Page[];
+  thumbnail?: File;
+  newPages?: File[];
+  pagesToDelete?: number[];
 }
 
 // 🆕 Add this

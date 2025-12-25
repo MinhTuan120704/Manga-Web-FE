@@ -50,7 +50,32 @@ export const chapterService = {
     chapterId: string,
     data: UpdateChapterRequest
   ): Promise<Chapter> => {
-    return axiosInstance.put(API_ENDPOINTS.CHAPTER.UPDATE(chapterId), data);
+    const formData = new FormData();
+
+    if (data.chapterNumber !== undefined) {
+      formData.append("chapterNumber", data.chapterNumber.toString());
+    }
+    if (data.title) {
+      formData.append("title", data.title);
+    }
+    if (data.thumbnail) {
+      formData.append("thumbnail", data.thumbnail);
+    }
+    if (data.pagesToDelete && data.pagesToDelete.length > 0) {
+      formData.append("pagesToDelete", JSON.stringify(data.pagesToDelete));
+    }
+    if (data.newPages && data.newPages.length > 0) {
+      data.newPages.forEach((page, index) => {
+        const paddedIndex = String(index + 1).padStart(2, "0");
+        formData.append("pages", page, `page_${paddedIndex}.jpg`);
+      });
+    }
+
+    return axiosInstance.put(API_ENDPOINTS.CHAPTER.UPDATE(chapterId), formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   },
 
   /**

@@ -252,10 +252,7 @@ export function CreateManga() {
     : [];
 
   const handleGenreSelect = (genre: Genre) => {
-    if (selectedGenres.length >= 5) {
-      toast.error("Chỉ được chọn tối đa 5 thể loại");
-      return;
-    }
+
     setSelectedGenres((prev) => [...prev, genre]);
     setGenreSearch("");
     setShowGenreDropdown(false);
@@ -682,7 +679,7 @@ export function CreateManga() {
             <CardHeader>
               <CardTitle>Thể loại</CardTitle>
               <CardDescription>
-                Tìm kiếm và chọn các thể loại phù hợp (tùy chọn, tối đa 5)
+                Tìm kiếm và chọn các thể loại phù hợp (tùy chọn)
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -706,7 +703,7 @@ export function CreateManga() {
                           setShowGenreDropdown(true);
                         }}
                         onFocus={() => setShowGenreDropdown(true)}
-                        disabled={loading || selectedGenres.length >= 5}
+                        disabled={loading}
                         className="pl-10"
                       />
                     </div>
@@ -759,7 +756,7 @@ export function CreateManga() {
                   {selectedGenres.length > 0 && (
                     <div>
                       <Label className="text-sm font-medium mb-2 block">
-                        Đã chọn ({selectedGenres.length}/5):
+                        Đã chọn ({selectedGenres.length}):
                       </Label>
                       <div className="flex flex-wrap gap-2">
                         {selectedGenres.map((genre) => (
@@ -787,11 +784,7 @@ export function CreateManga() {
                   <p className="text-xs text-muted-foreground">
                     {selectedGenres.length === 0
                       ? "Click vào ô tìm kiếm để xem tất cả thể loại"
-                      : selectedGenres.length >= 5
-                      ? "Đã đạt giới hạn 5 thể loại"
-                      : `Còn có thể chọn thêm ${
-                          5 - selectedGenres.length
-                        } thể loại`}
+                      : `Đã chọn ${selectedGenres.length} thể loại`}
                   </p>
                 </>
               )}
