@@ -153,10 +153,7 @@ export function EditMangaModal({
     : [];
 
   const handleGenreSelect = (genre: Genre) => {
-    if (selectedGenres.length >= 5) {
-      toast.error("Chỉ được chọn tối đa 5 thể loại");
-      return;
-    }
+
     setSelectedGenres((prev) => [...prev, genre]);
     setGenreSearch("");
     setShowGenreDropdown(false);
@@ -304,7 +301,7 @@ export function EditMangaModal({
                         setShowGenreDropdown(true);
                       }}
                       onFocus={() => setShowGenreDropdown(true)}
-                      disabled={loading || selectedGenres.length >= 5}
+                      disabled={loading}
                       className="pl-10"
                     />
                   </div>
@@ -367,9 +364,7 @@ export function EditMangaModal({
                 <p className="text-xs text-muted-foreground">
                   {selectedGenres.length === 0
                     ? "Click để xem danh sách thể loại"
-                    : selectedGenres.length >= 5
-                    ? "Đã đạt giới hạn 5 thể loại"
-                    : `Đã chọn ${selectedGenres.length}/5 thể loại`}
+                    : `Đã chọn ${selectedGenres.length} thể loại`}
                 </p>
               </>
             )}
