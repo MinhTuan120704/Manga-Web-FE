@@ -2,8 +2,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Clock, ChevronRight, Eye } from "lucide-react";
+import { Clock, ChevronRight, Eye, Heart } from "lucide-react";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { userService } from "@/services/user.service";
+import { useState } from "react";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
 import type { Manga } from "@/types/manga";
@@ -21,6 +24,45 @@ export function RecentUpdates({
   loading = false,
 }: RecentUpdatesProps) {
   const navigate = useNavigate();
+  const [localFollowed, setLocalFollowed] = useState<Set<string>>(new Set());
+
+  const isLocallyFollowed = (mangaId: string) => localFollowed.has(mangaId);
+
+  const handleToggleFollow = async (
+    e: React.MouseEvent,
+    mangaId: string,
+    title?: string
+  ) => {
+    e.stopPropagation();
+    const currently = isLocallyFollowed(mangaId);
+    const newValue = !currently;
+
+    // optimistic
+    setLocalFollowed((prev) => {
+      const s = new Set(prev);
+      if (newValue) s.add(mangaId);
+      else s.delete(mangaId);
+      return s;
+    });
+
+    try {
+      if (newValue) await userService.followManga({ mangaId });
+      else await userService.unfollowManga(mangaId);
+      toast.success(
+        `${newValue ? "Đã theo dõi" : "Đã bỏ theo dõi"} ${title || "truyện"}`
+      );
+    } catch (err) {
+      // revert
+      setLocalFollowed((prev) => {
+        const s = new Set(prev);
+        if (!newValue) s.add(mangaId);
+        else s.delete(mangaId);
+        return s;
+      });
+      toast.error("Không thể thay đổi trạng thái theo dõi. Vui lòng thử lại.");
+      console.error("Failed to toggle follow:", err);
+    }
+  };
 
   // Helper function để lấy tên genre
   const getGenreName = (genres: Genre[] | string[]): string => {
@@ -65,7 +107,7 @@ export function RecentUpdates({
           subtitle="Chapter truyện mới nhất"
           showViewAll
           viewAllPath="/view-all"
-          viewAllParams={{ sortBy: "-updatedAt" }}
+          viewAllParams={{ sortBy: "updated" }}
         />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
           {Array.from({ length: 9 }).map((_, index) => (
@@ -154,6 +196,29 @@ export function RecentUpdates({
                           <Eye className="h-3 w-3" />
                         </Button>
                       )}
+                      <button
+                        onClick={(e) =>
+                          handleToggleFollow(e, manga._id, manga.title)
+                        }
+                        onMouseDown={(e) => e.stopPropagation()}
+                        className="flex items-center justify-center h-6 w-6 rounded text-muted-foreground hover:text-red-500 transition-colors"
+                        title={
+                          isLocallyFollowed(manga._id)
+                            ? "Đã theo dõi"
+                            : "Theo dõi"
+                        }
+                        aria-label={
+                          isLocallyFollowed(manga._id)
+                            ? "Bỏ theo dõi"
+                            : "Theo dõi"
+                        }
+                      >
+                        <Heart
+                          className={`h-4 w-4 ${
+                            isLocallyFollowed(manga._id) ? "text-red-500" : ""
+                          }`}
+                        />
+                      </button>
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>

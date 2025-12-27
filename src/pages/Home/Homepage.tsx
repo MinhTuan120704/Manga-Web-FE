@@ -9,6 +9,7 @@ import { ScrollToTop } from "@/components/common/ScrollToTop";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
 import { mangaService } from "@/services/manga.service";
+import { userService } from "@/services/user.service";
 import type { Manga } from "@/types/manga";
 import type { MangaListResponse } from "@/types/api";
 
@@ -126,6 +127,16 @@ export function Homepage() {
     setShowPreview(true);
   };
 
+  const handleToggleFollow = async (mangaId: string, follow: boolean) => {
+    try {
+      if (follow) await userService.followManga({ mangaId });
+      else await userService.unfollowManga(mangaId);
+    } catch (err) {
+      console.error("Failed to toggle follow:", err);
+      throw err;
+    }
+  };
+
   const handleClosePreview = () => {
     setShowPreview(false);
     setSelectedManga(null);
@@ -165,7 +176,7 @@ export function Homepage() {
               viewAllPath="/view-all"
               viewAllParams={{ sortBy: "newest" }}
             />
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
               {loadingNew
                 ? // Loading skeleton
                   Array.from({ length: 6 }).map((_, index) => (
@@ -181,6 +192,7 @@ export function Homepage() {
                       manga={manga}
                       size="sm"
                       onPreview={handlePreview}
+                      onToggleFollow={handleToggleFollow}
                     />
                   ))}
             </div>

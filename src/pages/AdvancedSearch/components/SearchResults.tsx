@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MangaCard } from "@/components/common/MangaCard";
+import { userService } from "@/services/user.service";
 import { PreviewPane } from "@/components/common/PreviewPane";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -54,6 +55,16 @@ export const SearchResults = ({
   const handlePreview = (manga: Manga) => {
     setSelectedManga(manga);
     setShowPreview(true);
+  };
+
+  const handleToggleFollow = async (mangaId: string, follow: boolean) => {
+    try {
+      if (follow) await userService.followManga({ mangaId });
+      else await userService.unfollowManga(mangaId);
+    } catch (err) {
+      console.error("Failed to toggle follow:", err);
+      throw err;
+    }
   };
 
   const handleClosePreview = () => {
@@ -136,7 +147,12 @@ export const SearchResults = ({
               onClick={() => handleMangaClick(manga, index)}
               className="cursor-pointer"
             >
-              <MangaCard manga={manga} size="sm" onPreview={handlePreview} />
+              <MangaCard
+                manga={manga}
+                size="sm"
+                onPreview={handlePreview}
+                onToggleFollow={handleToggleFollow}
+              />
             </div>
           ))}
         </div>

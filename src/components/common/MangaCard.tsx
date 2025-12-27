@@ -1,17 +1,21 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Star, BookOpen, Eye } from "lucide-react";
+import { Clock, Star, BookOpen, Eye, Heart } from "lucide-react";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { handleImageError, sanitizeImageUrl } from "@/utils/imageHelper";
 import type { Manga } from "@/types/manga";
 import type { Genre } from "@/types/genre";
+import { useEffect, useState } from "react";
 
 interface MangaCardProps {
   manga: Manga;
   showStats?: boolean;
   size?: "sm" | "md" | "lg";
   onPreview?: (manga: Manga) => void;
+  isFollowed?: boolean;
+  onToggleFollow?: (mangaId: string, follow: boolean) => Promise<void> | void;
 }
 
 export function MangaCard({
@@ -19,6 +23,8 @@ export function MangaCard({
   showStats = true,
   size = "md",
   onPreview,
+  isFollowed,
+  onToggleFollow,
 }: MangaCardProps) {
   const navigate = useNavigate();
 
@@ -66,6 +72,32 @@ export function MangaCard({
 
   const handleCardClick = () => {
     navigate(`/manga/${manga._id}`);
+  };
+
+  const [followed, setFollowed] = useState<boolean>(!!isFollowed);
+
+  useEffect(() => {
+    setFollowed(!!isFollowed);
+  }, [isFollowed]);
+
+  const handleToggleFollow = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newValue = !followed;
+    setFollowed(newValue);
+    if (onToggleFollow) {
+      try {
+        await onToggleFollow(manga._id, newValue);
+        // show success toast
+        toast.success(
+          `${newValue ? "Đã theo dõi" : "Đã bỏ theo dõi"} ${manga.title}`
+        );
+      } catch {
+        toast.error(
+          "Không thể thay đổi trạng thái theo dõi. Vui lòng thử lại."
+        );
+        setFollowed(!newValue);
+      }
+    }
   };
 
   return (
@@ -133,9 +165,21 @@ export function MangaCard({
 
       {showStats && (
         <CardFooter className="px-3 pt-0 flex justify-between items-center text-xs text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <BookOpen className="h-3 w-3" />
-            <span>{manga.viewCount || 0} Lượt xem</span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleToggleFollow}
+              onMouseDown={(e) => e.stopPropagation()}
+              className="flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground hover:text-red-500 transition-colors"
+              aria-label={followed ? "Bỏ theo dõi" : "Theo dõi"}
+              title={followed ? "Đã theo dõi" : "Theo dõi"}
+            >
+              <Heart className={`h-4 w-4 ${followed ? "text-red-500" : ""}`} />
+            </button>
+
+            <div className="flex items-center gap-1">
+              <BookOpen className="h-3 w-3" />
+              <span>{manga.viewCount || 0} Lượt xem</span>
+            </div>
           </div>
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3" />

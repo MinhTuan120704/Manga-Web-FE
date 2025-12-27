@@ -1,4 +1,5 @@
 import { MangaCard } from "@/components/common/MangaCard";
+import { userService } from "@/services/user.service";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Manga } from "@/types/manga";
@@ -14,6 +15,15 @@ export function PopularMangaGrid({
   onPreview,
   loading = false,
 }: PopularMangaGridProps) {
+  const handleToggleFollow = async (mangaId: string, follow: boolean) => {
+    try {
+      if (follow) await userService.followManga({ mangaId });
+      else await userService.unfollowManga(mangaId);
+    } catch (err) {
+      console.error("Failed to toggle follow:", err);
+      throw err;
+    }
+  };
   return (
     <div className="mb-8">
       <SectionHeader
@@ -24,7 +34,7 @@ export function PopularMangaGrid({
         viewAllParams={{ sortBy: "mostViewed" }}
       />
 
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
         {loading
           ? // Loading skeleton
             Array.from({ length: 12 }).map((_, index) => (
@@ -42,7 +52,12 @@ export function PopularMangaGrid({
                   </div>
                 </div>
                 <div className="flex h-full">
-                  <MangaCard manga={manga} size="sm" onPreview={onPreview} />
+                  <MangaCard
+                    manga={manga}
+                    size="sm"
+                    onPreview={onPreview}
+                    onToggleFollow={handleToggleFollow}
+                  />
                 </div>
               </div>
             ))}

@@ -269,7 +269,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
                 <Heart
                   className={`h-4 w-4 mr-2 ${isFollowing ? "fill-current" : ""}`}
                 />
-                {isFollowing ? "Đã theo dõi" : "Thêm vào thư viện"}
+                {isFollowing ? "Đã theo dõi" : "Theo dõi"}
               </Button>
             </div>
           </div>
