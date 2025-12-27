@@ -157,8 +157,13 @@ export const MangaDetail = () => {
 
   const genres = getGenreNames(manga?.genres);
 
+  const breadcrumbs = [
+    { label: "Trang chủ", url: "/" },
+    { label: manga?.title || "Chi tiết" },
+  ];
+
   return (
-    <MainLayout>
+    <MainLayout breadcrumbs={breadcrumbs}>
       <div className="container mx-auto px-4 py-8">
         {/* Manga Info Section */}
         <div className="mb-8">
