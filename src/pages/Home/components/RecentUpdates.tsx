@@ -67,7 +67,7 @@ export function RecentUpdates({
           viewAllPath="/view-all"
           viewAllParams={{ sortBy: "-updatedAt" }}
         />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
           {Array.from({ length: 9 }).map((_, index) => (
             <Card key={index}>
               <CardContent className="p-4">
@@ -97,7 +97,7 @@ export function RecentUpdates({
         viewAllParams={{ sortBy: "updated" }}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
         {updates.map((manga) => (
           <Card
             key={manga._id}
