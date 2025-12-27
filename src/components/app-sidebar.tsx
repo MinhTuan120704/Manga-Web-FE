@@ -19,16 +19,12 @@ import {
   FolderOpen,
   Plus,
   MessageSquare,
-  LogOut,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { authService } from "@/services/auth.service";
-import { ConfirmationModal } from "@/components/common/ConfirmationModal";
-import { toast } from "sonner";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -172,14 +168,11 @@ const adminNavigation = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [currentUser, setCurrentUser] = useState(authService.getStoredUser());
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [navData, setNavData] = useState(baseNavigation);
 
   useEffect(() => {
     const checkAuth = () => {
       const user = authService.getStoredUser();
-      setCurrentUser(user);
 
       // Build navigation based on user role
       const navigation = [...baseNavigation];
@@ -207,19 +200,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       window.removeEventListener("storage", checkAuth);
     };
   }, []);
-
-  const handleLogout = async () => {
-    try {
-      await authService.logout();
-      toast.success("Đăng xuất thành công");
-      setCurrentUser(null);
-      setNavData(baseNavigation);
-      window.location.href = "/login";
-    } catch (error) {
-      console.error("Logout failed:", error);
-      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
-    }
-  };
 
   return (
     <Sidebar {...props}>
@@ -302,38 +282,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         })}
       </SidebarContent>
 
-      {currentUser && (
-        <SidebarFooter className="p-2">
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    onClick={() => setShowLogoutConfirm(true)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span>Đăng xuất</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarFooter>
-      )}
-
       <SidebarRail />
 
-      <ConfirmationModal
-        isOpen={showLogoutConfirm}
-        onClose={() => setShowLogoutConfirm(false)}
-        onConfirm={handleLogout}
-        title="Xác nhận đăng xuất"
-        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?"
-        confirmText="Đăng xuất"
-        cancelText="Hủy bỏ"
-        variant="danger"
-      />
     </Sidebar>
   );
 }

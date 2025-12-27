@@ -11,14 +11,9 @@ import {
   Clock,
   FileText,
   Settings,
-  LogOut,
   User,
   Shield,
 } from "lucide-react";
-import { useState } from "react";
-import { authService } from "@/services/auth.service";
-import { ConfirmationModal } from "@/components/common/ConfirmationModal";
-import { toast } from "sonner";
 import {
   Sidebar,
   SidebarContent,
@@ -127,19 +122,6 @@ const data = {
 };
 
 export default function AdminSidebar({ ...props }: AdminSidebarProps) {
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-
-  const handleLogout = async () => {
-    try {
-      await authService.logout();
-      toast.success("Đăng xuất thành công");
-      window.location.href = "/login";
-    } catch (error) {
-      console.error("Logout failed:", error);
-      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
-    }
-  };
-
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -237,15 +219,6 @@ export default function AdminSidebar({ ...props }: AdminSidebarProps) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => setShowLogoutConfirm(true)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Đăng xuất</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -253,16 +226,7 @@ export default function AdminSidebar({ ...props }: AdminSidebarProps) {
 
       <SidebarRail />
 
-      <ConfirmationModal
-        isOpen={showLogoutConfirm}
-        onClose={() => setShowLogoutConfirm(false)}
-        onConfirm={handleLogout}
-        title="Xác nhận đăng xuất"
-        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản quản trị không?"
-        confirmText="Đăng xuất"
-        cancelText="Hủy bỏ"
-        variant="danger"
-      />
+      {/* Confirmation modal removed from sidebar; logout handled in header */}
     </Sidebar>
   );
 }
