@@ -1,11 +1,8 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
-  Home,
-  Heart,
   Search,
   BookOpen,
-  Library,
   Sparkles,
   User,
   Settings,
@@ -19,15 +16,17 @@ import {
   FolderOpen,
   Plus,
   MessageSquare,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { authService } from "@/services/auth.service";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -39,28 +38,12 @@ import { Separator } from "@/components/ui/separator";
 // Base navigation - available to all users
 const baseNavigation = [
   {
-    title: "Trang chủ",
-    url: "/",
-    icon: Home,
+    title: "Trang cá nhân",
+    url: "/user/profile",
+    icon: User,
     isTopLevel: true,
   },
-  {
-    title: "Theo dõi",
-    url: "#",
-    icon: Heart,
-    items: [
-      {
-        title: "Truyện đang theo dõi",
-        url: "/user/profile?tab=favorites",
-        icon: Library,
-      },
-      {
-        title: "Lịch sử đọc",
-        url: "/user/profile?tab=history",
-        icon: BookOpen,
-      },
-    ],
-  },
+  // 'Theo dõi' removed — favorites/history moved into user profile tabs
   {
     title: "Truyện",
     url: "#",
@@ -80,24 +63,8 @@ const baseNavigation = [
   },
 ];
 
-// User-specific navigation
-const userNavigation = {
-  title: "Cá nhân",
-  url: "#",
-  icon: User,
-  items: [
-    {
-      title: "Trang cá nhân",
-      url: "/user/profile",
-      icon: User,
-    },
-    {
-      title: "Cài đặt",
-      url: "/user/settings",
-      icon: Settings,
-    },
-  ],
-};
+// User-specific navigation (kept for reference)
+// Note: profile links live inside `baseNavigation` to keep group ordering consistent
 
 // Uploader-specific navigation
 const uploaderNavigation = {
@@ -169,6 +136,16 @@ const adminNavigation = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [navData, setNavData] = useState(baseNavigation);
+  const location = useLocation();
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+
+  const toggleGroup = (key: string) =>
+    setOpenGroups((s) => ({ ...s, [key]: !s[key] }));
+  const isActive = (url?: string) =>
+    url
+      ? location.pathname === url ||
+        location.pathname.startsWith(url.split("?")[0])
+      : false;
 
   useEffect(() => {
     const checkAuth = () => {
@@ -178,9 +155,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       const navigation = [...baseNavigation];
 
       if (user) {
-        // Add user navigation for logged-in users
-        navigation.push(userNavigation);
-
         // Add role-specific navigation
         if (user.role === "admin") {
           navigation.push(adminNavigation);
@@ -232,7 +206,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarMenuButton asChild>
                           <Link
                             to={item.url}
-                            className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1 font-medium text-base text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+                            className={
+                              `flex items-center gap-3 px-4 py-3 rounded-lg mb-1 font-medium text-base transition-colors ` +
+                              (isActive(item.url)
+                                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground")
+                            }
                           >
                             <item.icon className="h-5 w-5" />
                             <span>{item.title}</span>
@@ -247,30 +226,58 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             );
           }
 
+          const open =
+            openGroups[item.title] ??
+            item.items?.some((si) => isActive(si.url));
+
           return (
             <React.Fragment key={item.title}>
               <SidebarGroup>
-                <SidebarGroupLabel className="flex items-center gap-2 px-2 mb-1 text-xs font-medium text-sidebar-foreground/60">
-                  <item.icon className="h-4 w-4" />
-                  {item.title}
-                </SidebarGroupLabel>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {item.items?.map((subItem) => (
-                      <SidebarMenuItem key={subItem.title}>
-                        <SidebarMenuButton asChild>
-                          <Link
-                            to={subItem.url}
-                            className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-                          >
-                            <subItem.icon className="h-4 w-4" />
-                            <span className="text-sm">{subItem.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
-                  </SidebarMenu>
-                </SidebarGroupContent>
+                <div className="flex items-center justify-between px-2 mb-1">
+                  <button
+                    onClick={() => toggleGroup(item.title)}
+                    className="flex items-center gap-2 text-xs font-medium text-sidebar-foreground/60 px-1 py-1"
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.title}</span>
+                  </button>
+                  <button
+                    onClick={() => toggleGroup(item.title)}
+                    aria-label="Toggle group"
+                    className="p-1"
+                  >
+                    {open ? (
+                      <ChevronDown className="h-4 w-4 text-sidebar-foreground/60" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4 text-sidebar-foreground/60" />
+                    )}
+                  </button>
+                </div>
+
+                {open && (
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {item.items?.map((subItem) => (
+                        <SidebarMenuItem key={subItem.title}>
+                          <SidebarMenuButton asChild>
+                            <Link
+                              to={subItem.url}
+                              className={
+                                `flex items-center gap-3 px-4 py-3 rounded-lg mb-1 text-sm transition-colors ` +
+                                (isActive(subItem.url)
+                                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground")
+                              }
+                            >
+                              <subItem.icon className="h-4 w-4" />
+                              <span className="text-sm">{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                )}
               </SidebarGroup>
 
               {index < navData.length - 1 &&
@@ -283,7 +290,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarRail />
-
+      <SidebarFooter className="p-2">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/user/settings"
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1"
+                  >
+                    <Settings className="h-4 w-4" />
+                    <span>Cài đặt</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarFooter>
     </Sidebar>
   );
 }
