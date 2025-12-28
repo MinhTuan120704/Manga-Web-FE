@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Card,
   CardContent,
@@ -24,6 +25,7 @@ export function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [remember, setRemember] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +50,20 @@ export function Login() {
           navigate("/uploader", { replace: true });
         } else {
           navigate("/", { replace: true });
+        }
+
+        // If user didn't choose Remember, move stored credentials to sessionStorage
+        if (!remember) {
+          const token = localStorage.getItem("accessToken");
+          const userStr = localStorage.getItem("user");
+          if (token) {
+            sessionStorage.setItem("accessToken", token);
+            localStorage.removeItem("accessToken");
+          }
+          if (userStr) {
+            sessionStorage.setItem("user", userStr);
+            localStorage.removeItem("user");
+          }
         }
 
         // Delay ngắn để đảm bảo navigation hoàn tất trước khi reload
@@ -159,7 +175,15 @@ export function Login() {
                   )}
                 </Button>
               </div>
-              <div className="text-right">
+              <div className="flex items-center justify-between">
+                <label className="inline-flex items-center gap-2 text-sm">
+                  <Checkbox
+                    checked={remember}
+                    onCheckedChange={(v) => setRemember(v === true)}
+                  />
+                  <span className="text-sm">Ghi nhớ tài khoản</span>
+                </label>
+
                 <Link
                   to="/forgot-password"
                   className="text-sm text-primary hover:underline"
