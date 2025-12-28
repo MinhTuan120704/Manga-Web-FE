@@ -39,6 +39,8 @@ export const authService = {
   logout: () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("user");
   },
 
   /**
@@ -52,14 +54,16 @@ export const authService = {
    * Kiểm tra xem user đã đăng nhập chưa
    */
   isAuthenticated: (): boolean => {
-    return !!localStorage.getItem("accessToken");
+    return !!(
+      localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken")
+    );
   },
 
   /**
    * Lấy thông tin user từ localStorage
    */
   getStoredUser: (): LoginResponse["user"] | null => {
-    const userStr = localStorage.getItem("user");
+    const userStr = localStorage.getItem("user") || sessionStorage.getItem("user");
     return userStr ? JSON.parse(userStr) : null;
   },
 

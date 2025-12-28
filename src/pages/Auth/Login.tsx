@@ -25,7 +25,7 @@ export function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [remember, setRemember] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +50,20 @@ export function Login() {
           navigate("/uploader", { replace: true });
         } else {
           navigate("/", { replace: true });
+        }
+
+        // If user didn't choose Remember, move stored credentials to sessionStorage
+        if (!remember) {
+          const token = localStorage.getItem("accessToken");
+          const userStr = localStorage.getItem("user");
+          if (token) {
+            sessionStorage.setItem("accessToken", token);
+            localStorage.removeItem("accessToken");
+          }
+          if (userStr) {
+            sessionStorage.setItem("user", userStr);
+            localStorage.removeItem("user");
+          }
         }
 
         // Delay ngắn để đảm bảo navigation hoàn tất trước khi reload
@@ -162,21 +176,14 @@ export function Login() {
                 </Button>
               </div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
+                <label className="inline-flex items-center gap-2 text-sm">
                   <Checkbox
-                    id="rememberMe"
-                    checked={rememberMe}
-                    onCheckedChange={(checked) => setRememberMe(checked === true)}
-                    disabled={loading}
-                    className="border-2 border-muted-foreground/50 dark:border-muted-foreground/70 data-[state=checked]:border-primary"
+                    checked={remember}
+                    onCheckedChange={(v) => setRemember(v === true)}
                   />
-                  <Label
-                    htmlFor="rememberMe"
-                    className="text-sm font-normal cursor-pointer"
-                  >
-                    Ghi nhớ tài khoản
-                  </Label>
-                </div>
+                  <span className="text-sm">Ghi nhớ tài khoản</span>
+                </label>
+
                 <Link
                   to="/forgot-password"
                   className="text-sm text-primary hover:underline"

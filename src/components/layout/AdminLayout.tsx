@@ -4,14 +4,6 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
 import { ConfirmationModal } from "@/components/common/ConfirmationModal";
 import { toast } from "sonner";
+import { PageBreadcrumbs } from "./PageBreadcrumbs";
 
 const AdminSidebar = lazy(() => import("@/components/app-sidebar-admin"));
 const LoadingSpinner = lazy(() => import("@/components/common/LoadingSpinner"));
@@ -64,35 +57,10 @@ export const AdminLayout = ({
       <Suspense fallback={<LoadingSpinner />}>
         <AdminSidebar />
       </Suspense>
-      <SidebarInset>
+      <SidebarInset className="flex-1 min-w-0 flex flex-col">
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 sticky top-0 bg-background z-10">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
-
-          {/* Breadcrumbs */}
-          {breadcrumbs.length > 0 && (
-            <Breadcrumb>
-              <BreadcrumbList>
-                {breadcrumbs.map((crumb, index) => (
-                  <div key={index} className="flex items-center">
-                    {index > 0 && <BreadcrumbSeparator />}
-                    <BreadcrumbItem>
-                      {crumb.href ? (
-                        <BreadcrumbLink
-                          onClick={() => navigate(crumb.href!)}
-                          className="cursor-pointer"
-                        >
-                          {crumb.label}
-                        </BreadcrumbLink>
-                      ) : (
-                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                      )}
-                    </BreadcrumbItem>
-                  </div>
-                ))}
-              </BreadcrumbList>
-            </Breadcrumb>
-          )}
 
           <div className="flex-1" />
 
@@ -141,6 +109,7 @@ export const AdminLayout = ({
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
+        <PageBreadcrumbs breadcrumbs={breadcrumbs} />
 
         <main className="flex-1 overflow-auto">{children}</main>
       </SidebarInset>

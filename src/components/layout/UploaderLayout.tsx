@@ -4,15 +4,8 @@ import {
   SidebarTrigger,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
+import { PageBreadcrumbs } from "@/components/layout/PageBreadcrumbs";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -121,29 +114,7 @@ export function UploaderLayout({
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
 
-            {/* Breadcrumbs */}
-            {breadcrumbs.length > 0 && (
-              <Breadcrumb>
-                <BreadcrumbList>
-                  {breadcrumbs.map((crumb, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <BreadcrumbItem>
-                        {crumb.href ? (
-                          <BreadcrumbLink href={crumb.href}>
-                            {crumb.label}
-                          </BreadcrumbLink>
-                        ) : (
-                          <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                        )}
-                      </BreadcrumbItem>
-                      {index < breadcrumbs.length - 1 && (
-                        <BreadcrumbSeparator />
-                      )}
-                    </div>
-                  ))}
-                </BreadcrumbList>
-              </Breadcrumb>
-            )}
+            {/* Breadcrumbs moved below header to avoid layout overflow */}
 
             {/* Right side controls */}
             <div className="ml-auto flex items-center gap-2">
@@ -236,8 +207,10 @@ export function UploaderLayout({
             </div>
           </header>
 
-          <main className="flex-1 overflow-auto">
-            <div className="p-4">{children}</div>
+          <PageBreadcrumbs breadcrumbs={breadcrumbs} />
+
+          <main className="flex-1 overflow-auto overflow-x-hidden">
+            <div className="p-4 w-full max-w-full min-w-0">{children}</div>
           </main>
         </SidebarInset>
       </div>

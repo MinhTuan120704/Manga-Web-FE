@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { mangaService } from "@/services/manga.service";
 import { MangaCard } from "@/components/common/MangaCard";
+import { userService } from "@/services/user.service";
 import type { Manga } from "@/types/manga";
 import type { ReadingHistoryItem } from "@/types/user";
 
@@ -68,9 +69,23 @@ export const MangaReadingHistory = ({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-          {mangas?.map(
-            (manga) => manga?._id && <MangaCard key={manga._id} manga={manga} />
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+          {mangas?.map((manga) =>
+            manga?._id ? (
+              <MangaCard
+                key={manga._id}
+                manga={manga}
+                onToggleFollow={async (mangaId, follow) => {
+                  try {
+                    if (follow) await userService.followManga({ mangaId });
+                    else await userService.unfollowManga(mangaId);
+                  } catch (err) {
+                    console.error("Failed to toggle follow:", err);
+                    throw err;
+                  }
+                }}
+              />
+            ) : null
           )}
         </div>
       )}

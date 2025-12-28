@@ -2,6 +2,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { mangaService } from "@/services/manga.service";
+import { userService } from "@/services/user.service";
 import { MangaCard } from "@/components/common/MangaCard";
 import { PreviewPane } from "@/components/common/PreviewPane";
 import { Button } from "@/components/ui/button";
@@ -125,6 +126,19 @@ export const ViewAll = () => {
     setShowPreview(true);
   };
 
+  const handleToggleFollow = async (mangaId: string, follow: boolean) => {
+    try {
+      if (follow) {
+        await userService.followManga({ mangaId });
+      } else {
+        await userService.unfollowManga(mangaId);
+      }
+    } catch (error) {
+      console.error("Failed to toggle follow:", error);
+      throw error;
+    }
+  };
+
   const handleClosePreview = () => {
     setShowPreview(false);
     setSelectedManga(null);
@@ -211,13 +225,14 @@ export const ViewAll = () => {
               </div>
 
               {/* Results Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
                 {mangas.map((manga) => (
                   <MangaCard
                     key={manga._id}
                     manga={manga}
                     size="sm"
                     onPreview={handlePreview}
+                    onToggleFollow={handleToggleFollow}
                   />
                 ))}
               </div>
