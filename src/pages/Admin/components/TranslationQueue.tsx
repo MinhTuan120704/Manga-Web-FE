@@ -10,7 +10,21 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const translationQueue = [
+interface TranslationItem {
+  id: number;
+  mangaTitle: string;
+  chapter: string;
+  language: string;
+  translator: string;
+  progress: number;
+  status: string;
+  totalChapters?: number;
+  translatedChapters?: number;
+  isHot?: boolean;
+  hasUpcomingAnime?: boolean;
+}
+
+const translationQueue: TranslationItem[] = [
   {
     id: 1,
     mangaTitle: "Jujutsu Kaisen",
@@ -19,6 +33,10 @@ const translationQueue = [
     translator: "Carlos Rodriguez",
     progress: 85,
     status: "In Progress",
+    totalChapters: 260,
+    translatedChapters: 220,
+    isHot: true,
+    hasUpcomingAnime: false,
   },
   {
     id: 2,
@@ -28,6 +46,10 @@ const translationQueue = [
     translator: "Marie Dubois",
     progress: 100,
     status: "Review",
+    totalChapters: 168,
+    translatedChapters: 168,
+    isHot: true,
+    hasUpcomingAnime: false,
   },
   {
     id: 3,
@@ -37,6 +59,10 @@ const translationQueue = [
     translator: "Klaus Mueller",
     progress: 45,
     status: "In Progress",
+    totalChapters: 430,
+    translatedChapters: 190,
+    isHot: true,
+    hasUpcomingAnime: true,
   },
 ];
 
@@ -103,10 +129,25 @@ export default function TranslationQueue() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [filterLanguage, setFilterLanguage] = useState("All");
+  const [progressFilterType, setProgressFilterType] = useState<
+    "all" | "missing" | "percent"
+  >("all");
+  const [minMissingChapters, setMinMissingChapters] = useState<number>(1);
+  const [maxTranslatedPercent, setMaxTranslatedPercent] = useState<number>(80);
+  const [filterHot, setFilterHot] = useState<boolean>(false);
+  const [filterUpcoming, setFilterUpcoming] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
   const filteredQueue = translationQueue.filter((item) => {
+    const total = item.totalChapters ?? 0;
+    const translated = item.translatedChapters ?? 0;
+    const missing = Math.max(0, total - translated);
+    const percentTranslated =
+      total > 0 ? Math.round((translated / total) * 100) : item.progress ?? 0;
+    const isHotItem = Boolean(item.isHot);
+    const hasUpcoming = Boolean(item.hasUpcomingAnime);
+
     const matchesSearch =
       item.mangaTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.chapter.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -115,7 +156,27 @@ export default function TranslationQueue() {
       filterStatus === "All" || item.status === filterStatus;
     const matchesLanguage =
       filterLanguage === "All" || item.language === filterLanguage;
-    return matchesSearch && matchesStatus && matchesLanguage;
+
+    // Progress filter: by missing chapters or by percent translated
+    let matchesProgress = true;
+    if (progressFilterType === "missing") {
+      matchesProgress = missing >= minMissingChapters;
+    } else if (progressFilterType === "percent") {
+      matchesProgress = percentTranslated <= maxTranslatedPercent;
+    }
+
+    // Hot / Upcoming filters
+    const matchesHot = !filterHot || isHotItem;
+    const matchesUpcoming = !filterUpcoming || hasUpcoming;
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesLanguage &&
+      matchesProgress &&
+      matchesHot &&
+      matchesUpcoming
+    );
   });
 
   // Pagination logic
@@ -203,69 +264,198 @@ export default function TranslationQueue() {
             <option value="Vietnamese">Tiếng Việt</option>
           </select>
         </div>
+        {/* Progress & Priority Filters */}
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-muted-foreground">Tiến độ:</label>
+          <select
+            value={progressFilterType}
+            onChange={(e) => {
+              setProgressFilterType(
+                e.target.value as "all" | "missing" | "percent"
+              );
+              setCurrentPage(1);
+            }}
+            className="px-3 py-2 rounded-lg border border-border bg-card text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">Tất cả</option>
+            <option value="missing">Theo số chương thiếu (&gt;=)</option>
+            <option value="percent">Theo % đã dịch (&lt;=)</option>
+          </select>
+
+          {progressFilterType === "missing" && (
+            <input
+              type="number"
+              min={1}
+              value={minMissingChapters}
+              onChange={(e) => {
+                setMinMissingChapters(Number(e.target.value || 0));
+                setCurrentPage(1);
+              }}
+              className="w-20 px-3 py-2 rounded-lg border border-border bg-card text-card-foreground"
+            />
+          )}
+
+          {progressFilterType === "percent" && (
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={maxTranslatedPercent}
+              onChange={(e) => {
+                setMaxTranslatedPercent(Number(e.target.value || 0));
+                setCurrentPage(1);
+              }}
+              className="w-20 px-3 py-2 rounded-lg border border-border bg-card text-card-foreground"
+            />
+          )}
+        </div>
+
+        {/* Hot / Upcoming toggles */}
+        <div className="flex items-center gap-3">
+          <label className="inline-flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={filterHot}
+              onChange={(e) => {
+                setFilterHot(e.target.checked);
+                setCurrentPage(1);
+              }}
+              className="rounded"
+            />
+            <span className="text-muted-foreground">Hot</span>
+          </label>
+          <label className="inline-flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={filterUpcoming}
+              onChange={(e) => {
+                setFilterUpcoming(e.target.checked);
+                setCurrentPage(1);
+              }}
+              className="rounded"
+            />
+            <span className="text-muted-foreground">Sắp có anime</span>
+          </label>
+        </div>
       </div>
 
       <div className="space-y-4">
         {paginatedQueue.length > 0 ? (
-          paginatedQueue.map((item) => (
-            <div
-              key={item.id}
-              className="bg-card border border-border rounded-lg p-6 hover:border-primary transition"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-card-foreground mb-1">
-                    {item.mangaTitle} - Chương {item.chapter}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Dịch giả:{" "}
-                    <span className="font-medium text-card-foreground">
-                      {item.translator}
-                    </span>
-                  </p>
+          paginatedQueue.map((item) => {
+            const total = item.totalChapters ?? 0;
+            const translated = item.translatedChapters ?? 0;
+            const missing = Math.max(0, total - translated);
+            const percentTranslated =
+              total > 0
+                ? Math.round((translated / total) * 100)
+                : item.progress || 0;
+            const isHotItem = Boolean(item.isHot);
+            const hasUpcoming = Boolean(item.hasUpcomingAnime);
+            const urgent =
+              missing >= 5 ||
+              (isHotItem && missing > 0) ||
+              (hasUpcoming && missing > 0);
+
+            return (
+              <div
+                key={item.id}
+                className="bg-card border border-border rounded-lg p-6 hover:border-primary transition"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-card-foreground mb-1 flex items-center gap-2">
+                      <span>
+                        {item.mangaTitle} - Chương {item.chapter}
+                      </span>
+                      {urgent && (
+                        <span className="ml-2 px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded">
+                          Ưu tiên
+                        </span>
+                      )}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Dịch giả:{" "}
+                      <span className="font-medium text-card-foreground">
+                        {item.translator}
+                      </span>
+                    </p>
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-sm font-medium text-card-foreground">
+                        {getLanguageInVietnamese(item.language)}
+                      </span>
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full font-medium ${
+                          item.status === "In Progress"
+                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                            : item.status === "Review"
+                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                            : item.status === "Pending"
+                            ? "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                            : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                        }`}
+                      >
+                        {getStatusInVietnamese(item.status)}
+                      </span>
+                    </div>
+
+                    {/* Missing / Percent summary */}
+                    <div className="text-sm text-muted-foreground">
+                      {total > 0 ? (
+                        <>
+                          Thiếu:{" "}
+                          <span className="font-medium text-card-foreground">
+                            {missing}
+                          </span>{" "}
+                          chương • Đã dịch:{" "}
+                          <span className="font-medium text-card-foreground">
+                            {percentTranslated}%
+                          </span>
+                          {isHotItem && (
+                            <span className="ml-3 text-xs text-yellow-400">
+                              • Hot
+                            </span>
+                          )}
+                          {hasUpcoming && (
+                            <span className="ml-2 text-xs text-blue-400">
+                              • Sắp có anime
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          Đã dịch:{" "}
+                          <span className="font-medium text-card-foreground">
+                            {item.progress}%
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-card-foreground">
-                      {getLanguageInVietnamese(item.language)}
-                    </span>
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full font-medium ${
-                        item.status === "In Progress"
-                          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-                          : item.status === "Review"
-                          ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                          : item.status === "Pending"
-                          ? "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
-                          : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                      }`}
-                    >
-                      {getStatusInVietnamese(item.status)}
-                    </span>
+                    {getStatusIcon(item.status)}
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  {getStatusIcon(item.status)}
-                </div>
-              </div>
 
-              {/* Progress Bar */}
-              <div className="w-full">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs text-muted-foreground">
-                    Hoàn thành
-                  </span>
-                  <span className="text-xs font-medium text-card-foreground">
-                    {item.progress}%
-                  </span>
-                </div>
-                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary transition-all"
-                    style={{ width: `${item.progress}%` }}
-                  />
+                {/* Progress Bar */}
+                <div className="w-full">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs text-muted-foreground">
+                      Hoàn thành
+                    </span>
+                    <span className="text-xs font-medium text-card-foreground">
+                      {percentTranslated}%
+                    </span>
+                  </div>
+                  <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary transition-all"
+                      style={{ width: `${percentTranslated}%` }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="bg-card border border-border rounded-lg p-8 text-center">
             <Clock className="mx-auto mb-4 text-muted-foreground" size={40} />
