@@ -51,7 +51,7 @@ export const UserLayout = () => {
       />
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header with Search */}
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <header className="relative flex h-16 shrink-0 items-center gap-2 border-b px-4 z-40">
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="-ml-1 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground h-8 w-8"
