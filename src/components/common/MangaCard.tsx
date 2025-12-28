@@ -102,7 +102,7 @@ export function MangaCard({
 
   return (
     <Card
-      className="w-full min-w-[200px] sm:min-w-[220px] md:min-w-[260px] overflow-hidden hover:shadow-lg transition-shadow duration-300 group flex flex-col cursor-pointer"
+      className="w-full min-w-[200px] sm:min-w-[220px] md:min-w-[260px] h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 group flex flex-col cursor-pointer"
       onClick={handleCardClick}
     >
       <div className="relative">

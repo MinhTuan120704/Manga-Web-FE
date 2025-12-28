@@ -2,6 +2,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { FeaturedCarousel } from "@/pages/Home/components/FeaturedCarousel";
 import { RecentUpdates } from "@/pages/Home/components/RecentUpdates";
 import { PopularMangaGrid } from "@/pages/Home/components/PopularMangaGrid";
+import { FilterMangaCarousel } from "@/pages/Home/components/FilterMangaCarousel";
 import { MangaCard } from "@/components/common/MangaCard";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { PreviewPane } from "@/components/common/PreviewPane";
@@ -152,6 +153,9 @@ export function Homepage() {
             onPreview={handlePreview}
             loading={loadingFeatured}
           />
+
+          {/* Filter carousel (genres/status + horizontal sliding cards) */}
+          <FilterMangaCarousel />
 
           {/* Recent Updates */}
           <RecentUpdates
