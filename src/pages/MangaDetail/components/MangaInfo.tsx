@@ -114,42 +114,49 @@ export const MangaInfo = ({
           />
         </Card>
 
-        {/* Action Buttons */}
-        <div className="mt-4 space-y-2">
+        {/* Action Buttons: primary start button + outline icon buttons */}
+        <div className="mt-4 flex items-center gap-2">
           <Button
-            className="w-full"
             size="lg"
             onClick={onStartReading}
             disabled={chaptersCount === 0}
+            className="flex-1"
           >
             <BookOpen className="mr-2 h-5 w-5" />
             {chaptersCount > 0 ? "Bắt đầu đọc" : "Chưa có chapter"}
           </Button>
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant={isFollowing ? "default" : "outline"}
-              onClick={onFollowToggle}
-            >
-              <Heart
-                className={`mr-2 h-4 w-4 ${isFollowing ? "fill-current" : ""}`}
-              />
-              {isFollowing ? "Đang theo dõi" : "Theo dõi"}
-            </Button>
-            <Button variant="outline" onClick={onShare}>
-              <Share2 className="mr-2 h-4 w-4" />
-              Chia sẻ
-            </Button>
+
+          <Button
+            variant={isFollowing ? "default" : "outline"}
+            size="sm"
+            onClick={onFollowToggle}
+            className="h-10 w-10 p-0 flex items-center justify-center"
+            aria-label={isFollowing ? "Bỏ theo dõi" : "Theo dõi"}
+          >
+            <Heart className="h-5 w-5" />
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onShare}
+            className="h-10 w-10 p-0 flex items-center justify-center"
+            aria-label="Chia sẻ"
+          >
+            <Share2 className="h-5 w-5" />
+          </Button>
+
           {onReport && (
             <Button
               variant="outline"
-              className="w-full text-destructive hover:text-destructive"
+              size="sm"
               onClick={onReport}
+              className="h-10 w-10 p-0 flex items-center justify-center text-destructive"
+              aria-label="Báo cáo"
             >
-              <Flag className="mr-2 h-4 w-4" />
-              Báo cáo vi phạm
+              <Flag className="h-5 w-5" />
             </Button>
           )}
-          </div>
         </div>
       </div>
 
@@ -196,13 +203,37 @@ export const MangaInfo = ({
               <Calendar className="h-4 w-4" />
               <span>{formatDate(createdAt)}</span>
             </div>
+          </div>
 
-            {averageRating !== undefined && (
-              <div className="flex items-center gap-1">
-                <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                <span>{averageRating.toFixed(1)}</span>
-              </div>
-            )}
+          {/* Inline stats (icon + number) like metadata above */}
+          <div className="mt-3 flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Eye className="h-4 w-4 text-primary" />
+              <span className="font-semibold text-foreground">
+                {viewCount?.toLocaleString() || 0}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Heart className="h-4 w-4 text-red-500" />
+              <span className="font-semibold text-foreground">
+                {followedCount?.toLocaleString() || 0}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Star className="h-4 w-4 text-yellow-400 fill-current" />
+              <span className="font-semibold text-foreground">
+                {averageRating?.toFixed(1) || "N/A"}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4 text-blue-500" />
+              <span className="font-semibold text-foreground">
+                {chaptersCount}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -237,68 +268,30 @@ export const MangaInfo = ({
                 >
                   {description}
                 </p>
-              {description && description.length > 200 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-2 p-0 h-auto font-semibold"
-                  onClick={() => setShowFullDescription(!showFullDescription)}
-                >
-                  {showFullDescription ? (
-                    <>
-                      Thu gọn <ChevronUp className="ml-1 h-4 w-4" />
-                    </>
-                  ) : (
-                    <>
-                      Xem thêm <ChevronDown className="ml-1 h-4 w-4" />
-                    </>
-                  )}
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+                {description && description.length > 200 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-2 p-0 h-auto font-semibold"
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                  >
+                    {showFullDescription ? (
+                      <>
+                        Thu gọn <ChevronUp className="ml-1 h-4 w-4" />
+                      </>
+                    ) : (
+                      <>
+                        Xem thêm <ChevronDown className="ml-1 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
           </div>
         )}
 
-        {/* Statistics Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <Eye className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold">
-                {viewCount?.toLocaleString() || 0}
-              </div>
-              <div className="text-xs text-muted-foreground">Lượt xem</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <Heart className="h-8 w-8 mx-auto mb-2 text-red-500" />
-              <div className="text-2xl font-bold">
-                {followedCount?.toLocaleString() || 0}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Người theo dõi
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <Star className="h-8 w-8 mx-auto mb-2 text-yellow-400 fill-current" />
-              <div className="text-2xl font-bold">
-                {averageRating?.toFixed(1) || "N/A"}
-              </div>
-              <div className="text-xs text-muted-foreground">Đánh giá</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <BookOpen className="h-8 w-8 mx-auto mb-2 text-blue-500" />
-              <div className="text-2xl font-bold">{chaptersCount}</div>
-              <div className="text-xs text-muted-foreground">Chapter</div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Duplicate stats removed — kept the primary stats block above. */}
       </div>
     </div>
   );

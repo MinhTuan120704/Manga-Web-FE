@@ -1,13 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { PageBreadcrumbs } from "@/components/layout/PageBreadcrumbs";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -126,8 +119,9 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
     }
   };
 
-  // Lấy chữ cái đầu của username cho avatar fallback
-  const getInitials = (name: string) => {
+  // Lấy chữ cái đầu của username cho avatar fallback (guard nếu name undefined)
+  const getInitials = (name?: string) => {
+    if (!name || typeof name !== "string" || name.length === 0) return "";
     return name.charAt(0).toUpperCase();
   };
 
@@ -159,31 +153,11 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
     <div className="flex h-screen w-full overflow-hidden">
       <AppSidebar />
       <SidebarInset className="flex-1 min-w-0 flex flex-col">
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <header className="relative sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-background">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
 
-          {/* Breadcrumbs */}
-          {breadcrumbs.length > 0 && (
-            <Breadcrumb>
-              <BreadcrumbList>
-                {breadcrumbs.map((crumb, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <BreadcrumbItem>
-                      {crumb.href ? (
-                        <BreadcrumbLink href={crumb.href}>
-                          {crumb.label}
-                        </BreadcrumbLink>
-                      ) : (
-                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                      )}
-                    </BreadcrumbItem>
-                    {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
-                  </div>
-                ))}
-              </BreadcrumbList>
-            </Breadcrumb>
-          )}
+          {/* header (left) controls kept here; Breadcrumbs shown below header */}
 
           {/* Search Bar */}
           <div className="flex-1 max-w-sm ml-4">
@@ -340,8 +314,10 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
           </div>
         </header>
 
-        <main className="flex-1 overflow-auto">
-          <div className="p-4">{children}</div>
+        <PageBreadcrumbs breadcrumbs={breadcrumbs} />
+
+        <main className="flex-1 overflow-auto overflow-x-hidden">
+          <div className="p-4 w-full max-w-full min-w-0">{children}</div>
           {/* <Footer /> */}
         </main>
       </SidebarInset>

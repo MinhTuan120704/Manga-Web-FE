@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MangaCard } from "@/components/common/MangaCard";
+import { userService } from "@/services/user.service";
 import { PreviewPane } from "@/components/common/PreviewPane";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -56,6 +57,16 @@ export const SearchResults = ({
     setShowPreview(true);
   };
 
+  const handleToggleFollow = async (mangaId: string, follow: boolean) => {
+    try {
+      if (follow) await userService.followManga({ mangaId });
+      else await userService.unfollowManga(mangaId);
+    } catch (err) {
+      console.error("Failed to toggle follow:", err);
+      throw err;
+    }
+  };
+
   const handleClosePreview = () => {
     setShowPreview(false);
     setSelectedManga(null);
@@ -77,7 +88,7 @@ export const SearchResults = ({
     return (
       <div className="space-y-4">
         <Skeleton className="h-8 w-48" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {Array.from({ length: 12 }).map((_, index) => (
             <div key={index} className="space-y-2">
               <Skeleton className="h-48 w-full rounded" />
@@ -129,7 +140,7 @@ export const SearchResults = ({
         </div>
 
         {/* Results Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
           {mangas.map((manga, index) => (
             <div
               key={manga._id}
@@ -140,6 +151,7 @@ export const SearchResults = ({
                 manga={manga}
                 size="sm"
                 onPreview={handlePreview}
+                onToggleFollow={handleToggleFollow}
               />
             </div>
           ))}

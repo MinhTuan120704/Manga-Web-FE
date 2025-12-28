@@ -1,31 +1,27 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import {
-  Home,
   Search,
   BookOpen,
-  Library,
   Sparkles,
   BarChart3,
   Users,
   Clock,
   FileText,
   Settings,
-  LogOut,
   User,
   Shield,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
-import { authService } from "@/services/auth.service";
-import { ConfirmationModal } from "@/components/common/ConfirmationModal";
-import { toast } from "sonner";
+import { useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -40,34 +36,12 @@ interface AdminSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 // Navigation data for Admin role
 const data = {
-  navMain: [
+    navMain: [
     {
-      title: "Trang chủ",
-      url: "/",
-      icon: Home,
-      isTopLevel: true,
-    },
-    {
-      title: "Người dùng",
-      url: "#",
+      title: "Trang cá nhân",
+      url: "/user/profile",
       icon: User,
-      items: [
-        {
-          title: "Truyện đang theo dõi",
-          url: "/user/profile?tab=favorites",
-          icon: Library,
-        },
-        {
-          title: "Lịch sử đọc",
-          url: "/user/profile?tab=history",
-          icon: BookOpen,
-        },
-        {
-          title: "Trang cá nhân",
-          url: "/user/profile",
-          icon: User,
-        },
-      ],
+      isTopLevel: true,
     },
     {
       title: "Truyện",
@@ -127,18 +101,16 @@ const data = {
 };
 
 export default function AdminSidebar({ ...props }: AdminSidebarProps) {
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const location = useLocation();
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
-  const handleLogout = async () => {
-    try {
-      await authService.logout();
-      toast.success("Đăng xuất thành công");
-      window.location.href = "/login";
-    } catch (error) {
-      console.error("Logout failed:", error);
-      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
-    }
-  };
+  const toggleGroup = (k: string) =>
+    setOpenGroups((s) => ({ ...s, [k]: !s[k] }));
+  const isActive = (url?: string) =>
+    url
+      ? location.pathname === url ||
+        location.pathname.startsWith(url.split("?")[0])
+      : false;
 
   return (
     <Sidebar {...props}>
@@ -151,9 +123,9 @@ export default function AdminSidebar({ ...props }: AdminSidebarProps) {
               className="h-8 w-8 object-contain"
             />
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">Admin Panel</span>
+              <span className="truncate font-semibold">Mangaria</span>
               <span className="truncate text-xs text-muted-foreground">
-                Bảng điều khiển
+                Manga Reader Platform
               </span>
             </div>
           </div>
@@ -172,7 +144,12 @@ export default function AdminSidebar({ ...props }: AdminSidebarProps) {
                         <SidebarMenuButton asChild>
                           <Link
                             to={item.url}
-                            className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1 font-medium text-base text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+                            className={
+                              `flex items-center gap-3 px-4 py-3 rounded-lg mb-1 font-medium text-base transition-colors ` +
+                              (isActive(item.url)
+                                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground")
+                            }
                           >
                             <item.icon className="h-5 w-5" />
                             <span>{item.title}</span>
@@ -187,30 +164,58 @@ export default function AdminSidebar({ ...props }: AdminSidebarProps) {
             );
           }
 
+          const open =
+            openGroups[item.title] ??
+            item.items?.some((si) => isActive(si.url));
+
           return (
             <React.Fragment key={item.title}>
               <SidebarGroup>
-                <SidebarGroupLabel className="flex items-center gap-2 px-2 mb-1 text-xs font-medium text-sidebar-foreground/60">
-                  <item.icon className="h-4 w-4" />
-                  {item.title}
-                </SidebarGroupLabel>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {item.items?.map((subItem) => (
-                      <SidebarMenuItem key={subItem.title}>
-                        <SidebarMenuButton asChild>
-                          <Link
-                            to={subItem.url}
-                            className="flex items-center gap-3 px-4 py-3 rounded-lg mb-1 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-                          >
-                            <subItem.icon className="h-4 w-4" />
-                            <span className="text-sm">{subItem.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
-                  </SidebarMenu>
-                </SidebarGroupContent>
+                <div className="flex items-center justify-between px-2 mb-1">
+                  <button
+                    onClick={() => toggleGroup(item.title)}
+                    className="flex items-center gap-2 text-xs font-medium text-sidebar-foreground/60 px-1 py-1"
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.title}</span>
+                  </button>
+                  <button
+                    onClick={() => toggleGroup(item.title)}
+                    aria-label="Toggle group"
+                    className="p-1"
+                  >
+                    {open ? (
+                      <ChevronDown className="h-4 w-4 text-sidebar-foreground/60" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4 text-sidebar-foreground/60" />
+                    )}
+                  </button>
+                </div>
+
+                {open && (
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {item.items?.map((subItem) => (
+                        <SidebarMenuItem key={subItem.title}>
+                          <SidebarMenuButton asChild>
+                            <Link
+                              to={subItem.url}
+                              className={
+                                `flex items-center gap-3 px-4 py-3 rounded-lg mb-1 text-sm transition-colors ` +
+                                (isActive(subItem.url)
+                                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground")
+                              }
+                            >
+                              <subItem.icon className="h-4 w-4" />
+                              <span className="text-sm">{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                )}
               </SidebarGroup>
 
               {index < data.navMain.length - 1 &&
@@ -237,15 +242,6 @@ export default function AdminSidebar({ ...props }: AdminSidebarProps) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => setShowLogoutConfirm(true)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Đăng xuất</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -253,16 +249,7 @@ export default function AdminSidebar({ ...props }: AdminSidebarProps) {
 
       <SidebarRail />
 
-      <ConfirmationModal
-        isOpen={showLogoutConfirm}
-        onClose={() => setShowLogoutConfirm(false)}
-        onConfirm={handleLogout}
-        title="Xác nhận đăng xuất"
-        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản quản trị không?"
-        confirmText="Đăng xuất"
-        cancelText="Hủy bỏ"
-        variant="danger"
-      />
+      {/* Confirmation modal removed from sidebar; logout handled in header */}
     </Sidebar>
   );
 }

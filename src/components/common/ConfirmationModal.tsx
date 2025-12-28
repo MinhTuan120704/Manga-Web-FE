@@ -1,4 +1,4 @@
-import { AlertTriangle,  CheckCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ConfirmationModalProps {
@@ -58,17 +58,8 @@ export const ConfirmationModal = ({
             {message}
           </p>
 
-          {/* Buttons */}
+          {/* Buttons: confirm first, then cancel (swapped) */}
           <div className="flex gap-2 sm:gap-3 w-full mt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={loading}
-              className="flex-1"
-            >
-              {cancelText}
-            </Button>
             <Button
               type="button"
               variant={getConfirmButtonVariant()}
@@ -77,6 +68,15 @@ export const ConfirmationModal = ({
               className="flex-1"
             >
               {loading ? "Đang xử lý..." : confirmText}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={loading}
+              className="flex-1"
+            >
+              {cancelText}
             </Button>
           </div>
         </div>

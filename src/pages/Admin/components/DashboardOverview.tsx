@@ -161,6 +161,7 @@ export default function DashboardOverview() {
                   backgroundColor: "var(--card)",
                   border: "1px solid var(--border)",
                 }}
+                wrapperStyle={{ zIndex: 9999 }}
               />
               <Bar
                 dataKey="count"
@@ -176,33 +177,56 @@ export default function DashboardOverview() {
           <h3 className="text-lg font-semibold text-card-foreground mb-4 w-full">
             Top 5 thể loại
           </h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={genreChartData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={90}
-                paddingAngle={2}
-                dataKey="value"
-                label={({ name, value }) => `${name}: ${value}`}
-              >
-                {genreChartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "var(--card)",
-                  border: "1px solid var(--border)",
-                }}
-                itemStyle={{
-                  color: "var(--foreground)",
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+          {/* Ensure labels outside the pie are visible by allowing overflow */}
+          <div className="w-full h-[250px] overflow-visible">
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
+              className="overflow-visible"
+            >
+              <PieChart style={{ overflow: "visible" }}>
+                <Pie
+                  data={genreChartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={90}
+                  paddingAngle={2}
+                  dataKey="value"
+                  label={({ name, value }) => `${name}: ${value}`}
+                >
+                  {genreChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "var(--card)",
+                    border: "1px solid var(--border)",
+                  }}
+                  wrapperStyle={{ zIndex: 9999 }}
+                  itemStyle={{
+                    color: "var(--foreground)",
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          {/* Legend describing colors for Pie chart (Top genres) */}
+          <div className="w-full mt-4 flex flex-wrap gap-3">
+            {genreChartData.map((g) => (
+              <div key={g.name} className="flex items-center gap-2 text-sm">
+                <span
+                  className="inline-block w-3 h-3 rounded"
+                  style={{ backgroundColor: g.color }}
+                />
+                <span className="text-muted-foreground">{g.name}</span>
+                <span className="ml-2 text-xs text-muted-foreground">
+                  ({g.value})
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -221,6 +245,7 @@ export default function DashboardOverview() {
                 backgroundColor: "var(--card)",
                 border: "1px solid var(--border)",
               }}
+              wrapperStyle={{ zIndex: 9999 }}
             />
             <Bar dataKey="count" fill="var(--primary)" radius={[8, 8, 0, 0]} />
           </BarChart>

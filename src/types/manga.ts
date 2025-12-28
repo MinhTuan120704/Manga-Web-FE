@@ -54,7 +54,8 @@ export interface MangaQueryParams {
 
 export interface MangaSearchParams {
   search?: string;
-  status?: "ongoing" | "completed";
+  // Allow all statuses for search filters
+  status?: "ongoing" | "completed" | "hiatus" | "cancelled";
   genres?: string;
   sortBy?: "newest" | "oldest" | "mostViewed" | "highestRating" | "mostFollowed" | "az" | "za" | "updated";
   page?: number;
