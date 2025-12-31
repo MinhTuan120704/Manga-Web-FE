@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -85,18 +86,23 @@ export const ScrollToTop = () => {
   };
 
   return (
-    <Button
-      onClick={scrollToTop}
-      className={cn(
-        "fixed bottom-8 right-8 z-[9999] h-14 w-14 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 bg-primary hover:bg-primary/90 text-primary-foreground",
-        isVisible
-          ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-10 pointer-events-none"
-      )}
-      size="icon"
-      aria-label="Scroll to top"
-    >
-      <ArrowUp className="h-6 w-6" />
-    </Button>
+    <Tooltip delayDuration={600}>
+      <TooltipTrigger asChild>
+        <Button
+          onClick={scrollToTop}
+          className={cn(
+            "fixed bottom-8 right-8 z-[9999] h-14 w-14 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 bg-primary hover:bg-primary/90 text-primary-foreground",
+            isVisible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-10 pointer-events-none"
+          )}
+          size="icon"
+          aria-label="Lên đầu trang"
+        >
+          <ArrowUp className="h-6 w-6" />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>Lên đầu trang</TooltipContent>
+    </Tooltip>
   );
 };
