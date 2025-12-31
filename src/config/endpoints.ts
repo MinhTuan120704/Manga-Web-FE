@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
   MANGA: {
     LIST: "/mangas",
     SEARCH: "/mangas/search",
+    RECOMMENDATIONS: (id: string) => `/mangas/${id}/recommendations`,
     DETAIL: (id: string) => `/mangas/${id}`,
     CREATE: "/mangas",
     UPDATE: (id: string) => `/mangas/${id}`,

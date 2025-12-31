@@ -1,6 +1,10 @@
 import axiosInstance from "@/lib/axios";
 import { API_ENDPOINTS } from "@/config/endpoints";
-import type { MangaListResponse, ChapterListResponse } from "@/types/api";
+import type {
+  MangaListResponse,
+  ChapterListResponse,
+  RecommendationsRawData,
+} from "@/types/api";
 import type {
   CreateMangaRequest,
   Manga,
@@ -20,7 +24,9 @@ export const mangaService = {
   /**
    * Tìm kiếm truyện với các bộ lọc nâng cao
    */
-  searchMangas: async (params?: MangaSearchParams): Promise<MangaListResponse> => {
+  searchMangas: async (
+    params?: MangaSearchParams
+  ): Promise<MangaListResponse> => {
     return axiosInstance.get(API_ENDPOINTS.MANGA.SEARCH, { params });
   },
 
@@ -38,6 +44,20 @@ export const mangaService = {
     mangaId: string
   ): Promise<ChapterListResponse> => {
     return axiosInstance.get(API_ENDPOINTS.MANGA.CHAPTERS(mangaId));
+  },
+
+  /**
+   * Lấy truyện đề xuất dựa theo id truyện hiện tại
+   * GET /mangas/{id}/recommendations
+   */
+  getRecommendations: async (
+    mangaId: string,
+    limit?: number
+  ): Promise<RecommendationsRawData> => {
+    const params = typeof limit === "number" ? { limit } : undefined;
+    return axiosInstance.get(API_ENDPOINTS.MANGA.RECOMMENDATIONS(mangaId), {
+      params,
+    });
   },
 
   /**
