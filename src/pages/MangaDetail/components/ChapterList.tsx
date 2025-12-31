@@ -109,7 +109,7 @@ export const ChapterList = ({
 
       <CardContent>
         {filteredChapters.length === 0 ? (
-          <div className="text-center py-12">
+          <div className="text-center py-12 h-80 sm:h-96 md:h-[28rem] flex flex-col justify-center">
             <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
             <p className="text-muted-foreground">
               {chapters.length === 0
@@ -118,7 +118,7 @@ export const ChapterList = ({
             </p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-2 h-80 sm:h-96 md:h-[28rem] overflow-auto pr-2">
             {filteredChapters.map((chapter) => (
               <div
                 key={chapter._id}
