@@ -68,6 +68,8 @@ const getStatusInVietnamese = (status: string): string => {
   return statusMap[status.toLowerCase()] || status;
 };
 
+import { BackButton } from "@/components/common/BackButton";
+
 export const MangaInfo = ({
   coverImage,
   title,
@@ -102,6 +104,8 @@ export const MangaInfo = ({
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* Sidebar */}
       <div className="lg:col-span-1">
+        
+      <BackButton />
         {/* Cover Image */}
         <Card className="overflow-hidden">
           <img
@@ -161,7 +165,8 @@ export const MangaInfo = ({
       </div>
 
       {/* Main Info */}
-      <div className="lg:col-span-2 space-y-6">
+      <div className="lg:col-span-2 space-y-6 relative">
+        
         {/* Header - Title and Status */}
         <div>
           <div className="flex items-start gap-3 mb-2">
