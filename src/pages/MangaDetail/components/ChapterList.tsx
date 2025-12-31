@@ -19,7 +19,10 @@ interface ChapterListProps {
   onChapterClick: (chapterId: string) => void;
 }
 
-export const ChapterList = ({ chapters = [], onChapterClick }: ChapterListProps) => {
+export const ChapterList = ({
+  chapters = [],
+  onChapterClick,
+}: ChapterListProps) => {
   const [chapterSearch, setChapterSearch] = useState("");
   const [chapterSort, setChapterSort] = useState<"asc" | "desc">("desc");
 
@@ -106,7 +109,7 @@ export const ChapterList = ({ chapters = [], onChapterClick }: ChapterListProps)
 
       <CardContent>
         {filteredChapters.length === 0 ? (
-          <div className="text-center py-12">
+          <div className="text-center py-12 h-80 sm:h-96 md:h-[28rem] flex flex-col justify-center">
             <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
             <p className="text-muted-foreground">
               {chapters.length === 0
@@ -115,39 +118,51 @@ export const ChapterList = ({ chapters = [], onChapterClick }: ChapterListProps)
             </p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-2 h-80 sm:h-96 md:h-[28rem] overflow-auto pr-2">
             {filteredChapters.map((chapter) => (
               <div
                 key={chapter._id}
                 onClick={() => onChapterClick(chapter._id)}
-                className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors cursor-pointer group"
+                className="flex items-center justify-between p-5 rounded-lg border hover:bg-accent transition-colors cursor-pointer group"
               >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-1">
-                    <Badge variant="outline">Ch. {chapter.chapterNumber}</Badge>
-                    <h4 className="font-medium group-hover:text-primary transition-colors truncate">
-                      {chapter.title}
-                    </h4>
-                  </div>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    {chapter.uploaderId && (
-                      <div className="flex items-center gap-1">
-                        <User className="h-3 w-3" />
-                        <span>{getUploader(chapter.uploaderId)}</span>
-                      </div>
-                    )}
-                    {chapter.createdAt && (
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        <span>{getTimeAgo(chapter.createdAt)}</span>
-                      </div>
-                    )}
-                    {chapter.pages && chapter.pages.length > 0 && (
-                      <div className="flex items-center gap-1">
-                        <BookOpen className="h-3 w-3" />
-                        <span>{chapter.pages.length} trang</span>
-                      </div>
-                    )}
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                  {chapter.thumbnail && (
+                    <img
+                      src={chapter.thumbnail}
+                      alt={`Thumbnail chương ${chapter.chapterNumber}`}
+                      className="h-20 w-28 object-cover rounded-md flex-shrink-0"
+                    />
+                  )}
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-1">
+                      <Badge variant="outline">
+                        Ch. {chapter.chapterNumber}
+                      </Badge>
+                      <h4 className="font-medium group-hover:text-primary transition-colors truncate">
+                        {chapter.title}
+                      </h4>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      {chapter.uploaderId && (
+                        <div className="flex items-center gap-1">
+                          <User className="h-3 w-3" />
+                          <span>{getUploader(chapter.uploaderId)}</span>
+                        </div>
+                      )}
+                      {chapter.createdAt && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          <span>{getTimeAgo(chapter.createdAt)}</span>
+                        </div>
+                      )}
+                      {/* {chapter.pages && chapter.pages.length > 0 && (
+                        <div className="flex items-center gap-1">
+                          <BookOpen className="h-3 w-3" />
+                          <span>{chapter.pages.length} trang</span>
+                        </div>
+                      )} */}
+                    </div>
                   </div>
                 </div>
                 <Button
