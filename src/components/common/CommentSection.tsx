@@ -42,8 +42,28 @@ export function CommentSection({
 
       if (response) {
         // Filter out comments with null/undefined users
-        const validComments = response.filter(comment => comment.user != null);
-        setComments(validComments);
+        const validComments = response.filter(
+          (comment) => comment.user != null
+        );
+
+        // If current user available, pin their comments to the top
+        if (currentUser) {
+          const pinned = validComments.filter((c) => {
+            const u = c.user ;
+            if (!u) return false;
+            return typeof u === "string" ? u === currentUser._id : u._id === currentUser._id;
+          });
+
+          const others = validComments.filter((c) => {
+            const u = c.user ;
+            if (!u) return true;
+            return typeof u === "string" ? u !== currentUser._id : u._id !== currentUser._id;
+          });
+
+          setComments([...pinned, ...others]);
+        } else {
+          setComments(validComments);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch comments:", error);
@@ -149,42 +169,44 @@ export function CommentSection({
           </div>
         )}
 
-        {/* Comments List */}
+        {/* Comments List (scrollable) */}
         <div className="space-y-0">
-          {loading ? (
-            // Loading skeleton
-            Array.from({ length: 3 }).map((_, index) => (
-              <div
-                key={index}
-                className="flex gap-3 py-4 border-b border-border"
-              >
-                <Skeleton className="w-10 h-10 rounded-full flex-shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-16 w-full" />
-                  <Skeleton className="h-4 w-16" />
+          <div className="max-h-80 sm:max-h-96 md:max-h-[28rem] overflow-auto pr-2 space-y-4">
+            {loading ? (
+              // Loading skeleton
+              Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="flex gap-3 py-4 border-b border-border"
+                >
+                  <Skeleton className="w-10 h-10 rounded-full flex-shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
                 </div>
+              ))
+            ) : comments.length === 0 ? (
+              <div className="text-center py-6">
+                <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+                <p className="text-muted-foreground">
+                  Chưa có bình luận nào. Hãy là người đầu tiên!
+                </p>
               </div>
-            ))
-          ) : comments.length === 0 ? (
-            <div className="text-center py-12">
-              <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
-              <p className="text-muted-foreground">
-                Chưa có bình luận nào. Hãy là người đầu tiên!
-              </p>
-            </div>
-          ) : (
-            comments.map((comment) => (
-              <CommentItem
-                key={comment._id}
-                comment={comment}
-                currentUserId={currentUser?._id}
-                onEdit={handleEditComment}
-                onDelete={handleDeleteComment}
-                onLike={handleLikeComment}
-              />
-            ))
-          )}
+            ) : (
+              comments.map((comment) => (
+                <CommentItem
+                  key={comment._id}
+                  comment={comment}
+                  currentUserId={currentUser?._id}
+                  onEdit={handleEditComment}
+                  onDelete={handleDeleteComment}
+                  onLike={handleLikeComment}
+                />
+              ))
+            )}
+          </div>
         </div>
       </CardContent>
 
