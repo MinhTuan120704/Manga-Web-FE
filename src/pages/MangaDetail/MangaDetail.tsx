@@ -15,6 +15,7 @@ import {
 import { CommentSection } from "@/components/common/CommentSection";
 import { ShareModal } from "@/components/common/ShareModal";
 import { ReportModal } from "@/components/common/ReportModal";
+import { RecommendationsList } from "./components/RecommendationsList";
 import { ScrollToTop } from "@/components/common/ScrollToTop";
 import { toast } from "sonner";
 import type { Chapter } from "@/types/chapter";
@@ -209,6 +210,9 @@ export const MangaDetail = () => {
 
         {/* Comments Section */}
         {id && <CommentSection mangaId={id} />}
+
+        {/* Recommendations Section */}
+        {id && <RecommendationsList mangaId={id} limit={8} />}
       </div>
 
       <ShareModal
