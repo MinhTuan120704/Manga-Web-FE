@@ -1,13 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
-export const BackButton = () => {
+interface BackButtonProps {
+  fallbackPath?: string;
+}
+
+export const BackButton = ({ fallbackPath = "/" }: BackButtonProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const goBack = () => {
-    navigate(-1);
+    if (location.state?.from) {
+      navigate(location.state.from);
+      return;
+    }
+
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate(fallbackPath);
+    }
   };
 
   return (
