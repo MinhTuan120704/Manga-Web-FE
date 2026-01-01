@@ -1,30 +1,25 @@
 import { useEffect, useState } from "react";
-import { mangaService } from "@/services/manga.service";
 import { MangaCard } from "@/components/common/MangaCard";
 import { userService } from "@/services/user.service";
 import type { Manga } from "@/types/manga";
-import type { ReadingHistoryItem } from "@/types/user";
+import type { ReadingHistoryWithProgress } from "@/types/user";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { ReadingProgressInfo } from "./ReadingProgressInfo";
 
 interface MangaReadingHistoryProps {
-  readingHistory: ReadingHistoryItem[];
   onHistoryUpdate?: () => void;
 }
 
-interface MangaWithHistory extends Manga {
-  lastReadChapterId?: string;
-  lastReadAt?: string;
-}
-
 export const MangaReadingHistory = ({
-  readingHistory,
   onHistoryUpdate,
 }: MangaReadingHistoryProps) => {
-  const [mangas, setMangas] = useState<MangaWithHistory[]>([]);
+  const [historyItems, setHistoryItems] = useState<
+    ReadingHistoryWithProgress[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>({});
   const [bulkLoading, setBulkLoading] = useState(false);
@@ -33,49 +28,9 @@ export const MangaReadingHistory = ({
 
   useEffect(() => {
     const fetchReadingHistory = async () => {
-      if (readingHistory?.length === 0) {
-        setLoading(false);
-        return;
-      }
-
       try {
-        // Create a map of manga ID to reading history item
-        const historyMap = new Map<string, ReadingHistoryItem>();
-        readingHistory.forEach((item) => {
-          historyMap.set(item.manga, item);
-        });
-
-        // Get unique manga IDs from reading history
-        const mangaIds = Array.from(historyMap.keys());
-
-        // Fetch manga details for each unique manga
-        if (mangaIds.length > 0) {
-          const mangaPromises = mangaIds.map((id) =>
-            mangaService.getMangaById(id).catch(() => null)
-          );
-          const mangaResults = await Promise.all(mangaPromises);
-
-          // Attach reading history info to each manga
-          const mangasWithHistory = mangaResults
-            .filter((result) => result)
-            .map((manga) => {
-              const historyItem = historyMap.get(manga!._id!);
-              return {
-                ...manga!,
-                lastReadChapterId: historyItem?.chapterId,
-                lastReadAt: historyItem?.lastReadAt,
-              };
-            });
-
-          // Sort by last read time (newest first)
-          mangasWithHistory.sort((a, b) => {
-            const timeA = new Date(a.lastReadAt || 0).getTime();
-            const timeB = new Date(b.lastReadAt || 0).getTime();
-            return timeB - timeA;
-          });
-
-          setMangas(mangasWithHistory);
-        }
+        const data = await userService.getReadingHistory();
+        setHistoryItems(data);
       } catch (error) {
         console.error("Failed to fetch reading history:", error);
       } finally {
@@ -84,7 +39,7 @@ export const MangaReadingHistory = ({
     };
 
     fetchReadingHistory();
-  }, [readingHistory]);
+  }, []);
 
   if (loading) {
     return (
@@ -101,7 +56,9 @@ export const MangaReadingHistory = ({
       await userService.deleteBatchReadingHistory(mangaIds);
 
       // Update local state
-      setMangas((prev) => prev.filter((m) => !mangaIds.includes(m._id || "")));
+      setHistoryItems((prev) =>
+        prev.filter((item) => !mangaIds.includes(item.manga._id))
+      );
       setSelectedIds({});
 
       toast.success(
@@ -132,9 +89,8 @@ export const MangaReadingHistory = ({
           <label className="inline-flex items-center gap-2 text-sm">
             <Checkbox
               checked={
-                mangas.length > 0 &&
-                Object.keys(selectedIds).length ===
-                  mangas.filter((m) => m._id).length
+                historyItems.length > 0 &&
+                Object.keys(selectedIds).length === historyItems.length
                   ? true
                   : Object.keys(selectedIds).length > 0
                   ? "indeterminate"
@@ -144,8 +100,8 @@ export const MangaReadingHistory = ({
                 const checked = val === true;
                 if (checked) {
                   const next: Record<string, boolean> = {};
-                  mangas.forEach((m) => {
-                    if (m._id) next[m._id] = true;
+                  historyItems.forEach((item) => {
+                    next[item.manga._id] = true;
                   });
                   setSelectedIds(next);
                 } else {
@@ -190,36 +146,63 @@ export const MangaReadingHistory = ({
         </div>
       </div>
 
-      {!mangas || mangas.length === 0 ? (
+      {!historyItems || historyItems.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-base sm:text-lg">
             Chưa có truyện nào trong lịch sử đọc
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
-          {mangas.map((manga) =>
-            manga?._id ? (
-              <div key={manga._id} className="relative">
-                <div className="absolute z-10 left-3 top-3">
-                  <Checkbox
-                    checked={!!selectedIds[manga._id]}
-                    onCheckedChange={(val) => {
-                      const checked = val === true;
-                      setSelectedIds((prev) => {
-                        const next = { ...prev };
-                        if (checked) next[manga._id!] = true;
-                        else delete next[manga._id!];
-                        return next;
-                      });
-                    }}
-                    className="size-4 bg-white/90 backdrop-blur"
-                  />
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 auto-rows-fr">
+          {historyItems.map((item) => {
+            const manga: Manga = {
+              _id: item.manga._id,
+              title: item.manga.title,
+              description: "",
+              coverImage: item.manga.coverImage || "",
+              author: "",
+              genres: item.manga.genres || [],
+              status: item.manga.status as
+                | "ongoing"
+                | "completed"
+                | "hiatus"
+                | "cancelled",
+              createdAt: "",
+              updatedAt: "",
+              chapterCount: item.manga.totalChapters,
+            };
+
+            return (
+              <div key={item.manga._id} className="flex flex-col gap-3 h-full">
+                <div className="relative flex-1">
+                  <div className="absolute z-10 left-3 top-3">
+                    <Checkbox
+                      checked={!!selectedIds[item.manga._id]}
+                      onCheckedChange={(val) => {
+                        const checked = val === true;
+                        setSelectedIds((prev) => {
+                          const next = { ...prev };
+                          if (checked) next[item.manga._id] = true;
+                          else delete next[item.manga._id];
+                          return next;
+                        });
+                      }}
+                      className="size-4 bg-white/90 backdrop-blur"
+                    />
+                  </div>
+                  <MangaCard manga={manga} />
                 </div>
-                <MangaCard manga={manga} />
+                <ReadingProgressInfo
+                  mangaId={item.manga._id}
+                  chapterId={item.currentChapter._id}
+                  currentChapterNumber={item.currentChapter.chapterNumber}
+                  totalChapters={item.manga.totalChapters}
+                  progress={item.progress}
+                  chapterTitle={item.currentChapter.title}
+                />
               </div>
-            ) : null
-          )}
+            );
+          })}
         </div>
       )}
     </div>
