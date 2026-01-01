@@ -105,7 +105,7 @@ export const MangaInfo = ({
       {/* Sidebar */}
       <div className="lg:col-span-1">
         
-      <BackButton />
+      <BackButton fallbackPath="/" />
         {/* Cover Image */}
         <Card className="overflow-hidden">
           <img

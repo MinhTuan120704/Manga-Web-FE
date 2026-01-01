@@ -299,11 +299,7 @@ export function MangaReader() {
   };
 
   const handleReturnToManga = () => {
-    if (manga) {
-      navigate(`/manga/${manga._id}`);
-    } else {
-      navigate(-1);
-    }
+    navigate(-1);
   };
 
   const updateSettings = (newSettings: Partial<ReaderSettings>) => {
