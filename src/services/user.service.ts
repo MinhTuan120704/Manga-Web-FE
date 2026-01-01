@@ -47,6 +47,13 @@ export const userService = {
   },
 
   /**
+   * Bỏ theo dõi nhiều bộ truyện cùng lúc
+   */
+  unfollowMangaBatch: async (mangaIds: string[]): Promise<void> => {
+    return axiosInstance.post(API_ENDPOINTS.USER.UNFOLLOW_BATCH, { mangaIds });
+  },
+
+  /**
    * Lấy reading history
    */
   getReadingHistory: async (): Promise<Manga[]> => {

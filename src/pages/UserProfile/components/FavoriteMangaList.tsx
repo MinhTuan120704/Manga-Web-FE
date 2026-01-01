@@ -123,9 +123,7 @@ export const FavoriteMangaList = ({
               onConfirm={async () => {
                 try {
                   setBulkLoading(true);
-                  await Promise.all(
-                    pendingIds.map((id) => userService.unfollowManga(id))
-                  );
+                  await userService.unfollowMangaBatch(pendingIds);
                   setMangas((prev) =>
                     prev.filter((m) => !pendingIds.includes(m._id || ""))
                   );

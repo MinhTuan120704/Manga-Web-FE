@@ -45,6 +45,7 @@ export const API_ENDPOINTS = {
     DELETE_PROFILE: "/users/profile",
     FOLLOW: "/users/follow",
     UNFOLLOW: "/users/unfollow",
+    UNFOLLOW_BATCH: "/users/unfollow-batch",
     READING_HISTORY: "/users/reading-history",
     UPLOADED_MANGAS: "/users/uploaded-mangas",
     FOLLOWED_MANGAS: "/users/followed-mangas",
