@@ -95,9 +95,9 @@ export function Login() {
         className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent transition-colors"
       >
         <img
-          src="/mangaria_logo.svg"
+          src="/mangaria_logo.png"
           alt="Mangaria Logo"
-          className="h-8 w-8 object-contain"
+          className="h-10 w-10 object-contain"
         />
         <span className="font-semibold text-lg hidden sm:inline">Mangaria</span>
       </Link>
@@ -106,9 +106,9 @@ export function Login() {
         <CardHeader className="space-y-3 text-center">
           <div className="flex justify-center mb-2">
             <img
-              src="/mangaria_logo.svg"
+              src="/mangaria_logo.png"
               alt="Mangaria Logo"
-              className="h-16 w-16 object-contain"
+              className="h-20 w-20 object-contain"
             />
           </div>
           <CardTitle className="text-3xl font-bold">Đăng nhập</CardTitle>

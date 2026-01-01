@@ -181,9 +181,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <Link to="/" className="block">
           <div className="flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-accent transition-colors rounded-md">
             <img
-              src="/mangaria_logo.svg"
+              src="/mangaria_logo.png"
               alt="Mangaria Logo"
-              className="h-8 w-8 object-contain"
+              className="h-10 w-10 object-contain"
             />
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">Mangaria</span>
