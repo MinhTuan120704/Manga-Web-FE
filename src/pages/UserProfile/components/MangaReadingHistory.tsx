@@ -193,7 +193,6 @@ export const MangaReadingHistory = ({
                   <MangaCard manga={manga} />
                 </div>
                 <ReadingProgressInfo
-                  mangaId={item.manga._id}
                   chapterId={item.currentChapter._id}
                   currentChapterNumber={item.currentChapter.chapterNumber}
                   totalChapters={item.manga.totalChapters}

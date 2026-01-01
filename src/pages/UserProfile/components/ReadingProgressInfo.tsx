@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 interface ReadingProgressInfoProps {
-  mangaId: string;
   chapterId: string;
   currentChapterNumber: number;
   totalChapters: number;
@@ -13,7 +12,6 @@ interface ReadingProgressInfoProps {
 }
 
 export const ReadingProgressInfo = ({
-  mangaId,
   chapterId,
   currentChapterNumber,
   totalChapters,
