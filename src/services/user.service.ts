@@ -81,7 +81,7 @@ export const userService = {
    * Lấy danh sách manga đã upload (cho uploader)
    */
   getUploadedMangas: async (): Promise<Manga[]> => {
-    return axiosInstance.post(API_ENDPOINTS.USER.UPLOADED_MANGAS);
+    return axiosInstance.get(API_ENDPOINTS.USER.UPLOADED_MANGAS);
   },
 
   /**
