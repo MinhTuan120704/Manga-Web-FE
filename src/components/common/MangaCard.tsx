@@ -181,10 +181,12 @@ export function MangaCard({
               <span>{manga.viewCount || 0} Lượt xem</span>
             </div>
           </div>
+          {(manga.updatedAt && 
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
+            
             <span>{getTimeAgo(manga.updatedAt)}</span>
-          </div>
+          </div>)}
         </CardFooter>
       )}
     </Card>
