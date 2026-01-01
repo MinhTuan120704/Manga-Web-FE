@@ -70,11 +70,17 @@ export const userService = {
     return axiosInstance.post(API_ENDPOINTS.USER.READING_HISTORY, data);
   },
 
+  deleteBatchReadingHistory: async (mangaIds: string[]): Promise<void> => {
+    return axiosInstance.post(API_ENDPOINTS.USER.DELETE_READING_HISTORY, {
+      mangaIds,
+    });
+  },
+
   /**
    * Lấy danh sách manga đã upload (cho uploader)
    */
   getUploadedMangas: async (): Promise<Manga[]> => {
-    return axiosInstance.get(API_ENDPOINTS.USER.UPLOADED_MANGAS);
+    return axiosInstance.post(API_ENDPOINTS.USER.UPLOADED_MANGAS);
   },
 
   /**
