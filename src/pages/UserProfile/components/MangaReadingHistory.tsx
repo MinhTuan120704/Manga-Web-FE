@@ -175,7 +175,7 @@ export const MangaReadingHistory = ({
             return (
               <div key={item.manga._id} className="flex flex-col gap-3 h-full">
                 <div className="relative flex-1">
-                  <div className="absolute z-10 left-3 top-3">
+                  <div className="absolute z-0 left-3 top-3">
                     <Checkbox
                       checked={!!selectedIds[item.manga._id]}
                       onCheckedChange={(val) => {
