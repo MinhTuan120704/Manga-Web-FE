@@ -90,9 +90,7 @@ export const UserProfile = () => {
           </TabsContent>
 
           <TabsContent value="history" className="mt-0">
-            <MangaReadingHistory
-              readingHistory={userProfile?.readingHistory || []}
-            />
+            <MangaReadingHistory />
           </TabsContent>
         </Tabs>
       </div>

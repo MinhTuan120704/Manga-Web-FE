@@ -21,6 +21,27 @@ export interface ReadingHistoryItem {
   lastReadAt: string;
 }
 
+export interface ReadingHistoryWithProgress {
+  manga: {
+    _id: string;
+    title: string;
+    coverImage?: string;
+    status: string;
+    totalChapters: number;
+    genres?: Array<{
+      _id: string;
+      name: string;
+    }>;
+  };
+  currentChapter: {
+    _id: string;
+    chapterNumber: number;
+    title: string;
+  };
+  lastReadAt: string;
+  progress: number;
+}
+
 export interface UpdateProfileRequest {
   username?: string;
   email?: string;

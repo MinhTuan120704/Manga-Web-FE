@@ -47,6 +47,7 @@ export const API_ENDPOINTS = {
     UNFOLLOW: "/users/unfollow",
     UNFOLLOW_BATCH: "/users/unfollow-batch",
     READING_HISTORY: "/users/reading-history",
+    DELETE_READING_HISTORY: "/users/reading-history/batch-delete",
     UPLOADED_MANGAS: "/users/uploaded-mangas",
     FOLLOWED_MANGAS: "/users/followed-mangas",
     GET_USERS: "/users",
