@@ -6,6 +6,7 @@ import type {
   FollowMangaRequest,
   UserQueryParams,
   AdminUpdateUserRequest,
+  ReadingHistoryWithProgress,
 } from "@/types/user";
 import type { Manga } from "@/types/manga";
 import type { UserListResponse } from "@/types/api";
@@ -54,9 +55,9 @@ export const userService = {
   },
 
   /**
-   * Lấy reading history
+   * Lấy reading history with progress
    */
-  getReadingHistory: async (): Promise<Manga[]> => {
+  getReadingHistory: async (): Promise<ReadingHistoryWithProgress[]> => {
     return axiosInstance.get(API_ENDPOINTS.USER.READING_HISTORY);
   },
 
