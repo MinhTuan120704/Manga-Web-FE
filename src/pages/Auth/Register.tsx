@@ -22,13 +22,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { authService } from "@/services/auth.service";
-import {
-  Eye,
-  EyeOff,
-  Loader2,
-  UserCircle,
-  Upload,
-} from "lucide-react";
+import { Eye, EyeOff, Loader2, UserCircle, Upload } from "lucide-react";
 import type { RegisterRequest } from "@/types/auth";
 
 export function Register() {
@@ -106,9 +100,9 @@ export function Register() {
         className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent transition-colors"
       >
         <img
-          src="/mangaria_logo.svg"
+          src="/mangaria_logo.png"
           alt="Mangaria Logo"
-          className="h-8 w-8 object-contain"
+          className="h-10 w-10 object-contain"
         />
         <span className="font-semibold text-lg hidden sm:inline">Mangaria</span>
       </Link>
@@ -117,9 +111,9 @@ export function Register() {
         <CardHeader className="space-y-3 text-center">
           <div className="flex justify-center mb-2">
             <img
-              src="/mangaria_logo.svg"
+              src="/mangaria_logo.png"
               alt="Mangaria Logo"
-              className="h-16 w-16 object-contain"
+              className="h-20 w-20 object-contain"
             />
           </div>
           <CardTitle className="text-3xl font-bold">Đăng ký</CardTitle>
@@ -282,7 +276,9 @@ export function Register() {
               <Checkbox
                 id="terms"
                 checked={agreedToTerms}
-                onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+                onCheckedChange={(checked) =>
+                  setAgreedToTerms(checked === true)
+                }
                 disabled={loading}
                 className="mt-0.5 border-2 border-muted-foreground/50 dark:border-muted-foreground/70 data-[state=checked]:border-primary"
               />
@@ -336,82 +332,128 @@ export function Register() {
       <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden">
           <DialogHeader>
-            <DialogTitle className="text-xl">Điều khoản và Chính sách của Mangaria</DialogTitle>
+            <DialogTitle className="text-xl">
+              Điều khoản và Chính sách của Mangaria
+            </DialogTitle>
             <DialogDescription>
-              Vui lòng đọc kỹ các điều khoản và chính sách trước khi sử dụng dịch vụ
+              Vui lòng đọc kỹ các điều khoản và chính sách trước khi sử dụng
+              dịch vụ
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="h-[50vh] overflow-y-auto pr-4">
             <div className="space-y-6 text-sm">
               <section>
-                <h3 className="font-semibold text-base mb-2">1. Điều khoản sử dụng</h3>
+                <h3 className="font-semibold text-base mb-2">
+                  1. Điều khoản sử dụng
+                </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Bằng việc truy cập và sử dụng Mangaria, bạn đồng ý tuân thủ các điều khoản và điều kiện được nêu trong tài liệu này. 
-                  Nếu bạn không đồng ý với bất kỳ điều khoản nào, vui lòng không sử dụng dịch vụ của chúng tôi.
+                  Bằng việc truy cập và sử dụng Mangaria, bạn đồng ý tuân thủ
+                  các điều khoản và điều kiện được nêu trong tài liệu này. Nếu
+                  bạn không đồng ý với bất kỳ điều khoản nào, vui lòng không sử
+                  dụng dịch vụ của chúng tôi.
                 </p>
               </section>
 
               <section>
-                <h3 className="font-semibold text-base mb-2">2. Tài khoản người dùng</h3>
+                <h3 className="font-semibold text-base mb-2">
+                  2. Tài khoản người dùng
+                </h3>
                 <ul className="list-disc list-inside text-muted-foreground space-y-1 leading-relaxed">
-                  <li>Bạn phải cung cấp thông tin chính xác và đầy đủ khi đăng ký tài khoản.</li>
-                  <li>Bạn chịu trách nhiệm bảo mật thông tin đăng nhập của mình.</li>
+                  <li>
+                    Bạn phải cung cấp thông tin chính xác và đầy đủ khi đăng ký
+                    tài khoản.
+                  </li>
+                  <li>
+                    Bạn chịu trách nhiệm bảo mật thông tin đăng nhập của mình.
+                  </li>
                   <li>Mỗi người dùng chỉ được phép sở hữu một tài khoản.</li>
-                  <li>Chúng tôi có quyền đình chỉ hoặc xóa tài khoản vi phạm điều khoản.</li>
+                  <li>
+                    Chúng tôi có quyền đình chỉ hoặc xóa tài khoản vi phạm điều
+                    khoản.
+                  </li>
                 </ul>
               </section>
 
               <section>
                 <h3 className="font-semibold text-base mb-2">3. Nội dung</h3>
                 <ul className="list-disc list-inside text-muted-foreground space-y-1 leading-relaxed">
-                  <li>Người dùng không được đăng tải nội dung vi phạm bản quyền.</li>
-                  <li>Nội dung khiêu dâm, bạo lực quá mức hoặc phân biệt đối xử bị nghiêm cấm.</li>
-                  <li>Chúng tôi có quyền xóa bất kỳ nội dung nào vi phạm quy định.</li>
+                  <li>
+                    Người dùng không được đăng tải nội dung vi phạm bản quyền.
+                  </li>
+                  <li>
+                    Nội dung khiêu dâm, bạo lực quá mức hoặc phân biệt đối xử bị
+                    nghiêm cấm.
+                  </li>
+                  <li>
+                    Chúng tôi có quyền xóa bất kỳ nội dung nào vi phạm quy định.
+                  </li>
                 </ul>
               </section>
 
               <section>
-                <h3 className="font-semibold text-base mb-2">4. Chính sách bảo mật</h3>
+                <h3 className="font-semibold text-base mb-2">
+                  4. Chính sách bảo mật
+                </h3>
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn:
                 </p>
                 <ul className="list-disc list-inside text-muted-foreground space-y-1 leading-relaxed">
-                  <li>Thông tin cá nhân chỉ được sử dụng cho mục đích cung cấp dịch vụ.</li>
-                  <li>Chúng tôi không chia sẻ dữ liệu với bên thứ ba mà không có sự đồng ý của bạn.</li>
-                  <li>Dữ liệu được mã hóa và bảo mật theo tiêu chuẩn công nghiệp.</li>
+                  <li>
+                    Thông tin cá nhân chỉ được sử dụng cho mục đích cung cấp
+                    dịch vụ.
+                  </li>
+                  <li>
+                    Chúng tôi không chia sẻ dữ liệu với bên thứ ba mà không có
+                    sự đồng ý của bạn.
+                  </li>
+                  <li>
+                    Dữ liệu được mã hóa và bảo mật theo tiêu chuẩn công nghiệp.
+                  </li>
                   <li>Bạn có quyền yêu cầu xóa dữ liệu cá nhân của mình.</li>
                 </ul>
               </section>
 
               <section>
-                <h3 className="font-semibold text-base mb-2">5. Quyền sở hữu trí tuệ</h3>
+                <h3 className="font-semibold text-base mb-2">
+                  5. Quyền sở hữu trí tuệ
+                </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Tất cả nội dung, thiết kế và tính năng của Mangaria đều thuộc quyền sở hữu của chúng tôi hoặc các đối tác được cấp phép. 
-                  Bạn không được sao chép, phân phối hoặc sử dụng lại mà không có sự cho phép bằng văn bản.
+                  Tất cả nội dung, thiết kế và tính năng của Mangaria đều thuộc
+                  quyền sở hữu của chúng tôi hoặc các đối tác được cấp phép. Bạn
+                  không được sao chép, phân phối hoặc sử dụng lại mà không có sự
+                  cho phép bằng văn bản.
                 </p>
               </section>
 
               <section>
-                <h3 className="font-semibold text-base mb-2">6. Giới hạn trách nhiệm</h3>
+                <h3 className="font-semibold text-base mb-2">
+                  6. Giới hạn trách nhiệm
+                </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Mangaria không chịu trách nhiệm cho bất kỳ thiệt hại trực tiếp hay gián tiếp nào phát sinh từ việc sử dụng dịch vụ, 
-                  bao gồm nhưng không giới hạn ở mất mát dữ liệu, gián đoạn dịch vụ hoặc lỗi hệ thống.
+                  Mangaria không chịu trách nhiệm cho bất kỳ thiệt hại trực tiếp
+                  hay gián tiếp nào phát sinh từ việc sử dụng dịch vụ, bao gồm
+                  nhưng không giới hạn ở mất mát dữ liệu, gián đoạn dịch vụ hoặc
+                  lỗi hệ thống.
                 </p>
               </section>
 
               <section>
-                <h3 className="font-semibold text-base mb-2">7. Thay đổi điều khoản</h3>
+                <h3 className="font-semibold text-base mb-2">
+                  7. Thay đổi điều khoản
+                </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Chúng tôi có quyền cập nhật các điều khoản này bất cứ lúc nào. 
-                  Việc tiếp tục sử dụng dịch vụ sau khi có thay đổi đồng nghĩa với việc bạn chấp nhận các điều khoản mới.
+                  Chúng tôi có quyền cập nhật các điều khoản này bất cứ lúc nào.
+                  Việc tiếp tục sử dụng dịch vụ sau khi có thay đổi đồng nghĩa
+                  với việc bạn chấp nhận các điều khoản mới.
                 </p>
               </section>
 
               <section>
                 <h3 className="font-semibold text-base mb-2">8. Liên hệ</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Nếu bạn có bất kỳ câu hỏi nào về các điều khoản này, vui lòng liên hệ với chúng tôi qua email: 
+                  Nếu bạn có bất kỳ câu hỏi nào về các điều khoản này, vui lòng
+                  liên hệ với chúng tôi qua email:
                   <span className="text-primary"> mangariaweb@gmail.com</span>
                 </p>
               </section>
@@ -419,9 +461,7 @@ export function Register() {
           </div>
 
           <DialogFooter>
-            <Button onClick={() => setShowTermsDialog(false)}>
-              Đóng
-            </Button>
+            <Button onClick={() => setShowTermsDialog(false)}>Đóng</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

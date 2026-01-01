@@ -7,9 +7,9 @@ export const PageLoader = () => (
       {/* Logo in center */}
       <div className="absolute inset-0 flex items-center justify-center">
         <img
-          src="/mangaria_logo.svg"
+          src="/mangaria_logo.png"
           alt="Mangaria Logo"
-          className="w-32 h-32 object-contain"
+          className="w-40 h-40 object-contain"
         />
       </div>
     </div>

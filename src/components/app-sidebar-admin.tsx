@@ -36,7 +36,7 @@ interface AdminSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 // Navigation data for Admin role
 const data = {
-    navMain: [
+  navMain: [
     {
       title: "Trang cá nhân",
       url: "/user/profile",
@@ -118,9 +118,9 @@ export default function AdminSidebar({ ...props }: AdminSidebarProps) {
         <Link to="/" className="block">
           <div className="flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-accent transition-colors rounded-md">
             <img
-              src="/mangaria_logo.svg"
+              src="/mangaria_logo.png"
               alt="Mangaria Logo"
-              className="h-8 w-8 object-contain"
+              className="h-10 w-10 object-contain"
             />
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">Mangaria</span>
