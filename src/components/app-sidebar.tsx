@@ -9,7 +9,7 @@ import {
   Shield,
   BarChart3,
   Users,
-  Clock,
+ /*  Clock, */
   FileText,
   Upload,
   LayoutDashboard,
@@ -121,11 +121,11 @@ const adminNavigation = {
       url: "/admin/users",
       icon: Users,
     },
-    {
-      title: "Dịch thuật",
-      url: "/admin/translations",
-      icon: Clock,
-    },
+    // {
+    //   title: "Dịch thuật",
+    //   url: "/admin/translations",
+    //   icon: Clock,
+    // },
     {
       title: "Báo cáo",
       url: "/admin/reports",
