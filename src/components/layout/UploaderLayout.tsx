@@ -21,7 +21,6 @@ import {
   User,
   LogOut,
   Settings,
-  ArrowLeftRight,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -118,17 +117,6 @@ export function UploaderLayout({
 
             {/* Right side controls */}
             <div className="ml-auto flex items-center gap-2">
-              {/* Switch to Reader Mode Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate("/")}
-                className="gap-2"
-              >
-                <ArrowLeftRight className="h-4 w-4" />
-                <span className="hidden sm:inline">Reader Mode</span>
-              </Button>
-
               {/* Dark mode toggle */}
               <Button
                 variant="outline"
