@@ -4,7 +4,7 @@ import { ProtectedRoute } from "./protectedRoute";
 import DashboardOverview from "@/pages/Admin/components/DashboardOverview";
 import MangaManagementComponent from "@/pages/Admin/components/MangaManagement";
 import UserManagementComponent from "@/pages/Admin/components/UserManagement";
-import TranslationQueue from "@/pages/Admin/components/TranslationQueue";
+// import TranslationQueue from "@/pages/Admin/components/TranslationQueue";
 import ReportsComponent from "@/pages/Admin/components/Reports";
 import StatisticsComponent from "@/pages/Admin/components/Statistics";
 import SettingsComponent from "@/pages/Admin/components/Settings";
@@ -56,21 +56,21 @@ export const adminRoutes: RouteObject[] = [
       </ProtectedRoute>
     ),
   },
-  {
-    path: "/admin/translations",
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        <AdminLayout
-          breadcrumbs={[
-            { label: "Quản trị", href: "/admin" },
-            { label: "Dịch thuật" },
-          ]}
-        >
-          <TranslationQueue />
-        </AdminLayout>
-      </ProtectedRoute>
-    ),
-  },
+  // {
+  //   path: "/admin/translations",
+  //   element: (
+  //     <ProtectedRoute requiredRole="admin">
+  //       <AdminLayout
+  //         breadcrumbs={[
+  //           { label: "Quản trị", href: "/admin" },
+  //           { label: "Dịch thuật" },
+  //         ]}
+  //       >
+  //         <TranslationQueue />
+  //       </AdminLayout>
+  //     </ProtectedRoute>
+  //   ),
+  // },
   {
     path: "/admin/reports",
     element: (

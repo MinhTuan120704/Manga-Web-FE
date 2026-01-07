@@ -47,7 +47,7 @@ export function Login() {
         if (user?.role === "admin") {
           navigate("/admin/overview", { replace: true });
         } else if (user?.role === "uploader") {
-          navigate("/uploader", { replace: true });
+          navigate("/uploader/dashboard", { replace: true });
         } else {
           navigate("/", { replace: true });
         }

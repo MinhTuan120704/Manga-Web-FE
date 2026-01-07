@@ -11,6 +11,13 @@ import {
   RefreshCw,
 } from "lucide-react";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -31,44 +38,34 @@ import type { User } from "@/types/user";
 import type { Manga } from "@/types/manga";
 import { toast } from "sonner";
 
-/* const getStatusIcon = (status: string) => {
+const getStatusColor = (status: string) => {
   switch (status) {
-    case "Resolved":
-      return <CheckCircle className="text-green-600" size={18} />;
-    case "In Review":
-      return <Clock className="text-yellow-600" size={18} />;
-    case "Pending":
-      return <AlertCircle className="text-red-600" size={18} />;
-    default:
-      return <AlertCircle size={18} />;
-  }
-}; */
-
-/* const getStatusColor = (status: string) => {
-  switch (status) {
+    case "resolved":
     case "Resolved":
       return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
-    case "In Review":
-      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+    case "pending":
     case "Pending":
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+    case "rejected":
+    case "Rejected":
       return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
     default:
-      return "bg-gray-100 text-gray-800";
+      return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
   }
 };
 
 const getStatusInVietnamese = (status: string): string => {
-  switch (status) {
-    case "Resolved":
+  switch (status.toLowerCase()) {
+    case "resolved":
       return "Đã giải quyết";
-    case "In Review":
-      return "Đang xem xét";
-    case "Pending":
+    case "pending":
       return "Đang chờ";
+    case "rejected":
+      return "Đã từ chối";
     default:
       return status;
   }
-}; */
+};
 
 export default function Reports() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -95,6 +92,7 @@ export default function Reports() {
     try {
       setLoading(true);
       const response = await reportService.getAllReports();
+      console.log("Fetched reports:", response);
       setReports(response || []);
     } catch (error) {
       console.error("Failed to fetch reports:", error);
@@ -191,7 +189,7 @@ export default function Reports() {
     }
   };
 
- /*  const getUserName = (userId: string | User): string => {
+  /*  const getUserName = (userId: string | User): string => {
     if (typeof userId === "object" && userId) {
       return userId.username;
     }
@@ -240,7 +238,7 @@ export default function Reports() {
     }
   };
 
- /*  const handleCloseModal = () => {
+  /*  const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedReport(null);
     setSelectedManga(null);
@@ -314,16 +312,20 @@ export default function Reports() {
         {/* Time Filter */}
         <div className="flex items-center gap-2">
           <Filter size={20} className="text-muted-foreground" />
-          <select
+          <Select
             value={filterTime}
-            onChange={(e) => handleFilterChange(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-border bg-card text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            onValueChange={(v) => handleFilterChange(v)}
           >
-            <option value="all">Tất cả thời gian</option>
-            <option value="today">Hôm nay</option>
-            <option value="week">7 ngày qua</option>
-            <option value="month">30 ngày qua</option>
-          </select>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Tất cả thời gian" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả thời gian</SelectItem>
+              <SelectItem value="today">Hôm nay</SelectItem>
+              <SelectItem value="week">7 ngày qua</SelectItem>
+              <SelectItem value="month">30 ngày qua</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -343,6 +345,9 @@ export default function Reports() {
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-card-foreground">
                 Ngày báo cáo
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-card-foreground">
+                Trạng thái
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-card-foreground">
                 Hành động
@@ -375,6 +380,15 @@ export default function Reports() {
                 </td>
                 <td className="px-6 py-4 text-card-foreground text-sm">
                   {formatDate(report.createdAt)}
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                      report.status
+                    )}`}
+                  >
+                    {getStatusInVietnamese(report.status)}
+                  </span>
                 </td>
                 <td className="px-6 py-4 flex gap-2">
                   <button
@@ -521,7 +535,7 @@ export default function Reports() {
                           alt={selectedManga.title}
                           className="w-24 h-32 object-cover rounded-lg border border-border"
                           onError={(e) => {
-                            e.currentTarget.src = '/placeholder-manga.png';
+                            e.currentTarget.src = "/placeholder-manga.png";
                           }}
                         />
                         <div className="flex-1 space-y-2">
@@ -534,16 +548,22 @@ export default function Reports() {
                           <div className="grid grid-cols-2 gap-4">
                             <div>
                               <Label>Tác giả</Label>
-                              <p className="text-foreground">{selectedManga.author}</p>
+                              <p className="text-foreground">
+                                {selectedManga.author}
+                              </p>
                             </div>
                             <div>
                               <Label>Trạng thái</Label>
-                              <p className="text-foreground capitalize">{selectedManga.status}</p>
+                              <p className="text-foreground capitalize">
+                                {selectedManga.status}
+                              </p>
                             </div>
                           </div>
                           <div>
                             <Label>Lượt xem</Label>
-                            <p className="text-foreground">{selectedManga.viewCount?.toLocaleString() || 0}</p>
+                            <p className="text-foreground">
+                              {selectedManga.viewCount?.toLocaleString() || 0}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -572,7 +592,6 @@ export default function Reports() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-
                   <div className="space-y-2">
                     <Label htmlFor="report-date">Ngày báo cáo</Label>
                     <Input
@@ -615,21 +634,29 @@ export default function Reports() {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label>Tên người dùng</Label>
-                          <p className="text-foreground font-medium">{selectedUser.username}</p>
+                          <p className="text-foreground font-medium">
+                            {selectedUser.username}
+                          </p>
                         </div>
                         <div>
                           <Label>Email</Label>
-                          <p className="text-foreground">{selectedUser.email}</p>
+                          <p className="text-foreground">
+                            {selectedUser.email}
+                          </p>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label>Vai trò</Label>
-                          <p className="text-foreground capitalize">{selectedUser.role}</p>
+                          <p className="text-foreground capitalize">
+                            {selectedUser.role}
+                          </p>
                         </div>
                         <div>
                           <Label>ID người dùng</Label>
-                          <p className="text-foreground font-mono text-xs">{selectedUser._id}</p>
+                          <p className="text-foreground font-mono text-xs">
+                            {selectedUser._id}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -655,6 +682,18 @@ export default function Reports() {
                       <span className="text-muted-foreground">ID báo cáo:</span>
                       <p className="text-foreground font-mono text-xs">
                         {selectedReport._id}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Trạng thái:</span>
+                      <p className="mt-1">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                            selectedReport.status
+                          )}`}
+                        >
+                          {getStatusInVietnamese(selectedReport.status)}
+                        </span>
                       </p>
                     </div>
                     <div>

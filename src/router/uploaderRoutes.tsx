@@ -8,11 +8,11 @@ import { CreateChapter } from "@/pages/Uploader/CreateChapter/CreateChapter";
 import { EditChapter } from "@/pages/Uploader/EditChapter/EditChapter";
 import { CommentManagement } from "@/pages/Uploader/CommentManagement/CommentManagement";
 import { UploaderSettings } from "@/pages/Uploader/UploaderSettings/UploaderSettings";
-import { Analytics } from "@/pages/Uploader/Analytics/Analytics";
+// import { Analytics } from "@/pages/Uploader/Analytics/Analytics";
 
 export const uploaderRoutes: RouteObject[] = [
   {
-    path: "/uploader",
+    path: "/uploader/dashboard",
     element: (
       <ProtectedRoute requiredRole="uploader">
         <Dashboard />
@@ -35,14 +35,14 @@ export const uploaderRoutes: RouteObject[] = [
       </ProtectedRoute>
     ),
   },
-  {
-    path: "/uploader/analytics",
-    element: (
-      <ProtectedRoute requiredRole="uploader">
-        <Analytics />
-      </ProtectedRoute>
-    ),
-  },
+  // {
+  //   path: "/uploader/analytics",
+  //   element: (
+  //     <ProtectedRoute requiredRole="uploader">
+  //       <Analytics />
+  //     </ProtectedRoute>
+  //   ),
+  // },
   {
     path: "/uploader/manga/create",
     element: (

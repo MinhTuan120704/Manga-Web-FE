@@ -155,7 +155,7 @@ export function CreateManga() {
         } catch (error) {
           console.error("Error fetching manga details:", error);
           toast.error("Không thể tải thông tin truyện");
-          navigate("/uploader");
+          navigate("/uploader/dashboard");
         } finally {
           setLoading(false);
         }
@@ -322,7 +322,7 @@ export function CreateManga() {
 
         await mangaService.updateManga(id, updateData);
         toast.success("Cập nhật truyện thành công!");
-        navigate("/uploader");
+        navigate("/uploader/dashboard");
       } else {
         // Handle Create
         const requestData: CreateMangaRequest = {
@@ -416,7 +416,7 @@ export function CreateManga() {
 
   const handleBackToDashboard = () => {
     setShowSuccessDialog(false);
-    navigate("/uploader");
+    navigate("/uploader/dashboard");
   };
 
   const getStatusLabel = (status: string) => {
@@ -434,7 +434,7 @@ export function CreateManga() {
       <div className="mb-8">
         <Button
           variant="ghost"
-          onClick={() => navigate("/uploader")}
+          onClick={() => navigate("/uploader/dashboard")}
           className="mb-4 -ml-2"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -796,7 +796,7 @@ export function CreateManga() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate("/uploader")}
+              onClick={() => navigate("/uploader/dashboard")}
               disabled={loading}
               className="order-2 sm:order-1"
             >

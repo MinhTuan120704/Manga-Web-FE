@@ -75,7 +75,7 @@ export function ChapterManagement() {
   return (
     <UploaderLayout
       breadcrumbs={[
-        { label: "Dashboard", href: "/uploader" },
+        { label: "Dashboard", href: "/uploader/dashboard" },
         { label: "Quản lý truyện", href: "/uploader/mangas" },
         { label: manga?.title || "Chi tiết truyện" },
       ]}

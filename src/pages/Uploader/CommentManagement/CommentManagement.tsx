@@ -75,7 +75,7 @@ export function CommentManagement() {
   return (
     <UploaderLayout
       breadcrumbs={[
-        { label: "Dashboard", href: "/uploader" },
+        { label: "Dashboard", href: "/uploader/dashboard" },
         { label: "Quản lý bình luận" },
       ]}
     >

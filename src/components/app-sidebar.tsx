@@ -9,7 +9,7 @@ import {
   Shield,
   BarChart3,
   Users,
-  Clock,
+ /*  Clock, */
   FileText,
   Upload,
   LayoutDashboard,
@@ -74,7 +74,7 @@ const uploaderNavigation = {
   items: [
     {
       title: "Dashboard",
-      url: "/uploader",
+      url: "/uploader/dashboard",
       icon: LayoutDashboard,
     },
     {
@@ -121,15 +121,20 @@ const adminNavigation = {
       url: "/admin/users",
       icon: Users,
     },
-    {
-      title: "Dịch thuật",
-      url: "/admin/translations",
-      icon: Clock,
-    },
+    // {
+    //   title: "Dịch thuật",
+    //   url: "/admin/translations",
+    //   icon: Clock,
+    // },
     {
       title: "Báo cáo",
       url: "/admin/reports",
       icon: FileText,
+    },
+    {
+      title: "Thống kê",
+      url: "/admin/statistics",
+      icon: BarChart3,
     },
   ],
 };

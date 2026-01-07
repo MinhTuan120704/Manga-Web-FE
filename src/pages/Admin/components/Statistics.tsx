@@ -22,6 +22,21 @@ import { PageLoader } from "@/components/common/PageLoader";
 import { statisticsService } from "@/services/statistics.service";
 import type { BasicStatistics, DetailedStatistics } from "@/types/comment";
 import { toast } from "sonner";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 export default function Statistics() {
   const [basicStats, setBasicStats] = useState<BasicStatistics | null>(null);
@@ -34,7 +49,7 @@ export default function Statistics() {
     fetchStatistics();
   }, []);
 
-  const fetchStatistics = async () => {
+  const   fetchStatistics = async () => {
     try {
       setLoading(true);
       const [basic, detailed] = await Promise.all([
@@ -164,51 +179,84 @@ export default function Statistics() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-accent/50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Users className="h-4 w-4 text-primary" />
-                    <span className="text-sm text-muted-foreground">
-                      Tổng số
-                    </span>
-                  </div>
-                  <p className="text-2xl font-bold text-foreground">
-                    {detailedStats.users.total.toLocaleString()}
-                  </p>
-                </div>
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Pie Chart */}
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: "Uploader", value: detailedStats.users.uploaders },
+                        { name: "Reader", value: detailedStats.users.readers },
+                        { name: "Admin", value: detailedStats.users.admins },
+                      ]}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) =>
+                        `${name} ${((percent || 0) * 100).toFixed(1)}%`
+                      }
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {[0, 1, 2].map((index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
 
-                <div className="bg-accent/50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="h-4 w-4 text-blue-500" />
-                    <span className="text-sm text-muted-foreground">
-                      Uploader
-                    </span>
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Users className="h-4 w-4 text-primary" />
+                      <span className="text-sm text-muted-foreground">
+                        Tổng số
+                      </span>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">
+                      {detailedStats.users.total.toLocaleString()}
+                    </p>
                   </div>
-                  <p className="text-2xl font-bold text-foreground">
-                    {detailedStats.users.uploaders.toLocaleString()}
-                  </p>
-                </div>
 
-                <div className="bg-accent/50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <BookOpen className="h-4 w-4 text-green-500" />
-                    <span className="text-sm text-muted-foreground">
-                      Reader
-                    </span>
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="h-4 w-4 text-blue-500" />
+                      <span className="text-sm text-muted-foreground">
+                        Uploader
+                      </span>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">
+                      {detailedStats.users.uploaders.toLocaleString()}
+                    </p>
                   </div>
-                  <p className="text-2xl font-bold text-foreground">
-                    {detailedStats.users.readers.toLocaleString()}
-                  </p>
-                </div>
 
-                <div className="bg-accent/50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Activity className="h-4 w-4 text-purple-500" />
-                    <span className="text-sm text-muted-foreground">Admin</span>
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <BookOpen className="h-4 w-4 text-green-500" />
+                      <span className="text-sm text-muted-foreground">
+                        Reader
+                      </span>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">
+                      {detailedStats.users.readers.toLocaleString()}
+                    </p>
                   </div>
-                  <p className="text-2xl font-bold text-foreground">
-                    {detailedStats.users.admins.toLocaleString()}
-                  </p>
+
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Activity className="h-4 w-4 text-purple-500" />
+                      <span className="text-sm text-muted-foreground">Admin</span>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">
+                      {detailedStats.users.admins.toLocaleString()}
+                    </p>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -223,7 +271,36 @@ export default function Statistics() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart
+                  data={[
+                    {
+                      name: "Đang tiến hành",
+                      value: detailedStats.mangas.ongoing,
+                      fill: "#00C49F",
+                    },
+                    {
+                      name: "Hoàn thành",
+                      value: detailedStats.mangas.completed,
+                      fill: "#0088FE",
+                    },
+                    {
+                      name: "Tạm ngưng",
+                      value: detailedStats.mangas.hiatus,
+                      fill: "#FFBB28",
+                    },
+                  ]}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="value" name="Số lượng" />
+                </BarChart>
+              </ResponsiveContainer>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                 <div className="bg-accent/50 rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <BookOpen className="h-4 w-4 text-primary" />
@@ -284,41 +361,99 @@ export default function Statistics() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-accent/50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <AlertTriangle className="h-4 w-4 text-primary" />
-                    <span className="text-sm text-muted-foreground">
-                      Tổng số
-                    </span>
-                  </div>
-                  <p className="text-2xl font-bold text-foreground">
-                    {detailedStats.reports.total.toLocaleString()}
-                  </p>
-                </div>
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Pie Chart */}
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={[
+                        {
+                          name: "Đang chờ",
+                          value: detailedStats.reports.pending,
+                        },
+                        {
+                          name: "Đã xử lý",
+                          value: detailedStats.reports.resolved,
+                        },
+                      ]}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) =>
+                        `${name} ${((percent || 0) * 100).toFixed(1)}%`
+                      }
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      <Cell fill="#FFBB28" />
+                      <Cell fill="#00C49F" />
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
 
-                <div className="bg-accent/50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock className="h-4 w-4 text-yellow-500" />
-                    <span className="text-sm text-muted-foreground">
-                      Đang chờ
-                    </span>
+                {/* Stats */}
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertTriangle className="h-4 w-4 text-primary" />
+                      <span className="text-sm text-muted-foreground">
+                        Tổng số
+                      </span>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">
+                      {detailedStats.reports.total.toLocaleString()}
+                    </p>
                   </div>
-                  <p className="text-2xl font-bold text-foreground">
-                    {detailedStats.reports.pending.toLocaleString()}
-                  </p>
-                </div>
 
-                <div className="bg-accent/50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm text-muted-foreground">
-                      Đã xử lý
-                    </span>
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Clock className="h-4 w-4 text-yellow-500" />
+                      <span className="text-sm text-muted-foreground">
+                        Đang chờ
+                      </span>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">
+                      {detailedStats.reports.pending.toLocaleString()}
+                    </p>
+                    <div className="w-full bg-muted rounded-full h-2 mt-2">
+                      <div
+                        className="h-2 rounded-full bg-yellow-500 transition-all"
+                        style={{
+                          width: `${
+                            (detailedStats.reports.pending /
+                              detailedStats.reports.total) *
+                            100
+                          }%`,
+                        }}
+                      />
+                    </div>
                   </div>
-                  <p className="text-2xl font-bold text-foreground">
-                    {detailedStats.reports.resolved.toLocaleString()}
-                  </p>
+
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-sm text-muted-foreground">
+                        Đã xử lý
+                      </span>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">
+                      {detailedStats.reports.resolved.toLocaleString()}
+                    </p>
+                    <div className="w-full bg-muted rounded-full h-2 mt-2">
+                      <div
+                        className="h-2 rounded-full bg-green-500 transition-all"
+                        style={{
+                          width: `${
+                            (detailedStats.reports.resolved /
+                              detailedStats.reports.total) *
+                            100
+                          }%`,
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>

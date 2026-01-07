@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import {
   SidebarProvider,
   SidebarInset,
@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Settings } from "lucide-react";
+import { LogOut, Settings, Moon, Sun } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
 import { ConfirmationModal } from "@/components/common/ConfirmationModal";
@@ -38,6 +38,34 @@ export const AdminLayout = ({
 }: AdminLayoutProps) => {
   const navigate = useNavigate();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  // Load dark mode preference
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+      setDarkMode(true);
+    }
+  }, []);
+
+  // Apply dark mode
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
 
   const handleLogout = async () => {
     try {
@@ -63,6 +91,20 @@ export const AdminLayout = ({
           <Separator orientation="vertical" className="mr-2 h-4" />
 
           <div className="flex-1" />
+
+          {/* Dark mode toggle */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleDarkMode}
+            className="transition-all duration-300"
+          >
+            {darkMode ? (
+              <Sun className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
+          </Button>
 
           {/* User Menu */}
           <DropdownMenu>

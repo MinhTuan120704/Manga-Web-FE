@@ -11,7 +11,7 @@ import {
   Edit2,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -63,7 +63,7 @@ export default function UserManagement() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const fetchUserList = async (page: number = 1) => {
+  const fetchUserList = useCallback(async (page: number = 1) => {
     try {
       setLoadingUsers(true);
       const response = await userService.getUsers({
@@ -86,19 +86,11 @@ export default function UserManagement() {
     } finally {
       setLoadingUsers(false);
     }
-  };
+  }, [searchTerm, filterRole]);
 
   useEffect(() => {
     fetchUserList(1);
-  }, []);
-
-  useEffect(() => {
-    fetchUserList(1);
-  }, [searchTerm]);
-
-  useEffect(() => {
-    fetchUserList(1);
-  }, [filterRole]);
+  }, [fetchUserList]);
 
   const handleSaveUser = async () => {
     if (!selectedUser) return;
@@ -216,16 +208,20 @@ export default function UserManagement() {
         {/* Role Filter */}
         <div className="flex items-center gap-2">
           <Filter size={20} className="text-muted-foreground" />
-          <select
+          <Select
             value={filterRole}
-            onChange={(e) => setFilterRole(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-border bg-card text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            onValueChange={(v) => setFilterRole(v)}
           >
-            <option value="All">Tất cả</option>
-            <option value="admin">Quản trị viên</option>
-            <option value="uploader">Người đăng tải</option>
-            <option value="reader">Người dùng</option>
-          </select>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Tất cả" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">Tất cả</SelectItem>
+              <SelectItem value="admin">Quản trị viên</SelectItem>
+              <SelectItem value="uploader">Người đăng tải</SelectItem>
+              <SelectItem value="reader">Người dùng</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

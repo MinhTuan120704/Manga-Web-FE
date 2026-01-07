@@ -14,12 +14,8 @@ import {
 import StatCard from "./Statcard";
 import { TrendingUp, Users, BookOpen, Clock } from "lucide-react";
 import { statisticsService } from "@/services/statistics.service";
-import { genreService } from "@/services/genre.service";
-import { mangaService } from "@/services/manga.service";
 import { PageLoader } from "@/components/common/PageLoader";
 import type { DetailedStatistics } from "@/types/comment";
-import type { Genre } from "@/types/genre";
-import type { Manga } from "@/types/manga";
 import { toast } from "sonner";
 
 const CHART_COLORS = [
@@ -33,8 +29,6 @@ const CHART_COLORS = [
 export default function DashboardOverview() {
   const [loading, setLoading] = useState(true);
   const [statistics, setStatistics] = useState<DetailedStatistics | null>(null);
-  const [genres, setGenres] = useState<Genre[]>([]);
-  const [recentMangas, setRecentMangas] = useState<Manga[]>([]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -43,15 +37,8 @@ export default function DashboardOverview() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [statsData, genresData, mangasData] = await Promise.all([
-        statisticsService.getDetailedStatistics(),
-        genreService.getGenres(),
-        mangaService.searchMangas({ sortBy: "mostViewed", limit: 10 }),
-      ]);
-
+      const statsData = await statisticsService.getDetailedStatistics();
       setStatistics(statsData);
-      setGenres(genresData);
-      setRecentMangas(mangasData.mangas || []);
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
       toast.error("Không thể tải dữ liệu dashboard");
@@ -64,13 +51,12 @@ export default function DashboardOverview() {
     return <PageLoader />;
   }
 
-  // Prepare genre chart data - top 5 genres by manga count
-  const genreChartData = genres
-    .sort((a, b) => (b.mangaCount || 0) - (a.mangaCount || 0))
+  // Prepare genre chart data - top 5 genres from API
+  const genreChartData = (statistics.mangas.topGenres || [])
     .slice(0, 5)
     .map((genre, index) => ({
       name: genre.name,
-      value: genre.mangaCount || 0,
+      value: genre.count,
       color: CHART_COLORS[index % CHART_COLORS.length],
     }));
 
@@ -81,14 +67,11 @@ export default function DashboardOverview() {
     { status: "Tạm dừng", count: statistics.mangas.hiatus },
   ];
 
-  // Calculate total reads from recent mangas
-  const totalReads = recentMangas.reduce(
-    (sum, manga) => sum + (manga.viewCount || 0),
-    0
-  );
+  // Use totalViewCount from API
+  const totalReads = statistics.mangas.totalViewCount || 0;
 
   // Format number for display
-  const formatNumber = (num: number): string => {
+  const formatNumber = (num: number = 0): string => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
     return num.toString();

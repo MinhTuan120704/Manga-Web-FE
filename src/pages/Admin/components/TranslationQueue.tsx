@@ -9,6 +9,13 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface TranslationItem {
   id: number;
@@ -232,55 +239,65 @@ export default function TranslationQueue() {
         {/* Status Filter */}
         <div className="flex items-center gap-2">
           <Filter size={20} className="text-muted-foreground" />
-          <select
+          <Select
             value={filterStatus}
-            onChange={(e) => handleStatusChange(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-border bg-card text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            onValueChange={(v) => handleStatusChange(v)}
           >
-            <option value="All">Tất cả trạng thái</option>
-            <option value="Pending">Chờ xử lý</option>
-            <option value="In Progress">Đang tiến hành</option>
-            <option value="Review">Đang xem xét</option>
-            <option value="Completed">Hoàn thành</option>
-          </select>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Tất cả trạng thái" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">Tất cả trạng thái</SelectItem>
+              <SelectItem value="Pending">Chờ xử lý</SelectItem>
+              <SelectItem value="In Progress">Đang tiến hành</SelectItem>
+              <SelectItem value="Review">Đang xem xét</SelectItem>
+              <SelectItem value="Completed">Hoàn thành</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Language Filter */}
         <div className="flex items-center gap-2">
-          <select
+          <Select
             value={filterLanguage}
-            onChange={(e) => handleLanguageChange(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-border bg-card text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            onValueChange={(v) => handleLanguageChange(v)}
           >
-            <option value="All">Tất cả ngôn ngữ</option>
-            <option value="Spanish">Tiếng Tây Ban Nha</option>
-            <option value="French">Tiếng Pháp</option>
-            <option value="German">Tiếng Đức</option>
-            <option value="Portuguese">Tiếng Bồ Đào Nha</option>
-            <option value="English">Tiếng Anh</option>
-            <option value="Japanese">Tiếng Nhật</option>
-            <option value="Korean">Tiếng Hàn</option>
-            <option value="Chinese">Tiếng Trung</option>
-            <option value="Vietnamese">Tiếng Việt</option>
-          </select>
+            <SelectTrigger className="w-52">
+              <SelectValue placeholder="Tất cả ngôn ngữ" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">Tất cả ngôn ngữ</SelectItem>
+              <SelectItem value="Spanish">Tiếng Tây Ban Nha</SelectItem>
+              <SelectItem value="French">Tiếng Pháp</SelectItem>
+              <SelectItem value="German">Tiếng Đức</SelectItem>
+              <SelectItem value="Portuguese">Tiếng Bồ Đào Nha</SelectItem>
+              <SelectItem value="English">Tiếng Anh</SelectItem>
+              <SelectItem value="Japanese">Tiếng Nhật</SelectItem>
+              <SelectItem value="Korean">Tiếng Hàn</SelectItem>
+              <SelectItem value="Chinese">Tiếng Trung</SelectItem>
+              <SelectItem value="Vietnamese">Tiếng Việt</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         {/* Progress & Priority Filters */}
         <div className="flex items-center gap-2">
           <label className="text-sm text-muted-foreground">Tiến độ:</label>
-          <select
+          <Select
             value={progressFilterType}
-            onChange={(e) => {
-              setProgressFilterType(
-                e.target.value as "all" | "missing" | "percent"
-              );
+            onValueChange={(v) => {
+              setProgressFilterType(v as "all" | "missing" | "percent");
               setCurrentPage(1);
             }}
-            className="px-3 py-2 rounded-lg border border-border bg-card text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           >
-            <option value="all">Tất cả</option>
-            <option value="missing">Theo số chương thiếu (&gt;=)</option>
-            <option value="percent">Theo % đã dịch (&lt;=)</option>
-          </select>
+            <SelectTrigger className="w-56">
+              <SelectValue placeholder="Tất cả" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả</SelectItem>
+              <SelectItem value="missing">Theo số chương thiếu (≥)</SelectItem>
+              <SelectItem value="percent">Theo % đã dịch (≤)</SelectItem>
+            </SelectContent>
+          </Select>
 
           {progressFilterType === "missing" && (
             <input

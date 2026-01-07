@@ -6,7 +6,7 @@ import {
   Sparkles,
   BarChart3,
   Users,
-  Clock,
+ /*  Clock, */
   FileText,
   Settings,
   User,
@@ -80,11 +80,11 @@ const data = {
           url: "/admin/users",
           icon: Users,
         },
-        {
-          title: "Dịch thuật",
-          url: "/admin/translations",
-          icon: Clock,
-        },
+        // {
+        //   title: "Dịch thuật",
+        //   url: "/admin/translations",
+        //   icon: Clock,
+        // },
         {
           title: "Báo cáo",
           url: "/admin/reports",

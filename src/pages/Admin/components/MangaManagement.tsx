@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Trash2,
   Edit2,
@@ -77,7 +77,7 @@ export default function MangaManagement() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const fetchMangaList = async (page: number = 1) => {
+  const fetchMangaList = useCallback(async (page: number = 1) => {
     try {
       setLoadingManga(true);
       const response = await mangaService.getMangas({
@@ -89,29 +89,22 @@ export default function MangaManagement() {
             ? (filterStatus as "completed" | "ongoing" | "hiatus" | "cancelled")
             : undefined,
       });
-      console.log(response);
       if (response) {
         setMangaList(response);
         setCurrentPage(page);
       }
-    } catch (error) {
-      console.error("Error fetching featured mangas:", error);
+    } catch {
+      toast.error("Lấy dữ liệu thất bại", {
+        description: "Không thể lấy danh sách manga. Vui lòng thử lại.",
+      });
     } finally {
       setLoadingManga(false);
     }
-  };
+  }, [searchTerm, filterStatus]);
 
   useEffect(() => {
     fetchMangaList(1);
-  }, []);
-
-  useEffect(() => {
-    fetchMangaList(1);
-  }, [searchTerm]);
-
-  useEffect(() => {
-    fetchMangaList(1);
-  }, [filterStatus]);
+  }, [fetchMangaList]);
 
   const handleSaveManga = async () => {
     if (!selectedManga) return;
@@ -139,7 +132,7 @@ export default function MangaManagement() {
       setIsModalOpen(false);
       fetchMangaList(currentPage);
     } catch (error) {
-      console.error("Error updating manga:", error);
+      console.log(error);
       toast.error("Cập nhật thất bại", {
         description: "Không thể cập nhật thông tin manga. Vui lòng thử lại.",
       });
@@ -162,8 +155,7 @@ export default function MangaManagement() {
       setShowDeleteConfirm(false);
       setMangaToDelete(null);
       fetchMangaList(currentPage);
-    } catch (error) {
-      console.error("Error deleting manga:", error);
+    } catch {
       toast.error("Xóa thất bại", {
         description: "Không thể xóa manga. Vui lòng thử lại.",
       });
@@ -203,17 +195,21 @@ export default function MangaManagement() {
         {/* Status Filter */}
         <div className="flex items-center gap-2">
           <Filter size={20} className="text-muted-foreground" />
-          <select
+          <Select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-border bg-card text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            onValueChange={(v) => setFilterStatus(v)}
           >
-            <option value="All">Tất cả</option>
-            <option value="completed">Hoàn thành</option>
-            <option value="ongoing">Đang tiến hành</option>
-            <option value="hiatus">Tạm ngưng</option>
-            <option value="cancelled">Đã hủy</option>
-          </select>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Tất cả" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">Tất cả</SelectItem>
+              <SelectItem value="completed">Hoàn thành</SelectItem>
+              <SelectItem value="ongoing">Đang tiến hành</SelectItem>
+              <SelectItem value="hiatus">Tạm ngưng</SelectItem>
+              <SelectItem value="cancelled">Đã hủy</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

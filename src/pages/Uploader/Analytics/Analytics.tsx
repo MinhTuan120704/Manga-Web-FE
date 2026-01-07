@@ -99,11 +99,13 @@ const StatCard = ({ title, value, change, icon: Icon, description }: StatCardPro
 
 export const Analytics = () => {
   const [timeRange, setTimeRange] = useState("7days");
+ 
+
 
   return (
     <UploaderLayout
       breadcrumbs={[
-        { label: "Dashboard", href: "/uploader" },
+        { label: "Dashboard", href: "/uploader/dashboard" },
         { label: "Thống kê" },
       ]}
     >
