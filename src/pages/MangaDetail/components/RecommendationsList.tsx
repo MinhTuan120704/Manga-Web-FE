@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { mangaService } from "@/services/manga.service";
 import type { RecommendationsRawData, RecommendationItem } from "@/types/api";
-import { MangaCard } from "@/components/common/MangaCard";
+import { MangaCardHorizontal } from "@/components/common/MangaCardHorizontal";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
 import type { Manga } from "@/types/manga";
@@ -83,11 +83,15 @@ export function RecommendationsList({ mangaId, limit = 8 }: Props) {
         <CardHeader>
           <div className="flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" />
-            <h4 className="text-base font-semibold text-foreground">Có thể bạn cũng thích</h4>
+            <h4 className="text-base font-semibold text-foreground">
+              Có thể bạn cũng thích
+            </h4>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-muted-foreground">Đang tải đề xuất...</div>
+          <div className="text-sm text-muted-foreground">
+            Đang tải đề xuất...
+          </div>
         </CardContent>
       </Card>
     );
@@ -98,7 +102,9 @@ export function RecommendationsList({ mangaId, limit = 8 }: Props) {
         <CardHeader>
           <div className="flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" />
-            <h4 className="text-base font-semibold text-foreground">Có thể bạn cũng thích</h4>
+            <h4 className="text-base font-semibold text-foreground">
+              Có thể bạn cũng thích
+            </h4>
           </div>
         </CardHeader>
         <CardContent>
@@ -115,13 +121,15 @@ export function RecommendationsList({ mangaId, limit = 8 }: Props) {
       <CardHeader>
         <div className="flex items-center gap-2">
           <BookOpen className="h-5 w-5 text-primary" />
-          <h2 className="text-base font-semibold text-foreground">Có thể bạn cũng thích</h2>
+          <h2 className="text-base font-semibold text-foreground">
+            Có thể bạn cũng thích
+          </h2>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+        <div className="flex flex-col gap-4">
           {data.recommendations.map((r) => (
-            <MangaCard key={r._id} manga={mapToManga(r)} />
+            <MangaCardHorizontal key={r._id} manga={mapToManga(r)} />
           ))}
         </div>
       </CardContent>
