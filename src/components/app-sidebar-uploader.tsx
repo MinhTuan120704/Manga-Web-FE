@@ -6,7 +6,7 @@ import {
   Upload,
   LayoutDashboard,
   FolderOpen,
-  BarChart3,
+  /* BarChart3, */
   Settings,
   MessageSquare,
   User,
@@ -75,11 +75,11 @@ const data = {
           url: "/uploader/comments",
           icon: MessageSquare,
         },
-        {
-          title: "Thống kê",
-          url: "/uploader/analytics",
-          icon: BarChart3,
-        },
+        // {
+        //   title: "Thống kê",
+        //   url: "/uploader/analytics",
+        //   icon: BarChart3,
+        // },
       ],
     },
   ],

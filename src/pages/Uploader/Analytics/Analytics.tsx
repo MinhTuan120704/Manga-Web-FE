@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { UploaderLayout } from "@/components/layout/UploaderLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -33,9 +33,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import type { BasicStatistics, DetailedStatistics } from "@/types/comment";
-import { statisticsService } from "@/services/statistics.service";
-import { toast } from "sonner";
 
 // Mock data - replace with real API calls
 const viewsData = [
