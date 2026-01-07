@@ -11,6 +11,13 @@ import {
   RefreshCw,
 } from "lucide-react";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -182,7 +189,7 @@ export default function Reports() {
     }
   };
 
- /*  const getUserName = (userId: string | User): string => {
+  /*  const getUserName = (userId: string | User): string => {
     if (typeof userId === "object" && userId) {
       return userId.username;
     }
@@ -231,7 +238,7 @@ export default function Reports() {
     }
   };
 
- /*  const handleCloseModal = () => {
+  /*  const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedReport(null);
     setSelectedManga(null);
@@ -305,16 +312,20 @@ export default function Reports() {
         {/* Time Filter */}
         <div className="flex items-center gap-2">
           <Filter size={20} className="text-muted-foreground" />
-          <select
+          <Select
             value={filterTime}
-            onChange={(e) => handleFilterChange(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-border bg-card text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            onValueChange={(v) => handleFilterChange(v)}
           >
-            <option value="all">Tất cả thời gian</option>
-            <option value="today">Hôm nay</option>
-            <option value="week">7 ngày qua</option>
-            <option value="month">30 ngày qua</option>
-          </select>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Tất cả thời gian" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả thời gian</SelectItem>
+              <SelectItem value="today">Hôm nay</SelectItem>
+              <SelectItem value="week">7 ngày qua</SelectItem>
+              <SelectItem value="month">30 ngày qua</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -524,7 +535,7 @@ export default function Reports() {
                           alt={selectedManga.title}
                           className="w-24 h-32 object-cover rounded-lg border border-border"
                           onError={(e) => {
-                            e.currentTarget.src = '/placeholder-manga.png';
+                            e.currentTarget.src = "/placeholder-manga.png";
                           }}
                         />
                         <div className="flex-1 space-y-2">
@@ -537,16 +548,22 @@ export default function Reports() {
                           <div className="grid grid-cols-2 gap-4">
                             <div>
                               <Label>Tác giả</Label>
-                              <p className="text-foreground">{selectedManga.author}</p>
+                              <p className="text-foreground">
+                                {selectedManga.author}
+                              </p>
                             </div>
                             <div>
                               <Label>Trạng thái</Label>
-                              <p className="text-foreground capitalize">{selectedManga.status}</p>
+                              <p className="text-foreground capitalize">
+                                {selectedManga.status}
+                              </p>
                             </div>
                           </div>
                           <div>
                             <Label>Lượt xem</Label>
-                            <p className="text-foreground">{selectedManga.viewCount?.toLocaleString() || 0}</p>
+                            <p className="text-foreground">
+                              {selectedManga.viewCount?.toLocaleString() || 0}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -575,7 +592,6 @@ export default function Reports() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-
                   <div className="space-y-2">
                     <Label htmlFor="report-date">Ngày báo cáo</Label>
                     <Input
@@ -618,21 +634,29 @@ export default function Reports() {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label>Tên người dùng</Label>
-                          <p className="text-foreground font-medium">{selectedUser.username}</p>
+                          <p className="text-foreground font-medium">
+                            {selectedUser.username}
+                          </p>
                         </div>
                         <div>
                           <Label>Email</Label>
-                          <p className="text-foreground">{selectedUser.email}</p>
+                          <p className="text-foreground">
+                            {selectedUser.email}
+                          </p>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label>Vai trò</Label>
-                          <p className="text-foreground capitalize">{selectedUser.role}</p>
+                          <p className="text-foreground capitalize">
+                            {selectedUser.role}
+                          </p>
                         </div>
                         <div>
                           <Label>ID người dùng</Label>
-                          <p className="text-foreground font-mono text-xs">{selectedUser._id}</p>
+                          <p className="text-foreground font-mono text-xs">
+                            {selectedUser._id}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -661,9 +685,7 @@ export default function Reports() {
                       </p>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">
-                        Trạng thái:
-                      </span>
+                      <span className="text-muted-foreground">Trạng thái:</span>
                       <p className="mt-1">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
