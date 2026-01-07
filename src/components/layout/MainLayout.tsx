@@ -194,7 +194,7 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate("/uploader")}
+                onClick={() => navigate("/uploader/dashboard")}
                 className="gap-2"
               >
                 <ArrowLeftRight className="h-4 w-4" />
@@ -273,7 +273,7 @@ export function MainLayout({ children, breadcrumbs = [] }: MainLayoutProps) {
 
                   {currentUser.role === "uploader" && (
                     <>
-                      <DropdownMenuItem onClick={() => navigate("/uploader")}>
+                      <DropdownMenuItem onClick={() => navigate("/uploader/dashboard")}>
                         <LayoutDashboard className="mr-2 h-4 w-4" />
                         <span>Dashboard</span>
                       </DropdownMenuItem>

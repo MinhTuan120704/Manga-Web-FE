@@ -12,7 +12,7 @@ import { Analytics } from "@/pages/Uploader/Analytics/Analytics";
 
 export const uploaderRoutes: RouteObject[] = [
   {
-    path: "/uploader",
+    path: "/uploader/dashboard",
     element: (
       <ProtectedRoute requiredRole="uploader">
         <Dashboard />

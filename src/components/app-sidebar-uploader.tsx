@@ -62,7 +62,7 @@ const data = {
       items: [
         {
           title: "Dashboard",
-          url: "/uploader",
+          url: "/uploader/dashboard",
           icon: LayoutDashboard,
         },
         {

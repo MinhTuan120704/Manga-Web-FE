@@ -53,7 +53,7 @@ export interface Report {
   mangaId: string;
   userId: string | User;
   reason: string;
- /*  status?: string; */
+  status: string;
   createdAt: string;
   updatedAt: string;
 }

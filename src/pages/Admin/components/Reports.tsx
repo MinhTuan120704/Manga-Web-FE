@@ -31,44 +31,34 @@ import type { User } from "@/types/user";
 import type { Manga } from "@/types/manga";
 import { toast } from "sonner";
 
-/* const getStatusIcon = (status: string) => {
+const getStatusColor = (status: string) => {
   switch (status) {
-    case "Resolved":
-      return <CheckCircle className="text-green-600" size={18} />;
-    case "In Review":
-      return <Clock className="text-yellow-600" size={18} />;
-    case "Pending":
-      return <AlertCircle className="text-red-600" size={18} />;
-    default:
-      return <AlertCircle size={18} />;
-  }
-}; */
-
-/* const getStatusColor = (status: string) => {
-  switch (status) {
+    case "resolved":
     case "Resolved":
       return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
-    case "In Review":
-      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+    case "pending":
     case "Pending":
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+    case "rejected":
+    case "Rejected":
       return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
     default:
-      return "bg-gray-100 text-gray-800";
+      return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
   }
 };
 
 const getStatusInVietnamese = (status: string): string => {
-  switch (status) {
-    case "Resolved":
+  switch (status.toLowerCase()) {
+    case "resolved":
       return "Đã giải quyết";
-    case "In Review":
-      return "Đang xem xét";
-    case "Pending":
+    case "pending":
       return "Đang chờ";
+    case "rejected":
+      return "Đã từ chối";
     default:
       return status;
   }
-}; */
+};
 
 export default function Reports() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -95,6 +85,7 @@ export default function Reports() {
     try {
       setLoading(true);
       const response = await reportService.getAllReports();
+      console.log("Fetched reports:", response);
       setReports(response || []);
     } catch (error) {
       console.error("Failed to fetch reports:", error);
@@ -345,6 +336,9 @@ export default function Reports() {
                 Ngày báo cáo
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-card-foreground">
+                Trạng thái
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-card-foreground">
                 Hành động
               </th>
             </tr>
@@ -375,6 +369,15 @@ export default function Reports() {
                 </td>
                 <td className="px-6 py-4 text-card-foreground text-sm">
                   {formatDate(report.createdAt)}
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                      report.status
+                    )}`}
+                  >
+                    {getStatusInVietnamese(report.status)}
+                  </span>
                 </td>
                 <td className="px-6 py-4 flex gap-2">
                   <button
@@ -655,6 +658,20 @@ export default function Reports() {
                       <span className="text-muted-foreground">ID báo cáo:</span>
                       <p className="text-foreground font-mono text-xs">
                         {selectedReport._id}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">
+                        Trạng thái:
+                      </span>
+                      <p className="mt-1">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                            selectedReport.status
+                          )}`}
+                        >
+                          {getStatusInVietnamese(selectedReport.status)}
+                        </span>
                       </p>
                     </div>
                     <div>

@@ -89,13 +89,14 @@ export default function MangaManagement() {
             ? (filterStatus as "completed" | "ongoing" | "hiatus" | "cancelled")
             : undefined,
       });
-      console.log(response);
       if (response) {
         setMangaList(response);
         setCurrentPage(page);
       }
     } catch (error) {
-      console.error("Error fetching featured mangas:", error);
+      toast.error("Lấy dữ liệu thất bại", {
+        description: "Không thể lấy danh sách manga. Vui lòng thử lại.",
+      });
     } finally {
       setLoadingManga(false);
     }
@@ -139,7 +140,7 @@ export default function MangaManagement() {
       setIsModalOpen(false);
       fetchMangaList(currentPage);
     } catch (error) {
-      console.error("Error updating manga:", error);
+      console.log(error);
       toast.error("Cập nhật thất bại", {
         description: "Không thể cập nhật thông tin manga. Vui lòng thử lại.",
       });
@@ -163,7 +164,6 @@ export default function MangaManagement() {
       setMangaToDelete(null);
       fetchMangaList(currentPage);
     } catch (error) {
-      console.error("Error deleting manga:", error);
       toast.error("Xóa thất bại", {
         description: "Không thể xóa manga. Vui lòng thử lại.",
       });

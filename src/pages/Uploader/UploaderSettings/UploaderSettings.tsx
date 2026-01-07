@@ -48,7 +48,7 @@ export const UploaderSettings = () => {
   return (
     <UploaderLayout
       breadcrumbs={[
-        { label: "Dashboard", href: "/uploader" },
+        { label: "Dashboard", href: "/uploader/dashboard" },
         { label: "Cài đặt" },
       ]}
     >
