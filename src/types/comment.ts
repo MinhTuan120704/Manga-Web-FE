@@ -93,9 +93,14 @@ export interface DetailedStatistics {
   };
   mangas: {
     total: number;
+    totalViewCount: number;
     ongoing: number;
     completed: number;
     hiatus: number;
+    topGenres: Array<{
+      name: string;
+      count: number;
+    }>;
   };
   reports: {
     total: number;
